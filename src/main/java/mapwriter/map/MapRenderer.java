@@ -13,10 +13,6 @@ import mapwriter.map.mapmode.MapMode;
 import mapwriter.util.Reference;
 import mapwriter.util.Render;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.util.BlockPos;
-
-import org.lwjgl.opengl.GL11;
 
 public class MapRenderer
 {

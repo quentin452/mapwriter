@@ -1,6 +1,7 @@
 package mapwriter.region;
 
 import mapwriter.config.Config;
+import net.minecraft.block.state.IBlockState;
 
 public class ChunkRender
 {
@@ -89,8 +90,8 @@ public class ChunkRender
 		double b = 0.0;
 		for (; y > 0; y--)
 		{
-			int blockAndMeta = chunk.getBlockAndMetadata(x, y, z);
-			int c1 = bc.getColour(blockAndMeta);
+			IBlockState blockState = chunk.getBlockState(x, y, z);
+			int c1 = bc.getColour(blockState);
 			int alpha = (c1 >> 24) & 0xff;
 
 			// this is the color that gets returned for air, so set aplha to 0
@@ -103,8 +104,9 @@ public class ChunkRender
 			// no need to process block if it is transparent
 			if (alpha > 0)
 			{
-				int biome = chunk.getBiome(x, z);
-				int c2 = bc.getBiomeColour(blockAndMeta, biome);
+				
+				byte biome = chunk.getBiome(x, z);
+				int c2 = bc.getBiomeColour(blockState, biome);
 
 				// extract colour components as normalized doubles
 				double c1A = (alpha) / 255.0;
@@ -180,10 +182,11 @@ public class ChunkRender
 				{
 					for (y = 127; y >= 0; y--)
 					{
-						int blockAndMeta = chunk.getBlockAndMetadata(x, y, z);
-						int alpha = (bc.getColour(blockAndMeta) >> 24) & 0xff;
+						IBlockState blockState = chunk.getBlockState(x, y, z);
+						int color = bc.getColour(blockState);
+						int alpha = (color >> 24) & 0xff;
 
-						if (bc.getColour(blockAndMeta) == -8650628)
+						if (color == -8650628)
 						{
 							alpha = 0;
 						}
@@ -226,10 +229,11 @@ public class ChunkRender
 				int lastNonTransparentY = startY;
 				for (int y = startY; y < chunk.getMaxY(); y++)
 				{
-					int blockAndMeta = chunk.getBlockAndMetadata(x, y, z);
-					int alpha = (bc.getColour(blockAndMeta) >> 24) & 0xff;
+					IBlockState blockState = chunk.getBlockState(x, y, z);
+					int color = bc.getColour(blockState);
+					int alpha = (color >> 24) & 0xff;
 
-					if (bc.getColour(blockAndMeta) == -8650628)
+					if (color == -8650628)
 					{
 						alpha = 0;
 					}

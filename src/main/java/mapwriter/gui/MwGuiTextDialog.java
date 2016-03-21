@@ -2,10 +2,10 @@ package mapwriter.gui;
 
 import java.io.IOException;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
-
-import org.lwjgl.input.Keyboard;
 
 public class MwGuiTextDialog extends GuiScreen
 {

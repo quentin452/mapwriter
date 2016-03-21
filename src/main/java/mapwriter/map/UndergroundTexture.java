@@ -3,16 +3,17 @@ package mapwriter.map;
 import java.awt.Point;
 import java.util.Arrays;
 
+import org.lwjgl.opengl.GL11;
+
 import mapwriter.Mw;
 import mapwriter.region.ChunkRender;
 import mapwriter.region.IChunk;
 import mapwriter.util.Texture;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
-
-import org.lwjgl.opengl.GL11;
 
 public class UndergroundTexture extends Texture
 {
@@ -46,16 +47,13 @@ public class UndergroundTexture extends Texture
 		}
 
 		@Override
-		public int getBlockAndMetadata(int x, int y, int z)
+		public IBlockState getBlockState(int x, int y, int z)
 		{
-			Block block = this.chunk.getBlock(x, y, z);
-			int blockid = Block.blockRegistry.getIDForObject(block);
-			int meta = this.chunk.getBlockMetadata(new BlockPos(x, y, z));
-			return ((blockid & 0xfff) << 4) | (meta & 0xf);
+			return this.chunk.getBlockState(x, y, z);
 		}
 
 		@Override
-		public int getBiome(int x, int z)
+		public byte getBiome(int x, int z)
 		{
 			return this.chunk.getBiomeArray()[(z * 16) + x];
 		}
@@ -223,8 +221,9 @@ public class UndergroundTexture extends Texture
 				{
 					// if column not yet processed
 					WorldClient world = this.mw.mc.theWorld;
-					Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
-					if ((block == null) || !block.isOpaqueCube())
+					IBlockState state = world.getBlockState(new BlockPos(x, y, z));
+					Block block = state.getBlock();
+					if ((block == null) || !block.isOpaqueCube(state))
 					{
 						// if block is not opaque
 						this.updateFlags[chunkOffset][columnOffset] = ChunkRender.FLAG_NON_OPAQUE;

@@ -2,6 +2,8 @@ package mapwriter.forge;
 
 import java.util.ArrayList;
 
+import org.lwjgl.input.Keyboard;
+
 import mapwriter.Mw;
 import mapwriter.util.Reference;
 import modwarriors.notenoughkeys.api.Api;
@@ -12,8 +14,6 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
-
-import org.lwjgl.input.Keyboard;
 
 public class MwKeyHandler
 {

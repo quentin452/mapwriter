@@ -6,7 +6,7 @@ import mapwriter.map.mapmode.MapMode;
 import mapwriter.util.Render;
 import mapwriter.util.Utils;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 public class Marker
 {

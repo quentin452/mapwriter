@@ -8,7 +8,6 @@ import java.io.OutputStreamWriter;
 import java.io.RandomAccessFile;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,20 +19,18 @@ import mapwriter.util.Logging;
 import mapwriter.util.Reference;
 import mapwriter.util.Render;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.world.biome.BiomeGenBase;
 
 public class BlockColours
 {
-
-	public static final int MAX_BLOCKS = 4096;
 	public static final int MAX_META = 16;
-	public static final int MAX_BIOMES = 256;
 
 	public static final String biomeSectionString = "[biomes]";
 	public static final String blockSectionString = "[blocks]";
 
-	private int[] waterMultiplierArray = new int[MAX_BIOMES];
-	private int[] grassMultiplierArray = new int[MAX_BIOMES];
-	private int[] foliageMultiplierArray = new int[MAX_BIOMES];
+	private LinkedHashMap<String, BiomeData> biomeMap = new LinkedHashMap<String, BiomeData>();
+	
 	private LinkedHashMap<String, BlockData> bcMap = new LinkedHashMap<String, BlockData>();
 
 	public enum BlockType
@@ -48,9 +45,6 @@ public class BlockColours
 
 	public BlockColours()
 	{
-		Arrays.fill(this.waterMultiplierArray, 0xffffff);
-		Arrays.fill(this.grassMultiplierArray, 0xffffff);
-		Arrays.fill(this.foliageMultiplierArray, 0xffffff);
 	}
 
 	public String CombineBlockMeta(String BlockName, int meta)
@@ -81,10 +75,10 @@ public class BlockColours
 		return data.color;
 	}
 
-	public int getColour(int BlockAndMeta)
+	public int getColour(IBlockState BlockState)
 	{
-		Block block = Block.getBlockById(BlockAndMeta >> 4);
-		int meta = BlockAndMeta & 0xf;
+		Block block = BlockState.getBlock();
+		int meta = block.getMetaFromState(BlockState);
 		return this.getColour(block.delegate.name(), meta);
 	}
 
@@ -113,22 +107,25 @@ public class BlockColours
 		}
 	}
 
-	private int getGrassColourMultiplier(int biome)
-	{
-		return (this.grassMultiplierArray != null) && (biome >= 0) && (biome < this.grassMultiplierArray.length) ? this.grassMultiplierArray[biome] : 0xffffff;
+	private int getGrassColourMultiplier(String biomeName)
+	{	
+		BiomeData data = this.biomeMap.get(biomeName);
+		return (data != null) ? data.grassMultiplier : 0xffffff;
 	}
 
-	private int getWaterColourMultiplier(int biome)
+	private int getWaterColourMultiplier(String biomeName)
 	{
-		return (this.waterMultiplierArray != null) && (biome >= 0) && (biome < this.waterMultiplierArray.length) ? this.waterMultiplierArray[biome] : 0xffffff;
+		BiomeData data = this.biomeMap.get(biomeName);
+		return (data != null) ? data.waterMultiplier : 0xffffff;
 	}
 
-	private int getFoliageColourMultiplier(int biome)
+	private int getFoliageColourMultiplier(String biomeName)
 	{
-		return (this.foliageMultiplierArray != null) && (biome >= 0) && (biome < this.foliageMultiplierArray.length) ? this.foliageMultiplierArray[biome] : 0xffffff;
+		BiomeData data = this.biomeMap.get(biomeName);
+		return (data != null) ? data.foliageMultiplier : 0xffffff;
 	}
 
-	public int getBiomeColour(String BlockName, int meta, int biome)
+	public int getBiomeColour(String BlockName, int meta, String biomeName)
 	{
 		int colourMultiplier = 0xffffff;
 
@@ -137,14 +134,14 @@ public class BlockColours
 			switch (this.bcMap.get(this.CombineBlockMeta(BlockName, meta)).type)
 			{
 			case GRASS:
-				colourMultiplier = this.getGrassColourMultiplier(biome);
+				colourMultiplier = this.getGrassColourMultiplier(biomeName);
 				break;
 			case LEAVES:
 			case FOLIAGE:
-				colourMultiplier = this.getFoliageColourMultiplier(biome);
+				colourMultiplier = this.getFoliageColourMultiplier(biomeName);
 				break;
 			case WATER:
-				colourMultiplier = this.getWaterColourMultiplier(biome);
+				colourMultiplier = this.getWaterColourMultiplier(biomeName);
 				break;
 			default:
 				colourMultiplier = 0xffffff;
@@ -154,26 +151,23 @@ public class BlockColours
 		return colourMultiplier;
 	}
 
-	public int getBiomeColour(int BlockAndMeta, int biome)
+	public int getBiomeColour(IBlockState BlockState, byte biomeId)
 	{
-		Block block = Block.getBlockById(BlockAndMeta >> 4);
-		int meta = BlockAndMeta & 0xf;
-		return this.getBiomeColour(block.delegate.name(), meta, biome);
+		String biomeName = BiomeGenBase.getBiomeForId(biomeId).getBiomeName();
+		
+		Block block = BlockState.getBlock();
+		int meta = block.getMetaFromState(BlockState);
+		
+		return this.getBiomeColour(block.delegate.name(), meta, biomeName);
 	}
-
-	public void setBiomeWaterShading(int biomeID, int colour)
+	
+	public void setBiomeData(String biomeName, int waterShading, int grassShading, int foliageShading)
 	{
-		this.waterMultiplierArray[biomeID & 0xff] = colour;
-	}
-
-	public void setBiomeGrassShading(int biomeID, int colour)
-	{
-		this.grassMultiplierArray[biomeID & 0xff] = colour;
-	}
-
-	public void setBiomeFoliageShading(int biomeID, int colour)
-	{
-		this.foliageMultiplierArray[biomeID & 0xff] = colour;
+		BiomeData data = new BiomeData();
+		data.foliageMultiplier = foliageShading;
+		data.grassMultiplier = grassShading;
+		data.waterMultiplier = waterShading;
+		biomeMap.put(biomeName, data);
 	}
 
 	private static BlockType getBlockTypeFromString(String typeString)
@@ -298,36 +292,35 @@ public class BlockColours
 
 		switch (type)
 		{
-
-		case OPAQUE:
-			blockColour |= 0xff000000;
-		case NORMAL:
-			// fix crash when mods don't implement getRenderColor for all
-			// block meta values.
-			try
-			{
-				int renderColour = block.getRenderColor(block.getStateFromMeta(Integer.parseInt(meta) & 0xf));
-				if (renderColour != 0xffffff)
+			case OPAQUE:
+				blockColour |= 0xff000000;
+			case NORMAL:
+				// fix crash when mods don't implement getRenderColor for all
+				// block meta values.
+				try
 				{
-					blockColour = Render.multiplyColours(blockColour, 0xff000000 | renderColour);
+					int renderColour = block.getMapColor(block.getStateFromMeta(Integer.parseInt(meta) & 0xf)).colorValue;
+					if (renderColour != 0xffffff)
+					{
+						blockColour = Render.multiplyColours(blockColour, 0xff000000 | renderColour);
+					}
 				}
-			}
-			catch (RuntimeException e)
-			{
-				// do nothing
-			}
-			break;
-		case LEAVES:
-			// leaves look weird on the map if they are not opaque.
-			// they also look too dark if the render colour is applied.
-			blockColour |= 0xff000000;
-			break;
-		case GRASS:
-			// the icon returns the dirt texture so hardcode it to the grey
-			// undertexture.
-			blockColour = 0xff9b9b9b;
-		default:
-			break;
+				catch (RuntimeException e)
+				{
+					// do nothing
+				}
+				break;
+			case LEAVES:
+				// leaves look weird on the map if they are not opaque.
+				// they also look too dark if the render colour is applied.
+				blockColour |= 0xff000000;
+				break;
+			case GRASS:
+				// the icon returns the dirt texture so hardcode it to the grey
+				// undertexture.
+				blockColour = 0xff9b9b9b;
+			default:
+				break;
 		}
 		return blockColour;
 	}
@@ -349,33 +342,12 @@ public class BlockColours
 	{
 		try
 		{
-			int startBiomeId = 0;
-			int endBiomeId = MAX_BIOMES;
-			if (!split[1].equals("*"))
-			{
-				startBiomeId = Integer.parseInt(split[1]);
-				endBiomeId = startBiomeId + 1;
-			}
-
-			if ((startBiomeId >= 0) && (startBiomeId < MAX_BIOMES))
-			{
-				int waterMultiplier = getColourFromString(split[2]) & 0xffffff;
-				int grassMultiplier = getColourFromString(split[3]) & 0xffffff;
-				int foliageMultiplier = getColourFromString(split[4]) & 0xffffff;
-
-				for (int biomeId = startBiomeId; biomeId < endBiomeId; biomeId++)
-				{
-					this.setBiomeWaterShading(biomeId, waterMultiplier);
-					this.setBiomeGrassShading(biomeId, grassMultiplier);
-					this.setBiomeFoliageShading(biomeId, foliageMultiplier);
-				}
-			}
-			else
-			{
-				Logging.logWarning("biome ID '%d' out of range", startBiomeId);
-			}
-
+			int waterMultiplier = getColourFromString(split[2]) & 0xffffff;
+			int grassMultiplier = getColourFromString(split[3]) & 0xffffff;
+			int foliageMultiplier = getColourFromString(split[4]) & 0xffffff;
+			this.setBiomeData(split[1], waterMultiplier, grassMultiplier, foliageMultiplier);
 		}
+		
 		catch (NumberFormatException e)
 		{
 			Logging.logWarning("invalid biome colour line '%s %s %s %s %s'", split[0], split[1], split[2], split[3], split[4]);
@@ -477,16 +449,15 @@ public class BlockColours
 	{
 		fout.write("biome * ffffff ffffff ffffff\n");
 
-		for (int biomeId = 0; biomeId < MAX_BIOMES; biomeId++)
+		for (Map.Entry<String, BiomeData> entry : this.biomeMap.entrySet())
 		{
-			int waterMultiplier = this.getWaterColourMultiplier(biomeId) & 0xffffff;
-			int grassMultiplier = this.getGrassColourMultiplier(biomeId) & 0xffffff;
-			int foliageMultiplier = this.getFoliageColourMultiplier(biomeId) & 0xffffff;
-
+			String biomeName = entry.getKey();
+			BiomeData data = entry.getValue();
+			
 			// don't add lines that are covered by the default.
-			if ((waterMultiplier != 0xffffff) || (grassMultiplier != 0xffffff) || (foliageMultiplier != 0xffffff))
+			if ((data.waterMultiplier != 0xffffff) || (data.grassMultiplier != 0xffffff) || (data.foliageMultiplier != 0xffffff))
 			{
-				fout.write(String.format("biome %d %06x %06x %06x\n", biomeId, waterMultiplier, grassMultiplier, foliageMultiplier));
+				fout.write(String.format("biome %s %06x %06x %06x\n", biomeName, data.waterMultiplier, data.grassMultiplier, data.foliageMultiplier));
 			}
 		}
 	}
@@ -722,5 +693,12 @@ public class BlockColours
 	{
 		public int color = 0;
 		public BlockType type = BlockType.NORMAL;
+	}
+	
+	public class BiomeData
+	{
+		private int waterMultiplier = 0;
+		private int grassMultiplier = 0;
+		private int foliageMultiplier = 0;
 	}
 }

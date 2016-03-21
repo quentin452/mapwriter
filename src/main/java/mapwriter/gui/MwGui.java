@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import mapwriter.Mw;
 import mapwriter.api.IMwDataProvider;
 import mapwriter.api.MwAPI;
@@ -26,12 +29,9 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiConfirmOpenLink;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class MwGui extends GuiScreen
@@ -232,7 +232,7 @@ public class MwGui extends GuiScreen
 	public int getHeightAtBlockPos(int bX, int bZ)
 	{
 		int bY = 0;
-		int worldDimension = this.mw.mc.theWorld.provider.getDimensionId();
+		int worldDimension = this.mw.mc.theWorld.provider.getDimension();
 		if ((worldDimension == this.mapView.getDimension()) && (worldDimension != -1))
 		{
 			bY = this.mw.mc.theWorld.getHeight(new BlockPos(bX, 0, bZ)).getY();
@@ -635,7 +635,7 @@ public class MwGui extends GuiScreen
 			if (!this.mc.theWorld.getChunkFromBlockCoords(new BlockPos(bX, 0, bZ)).isEmpty())
 			{
 				builder.append(", ");
-				builder.append(I18n.format("mw.gui.mwgui.status.biome", this.mc.theWorld.getBiomeGenForCoords(new BlockPos(bX, 0, bZ)).biomeName));
+				builder.append(I18n.format("mw.gui.mwgui.status.biome", this.mc.theWorld.getBiomeGenForCoords(new BlockPos(bX, 0, bZ)).getBiomeName()));
 			}
 		}
 

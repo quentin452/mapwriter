@@ -8,8 +8,9 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.ColorizerGrass;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -25,7 +26,6 @@ import net.minecraft.world.biome.BiomeGenBase;
 
 public class BlockColourGen
 {
-
 	private static int getIconMapColour(TextureAtlasSprite icon, Texture terrainTexture)
 	{
 		// flipped icons have the U and V coords reversed (minU > maxU, minV >
@@ -53,25 +53,23 @@ public class BlockColourGen
 		// generate array of foliage, grass, and water colour multipliers
 		// for each biome.
 
-		for (int i = 0; i < BiomeGenBase.getBiomeGenArray().length; i++)
+		for (Object oBiome : BiomeGenBase.biomeRegistry)
 		{
-			if (BiomeGenBase.getBiomeGenArray()[i] != null)
+			BiomeGenBase biome = (BiomeGenBase)oBiome;
+			
+			if (biome != null)
 			{
-				bc.setBiomeWaterShading(i, BiomeGenBase.getBiomeGenArray()[i].getWaterColorMultiplier() & 0xffffff);
-
-				double temp = MathHelper.clamp_float(BiomeGenBase.getBiomeGenArray()[i].temperature, 0.0F, 1.0F);
-				double rain = MathHelper.clamp_float(BiomeGenBase.getBiomeGenArray()[i].rainfall, 0.0F, 1.0F);
+				double temp = MathHelper.clamp_float(biome.getTemperature(), 0.0F, 1.0F);
+				double rain = MathHelper.clamp_float(biome.getRainfall(), 0.0F, 1.0F);
 				int grasscolor = ColorizerGrass.getGrassColor(temp, rain);
 				int foliagecolor = ColorizerFoliage.getFoliageColor(temp, rain);
-
-				bc.setBiomeGrassShading(i, grasscolor & 0xffffff);
-				bc.setBiomeFoliageShading(i, foliagecolor & 0xffffff);
-			}
-			else
-			{
-				bc.setBiomeWaterShading(i, 0xffffff);
-				bc.setBiomeGrassShading(i, 0xffffff);
-				bc.setBiomeFoliageShading(i, 0xffffff);
+				int watercolor = biome.getWaterColorMultiplier();
+				
+				bc.setBiomeData(
+						biome.getBiomeName(), 
+						watercolor & 0xffffff, 
+						grasscolor & 0xffffff, 
+						foliagecolor & 0xffffff);
 			}
 		}
 	}
@@ -114,11 +112,9 @@ public class BlockColourGen
 
 			for (int dv = 0; dv < 16; dv++)
 			{
-
-				// int blockAndMeta = ((blockID & 0xfff) << 4) | (dv & 0xf);
 				int blockColour = 0;
 
-				if (block != null && block.getRenderType() != -1)
+				if (block != null && block.getRenderType(block.getDefaultState()) != EnumBlockRenderType.INVISIBLE)
 				{
 
 					TextureAtlasSprite icon = null;

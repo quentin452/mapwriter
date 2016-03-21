@@ -7,7 +7,7 @@ import mapwriter.api.IMwChunkOverlay;
 import mapwriter.api.IMwDataProvider;
 import mapwriter.map.MapView;
 import mapwriter.map.mapmode.MapMode;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 public class OverlayGrid implements IMwDataProvider
 {

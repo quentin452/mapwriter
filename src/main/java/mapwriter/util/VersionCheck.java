@@ -6,9 +6,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import net.minecraftforge.fml.common.Loader;
-
 import org.apache.commons.io.IOUtils;
+
+import net.minecraftforge.fml.common.Loader;
 
 public class VersionCheck implements Runnable
 {

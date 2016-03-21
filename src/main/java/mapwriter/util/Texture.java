@@ -2,11 +2,11 @@ package mapwriter.util;
 
 import java.nio.IntBuffer;
 
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public class Texture
 {

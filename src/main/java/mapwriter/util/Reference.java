@@ -3,9 +3,9 @@ package mapwriter.util;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
-import net.minecraft.util.ResourceLocation;
-
 import com.google.common.collect.Sets;
+
+import net.minecraft.util.ResourceLocation;
 
 public final class Reference
 {

@@ -2,10 +2,10 @@ package mapwriter.gui;
 
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiTextField;
-
-import org.lwjgl.input.Keyboard;
 
 public class ScrollableTextBox extends ScrollableField
 {

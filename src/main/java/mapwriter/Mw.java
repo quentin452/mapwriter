@@ -29,8 +29,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.BlockPos;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.chunk.Chunk;
 
 public class Mw
@@ -150,7 +150,7 @@ public class Mw
 		{
 			if (!this.mc.theWorld.getChunkFromBlockCoords(new BlockPos(this.playerX, 0, this.playerZ)).isEmpty())
 			{
-				this.playerBiome = this.mc.theWorld.getBiomeGenForCoords(new BlockPos(this.playerX, 0, this.playerZ)).biomeName;
+				this.playerBiome = this.mc.theWorld.getBiomeGenForCoords(new BlockPos(this.playerX, 0, this.playerZ)).getBiomeName();
 			}
 		}
 		
@@ -161,7 +161,7 @@ public class Mw
 		this.mapRotationDegrees = -this.mc.thePlayer.rotationYaw + 180;
 
 		// set by onWorldLoad
-		this.playerDimension = this.mc.theWorld.provider.getDimensionId();
+		this.playerDimension = this.mc.theWorld.provider.getDimension();
 		if (this.miniMap.view.getDimension() != this.playerDimension)
 		{
 			WorldConfig.getInstance().addDimension(this.playerDimension);
@@ -173,7 +173,7 @@ public class Mw
 	{
 		this.markerManager.nextGroup();
 		this.markerManager.update();
-		this.mc.thePlayer.addChatMessage(new ChatComponentText("group " + this.markerManager.getVisibleGroupName() + " selected"));
+		this.mc.thePlayer.addChatMessage(new TextComponentTranslation("mw.msg.groupselected", new Object[]{this.markerManager.getVisibleGroupName()}));
 	}
 
 	// cheap and lazy way to teleport...
@@ -590,7 +590,7 @@ public class Mw
 				// toggle marker mode
 				this.markerManager.nextGroup();
 				this.markerManager.update();
-				this.mc.thePlayer.addChatMessage(new ChatComponentText("group " + this.markerManager.getVisibleGroupName() + " selected"));
+				this.mc.thePlayer.addChatMessage(new TextComponentTranslation("mw.msg.groupselected", new Object[]{this.markerManager.getVisibleGroupName()}));
 
 			}
 			else if (kb == MwKeyHandler.keyTeleport)

@@ -6,9 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import mapwriter.util.Logging;
-
 import org.apache.logging.log4j.Logger;
+
+import mapwriter.util.Logging;
 
 public class RegionManager
 {

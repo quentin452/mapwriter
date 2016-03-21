@@ -18,9 +18,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.realms.Realms;
 import net.minecraft.server.integrated.IntegratedServer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.chunk.Chunk;
 
 public class Utils
@@ -85,7 +84,7 @@ public class Utils
 		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
 		if (thePlayer != null)
 		{
-			thePlayer.addChatMessage(new ChatComponentText(msg));
+			thePlayer.addChatMessage(new TextComponentString(msg));
 		}
 		Logging.log("%s", msg);
 	}

@@ -3,13 +3,13 @@ package mapwriter.map;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import mapwriter.BackgroundExecutor;
 import mapwriter.region.Region;
 import mapwriter.region.RegionManager;
 import mapwriter.tasks.MapUpdateViewTask;
 import mapwriter.util.Texture;
-
-import org.lwjgl.opengl.GL11;
 
 public class MapTexture extends Texture
 {

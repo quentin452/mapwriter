@@ -6,8 +6,8 @@ import mapwriter.overlay.OverlaySlime;
 import mapwriter.util.Logging;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -55,20 +55,22 @@ public class EventHandler
 		}
 		try
 		{ // I don't want to crash the game when we derp up in here
-			if (event.message instanceof ChatComponentTranslation)
+			if (event.message instanceof TextComponentTranslation)
 			{
-				ChatComponentTranslation component = (ChatComponentTranslation) event.message;
+					TextComponentTranslation component = (TextComponentTranslation) event.message;
 				if (component.getKey().equals("commands.seed.success"))
 				{
-					OverlaySlime.setSeed((Long) component.getFormatArgs()[0]);
+					String seed = (String)component.getFormatArgs()[0];
+					Long lSeed = Long.parseLong(seed);
+					OverlaySlime.setSeed(lSeed);
 					event.setCanceled(true); // Don't let the player see this
 					// seed message, They didn't do
 					// /seed, we did
 				}
 			}
-			else if (event.message instanceof ChatComponentText)
+			else if (event.message instanceof TextComponentString)
 			{
-				ChatComponentText component = (ChatComponentText) event.message;
+				TextComponentString component = (TextComponentString) event.message;
 				String msg = component.getUnformattedText();
 				if (msg.startsWith("Seed: "))
 				{ // Because bukkit...
@@ -81,7 +83,7 @@ public class EventHandler
 		}
 		catch (Exception e)
 		{
-			// e.printStackTrace();
+			Logging.logError("Something went wrong getting the seed. %s", new Object[]{e.toString()});
 		}
 	}
 

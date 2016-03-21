@@ -1,7 +1,6 @@
 package mapwriter.tasks;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import mapwriter.region.MwChunk;

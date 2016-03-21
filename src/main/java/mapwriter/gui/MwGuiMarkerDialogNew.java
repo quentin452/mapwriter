@@ -2,6 +2,9 @@ package mapwriter.gui;
 
 import java.io.IOException;
 
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+
 import mapwriter.api.MwAPI;
 import mapwriter.map.Marker;
 import mapwriter.map.MarkerManager;
@@ -9,9 +12,6 @@ import mapwriter.util.Utils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 @net.minecraftforge.fml.relauncher.SideOnly(Side.CLIENT)
 public class MwGuiMarkerDialogNew extends GuiScreen

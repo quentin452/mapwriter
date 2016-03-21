@@ -10,7 +10,7 @@ import mapwriter.map.MapView;
 import mapwriter.map.mapmode.MapMode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 public class OverlaySlime implements IMwDataProvider
 {
@@ -99,7 +99,7 @@ public class OverlaySlime implements IMwDataProvider
 		// in this case
 		// and the zoom lvl, to provide higher level informations
 
-		if (Minecraft.getMinecraft().thePlayer.getEntityWorld().provider.getDimensionId() != dim)
+		if (Minecraft.getMinecraft().thePlayer.getEntityWorld().provider.getDimension() != dim)
 		{
 			return new ArrayList<IMwChunkOverlay>();
 		}
