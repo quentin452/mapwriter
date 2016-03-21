@@ -184,3 +184,4 @@ mw.task.rebuildregionstask.chatmsg.rebuild.compleet=rebuild task complete
 mw.msg.tp.disabled=teleportation is disabled in config
 mw.msg.tp.dimError=cannot teleport to marker in different dimension
 mw.msg.warp.error=teleport command is set to 'warp', can only warp to markers
+mw.msg.groupselected="group %s selected")
