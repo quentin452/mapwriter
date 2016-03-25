@@ -31,7 +31,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void eventChunkLoad(ChunkEvent.Load event)
 	{
-		if (event.world.isRemote)
+		if (event.getWorld().isRemote)
 		{
 			this.mw.onChunkLoad(event.getChunk());
 		}
@@ -40,7 +40,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void eventChunkUnload(ChunkEvent.Unload event)
 	{
-		if (event.world.isRemote)
+		if (event.getWorld().isRemote)
 		{
 			this.mw.onChunkUnload(event.getChunk());
 		}
@@ -55,9 +55,9 @@ public class EventHandler
 		}
 		try
 		{ // I don't want to crash the game when we derp up in here
-			if (event.message instanceof TextComponentTranslation)
+			if (event.getMessage() instanceof TextComponentTranslation)
 			{
-					TextComponentTranslation component = (TextComponentTranslation) event.message;
+					TextComponentTranslation component = (TextComponentTranslation) event.getMessage();
 				if (component.getKey().equals("commands.seed.success"))
 				{
 					String seed = (String)component.getFormatArgs()[0];
@@ -68,9 +68,9 @@ public class EventHandler
 					// /seed, we did
 				}
 			}
-			else if (event.message instanceof TextComponentString)
+			else if (event.getMessage() instanceof TextComponentString)
 			{
-				TextComponentString component = (TextComponentString) event.message;
+				TextComponentString component = (TextComponentString) event.getMessage();
 				String msg = component.getUnformattedText();
 				if (msg.startsWith("Seed: "))
 				{ // Because bukkit...
@@ -92,9 +92,9 @@ public class EventHandler
 	{
 		if (!event.isCanceled())
 		{
-			if (event.entityLiving.getEntityId() == net.minecraft.client.Minecraft.getMinecraft().thePlayer.getEntityId())
+			if (event.getEntityLiving().getEntityId() == net.minecraft.client.Minecraft.getMinecraft().thePlayer.getEntityId())
 			{
-				this.mw.onPlayerDeath((EntityPlayerMP) event.entityLiving);
+				this.mw.onPlayerDeath((EntityPlayerMP) event.getEntityLiving());
 			}
 		}
 	}
@@ -102,7 +102,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void renderMap(RenderGameOverlayEvent.Post event)
 	{
-		if (event.type == RenderGameOverlayEvent.ElementType.ALL)
+		if (event.getType() == RenderGameOverlayEvent.ElementType.ALL)
 		{
 			Mw.getInstance().onTick();
 		}
@@ -126,7 +126,7 @@ public class EventHandler
 	{
 		if (Mw.getInstance().ready)
 		{
-			Mw.getInstance().markerManager.drawMarkersWorld(event.partialTicks);
+			Mw.getInstance().markerManager.drawMarkersWorld(event.getPartialTicks());
 		}
 	}
 	
@@ -136,7 +136,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void onGuiOpenEvent(GuiOpenEvent event)
 	{
-		if (event.gui instanceof GuiMainMenu && Config.reloadColours)
+		if (event.getGui() instanceof GuiMainMenu && Config.reloadColours)
 		{
 			this.mw.reloadBlockColours();
 			Config.reloadColours = false;
