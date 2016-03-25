@@ -153,7 +153,12 @@ public class BlockColours
 
 	public int getBiomeColour(IBlockState BlockState, byte biomeId)
 	{
-		String biomeName = BiomeGenBase.getBiomeForId(biomeId).getBiomeName();
+		String biomeName = "";
+		BiomeGenBase biome = BiomeGenBase.getBiomeForId(biomeId);
+		if (biome != null)
+		{
+			biomeName = BiomeGenBase.getBiomeForId(biomeId).getBiomeName();
+		}		 
 		
 		Block block = BlockState.getBlock();
 		int meta = block.getMetaFromState(BlockState);
