@@ -1,11 +1,23 @@
 package mapwriter.forge;
 
+import java.util.ArrayList;
+
+import org.apache.commons.lang3.reflect.FieldUtils;
+
+import com.mojang.realmsclient.RealmsMainScreen;
+import com.mojang.realmsclient.dto.RealmsServer;
+import com.mojang.realmsclient.gui.screens.RealmsConfigureWorldScreen;
+import com.mojang.realmsclient.gui.screens.RealmsLongRunningMcoTaskScreen;
+
 import mapwriter.Mw;
 import mapwriter.config.Config;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.util.Logging;
+import mapwriter.util.Utils;
 import net.minecraft.client.gui.GuiMainMenu;
+import net.minecraft.client.gui.GuiScreenRealmsProxy;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.realms.RealmsScreen;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -57,10 +69,10 @@ public class EventHandler
 		{ // I don't want to crash the game when we derp up in here
 			if (event.getMessage() instanceof TextComponentTranslation)
 			{
-					TextComponentTranslation component = (TextComponentTranslation) event.getMessage();
+				TextComponentTranslation component = (TextComponentTranslation) event.getMessage();
 				if (component.getKey().equals("commands.seed.success"))
 				{
-					String seed = (String)component.getFormatArgs()[0];
+					String seed = (String) component.getFormatArgs()[0];
 					Long lSeed = Long.parseLong(seed);
 					OverlaySlime.setSeed(lSeed);
 					event.setCanceled(true); // Don't let the player see this
@@ -83,7 +95,10 @@ public class EventHandler
 		}
 		catch (Exception e)
 		{
-			Logging.logError("Something went wrong getting the seed. %s", new Object[]{e.toString()});
+			Logging.logError("Something went wrong getting the seed. %s", new Object[]
+			{
+					e.toString()
+			});
 		}
 	}
 
@@ -113,7 +128,7 @@ public class EventHandler
 	{
 		if (Config.reloadColours)
 		{
-			Logging.logInfo("Skipping the first generation of blockcolours, models are not loaded yet", (Object[])null);
+			Logging.logInfo("Skipping the first generation of blockcolours, models are not loaded yet", (Object[]) null);
 		}
 		else
 		{
@@ -129,10 +144,10 @@ public class EventHandler
 			Mw.getInstance().markerManager.drawMarkersWorld(event.getPartialTicks());
 		}
 	}
-	
-	
-	//a bit odd way to reload the blockcolours. if the models are not loaded yet then the uv values and icons will be wrong.
-	//this only happens if fml.skipFirstTextureLoad is enabled.
+
+	// a bit odd way to reload the blockcolours. if the models are not loaded
+	// yet then the uv values and icons will be wrong.
+	// this only happens if fml.skipFirstTextureLoad is enabled.
 	@SubscribeEvent
 	public void onGuiOpenEvent(GuiOpenEvent event)
 	{
@@ -140,6 +155,48 @@ public class EventHandler
 		{
 			this.mw.reloadBlockColours();
 			Config.reloadColours = false;
+		}
+		if (event.getGui() instanceof GuiScreenRealmsProxy)
+		{
+			try
+			{
+				RealmsScreen proxy = ((GuiScreenRealmsProxy) event.getGui()).getProxy();
+				RealmsMainScreen parrent = null;
+
+				if (proxy instanceof RealmsLongRunningMcoTaskScreen || proxy instanceof RealmsConfigureWorldScreen)
+				{
+					Object obj = FieldUtils.readField(proxy, "lastScreen", true);
+					if (obj instanceof RealmsMainScreen)
+					{
+						parrent = (RealmsMainScreen) obj;
+					}
+
+					if (parrent != null)
+					{
+						long id = (Long) FieldUtils.readField(parrent, "selectedServerId", true);
+						if (id > 0)
+						{
+							ArrayList list = (ArrayList) FieldUtils.readField(parrent, "realmsServers", true);
+							for (Object item : list)
+							{
+								RealmsServer server = (RealmsServer) item;
+								String Name = server.getName();
+								String Owner = server.owner;
+								StringBuilder builder = new StringBuilder();
+								builder.append(server.owner);
+								builder.append("_");
+								builder.append(server.getName());
+								Utils.RealmsWorldName = builder.toString();
+							}
+						}
+					}
+
+				}
+			}
+			catch (IllegalAccessException e)
+			{
+
+			}
 		}
 	}
 }

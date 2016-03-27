@@ -143,6 +143,7 @@ public class Utils
 		return (dx * dx) + (dz * dz);
 	}
 
+	public static String RealmsWorldName = "";
 	public static String getWorldName()
 	{
 		String worldName;
@@ -156,7 +157,14 @@ public class Utils
 		}
 		else if (Minecraft.getMinecraft().isConnectedToRealms())
 		{
-			worldName = "Realms";
+			if (RealmsWorldName != "")
+			{
+				worldName = RealmsWorldName;
+			}
+			else
+			{
+				worldName = "Realms";
+			}
 		}
 		else
 		{
