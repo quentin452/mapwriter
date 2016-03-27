@@ -14,6 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class ChunkManager
 {
@@ -44,8 +45,10 @@ public class ChunkManager
 	{
 		Map<BlockPos, TileEntity> TileEntityMap = Maps.newHashMap();
 		TileEntityMap = Utils.checkedMapByCopy(chunk.getTileEntityMap(), BlockPos.class, TileEntity.class, false);
-
-		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimensionType().getId(), chunk.getBlockStorageArray(), Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length), TileEntityMap);
+		byte[] biomeArray = Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length);
+		ExtendedBlockStorage[] dataArray = Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
+		
+		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimensionType().getId(), dataArray, biomeArray, TileEntityMap);
 	}
 
 	public synchronized void addChunk(Chunk chunk)

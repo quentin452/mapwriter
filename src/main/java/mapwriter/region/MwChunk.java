@@ -28,12 +28,9 @@ public class MwChunk implements IChunk
 	public final int z;
 	public final int dimension;
 
-	ExtendedBlockStorage[] dataArray = new ExtendedBlockStorage[16];
-
+	public ExtendedBlockStorage[] dataArray = new ExtendedBlockStorage[16];
 	public final Map<BlockPos, TileEntity> tileentityMap;
-
 	public final byte[] biomeArray;
-
 	public final int maxY;
 
 	public MwChunk(int x, int z, int dimension, ExtendedBlockStorage[] data, byte[] biomeArray, Map<BlockPos, TileEntity> TileEntityMap)
