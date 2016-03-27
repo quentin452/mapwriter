@@ -161,7 +161,7 @@ public class Mw
 		this.mapRotationDegrees = -this.mc.thePlayer.rotationYaw + 180;
 
 		// set by onWorldLoad
-		this.playerDimension = this.mc.theWorld.provider.getDimension();
+		this.playerDimension = this.mc.theWorld.provider.getDimensionType().getId();
 		if (this.miniMap.view.getDimension() != this.playerDimension)
 		{
 			WorldConfig.getInstance().addDimension(this.playerDimension);
@@ -311,7 +311,8 @@ public class Mw
 	public void toggleUndergroundMode()
 	{
 		Config.undergroundMode = !Config.undergroundMode;
-		this.miniMap.view.setUndergroundMode(Config.undergroundMode);
+		//save the new value of underground mode.
+		ConfigurationHandler.configuration.get(Reference.catOptions, "undergroundMode", Config.undergroundModeDef).set(Config.undergroundMode);
 	}
 
 	// //////////////////////////////
@@ -320,7 +321,6 @@ public class Mw
 
 	public void load()
 	{
-
 		if (this.ready)
 		{
 			return;
@@ -351,6 +351,7 @@ public class Mw
 
 		if (!this.mc.isSingleplayer())
 		{
+			
 			this.worldDir = new File(new File(saveDir, "mapwriter_mp_worlds"), Utils.getWorldName());
 		}
 		else
@@ -457,11 +458,14 @@ public class Mw
 		this.load();
 		if (this.ready && (this.mc.thePlayer != null))
 		{
-
 			this.setTextureSize();
 
 			this.updatePlayer();
 
+			//check every tick for a change in underground mode.
+			//this makes it posible to change to underground mode in the config screen.
+			this.miniMap.view.setUndergroundMode(Config.undergroundMode);
+			
 			if (Config.undergroundMode && ((this.tickCounter % 30) == 0))
 			{
 				this.undergroundMapTexture.update();

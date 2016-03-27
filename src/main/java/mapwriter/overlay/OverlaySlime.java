@@ -99,7 +99,7 @@ public class OverlaySlime implements IMwDataProvider
 		// in this case
 		// and the zoom lvl, to provide higher level informations
 
-		if (Minecraft.getMinecraft().thePlayer.getEntityWorld().provider.getDimension() != dim)
+		if (Minecraft.getMinecraft().thePlayer.getEntityWorld().provider.getDimensionType().getId() != dim)
 		{
 			return new ArrayList<IMwChunkOverlay>();
 		}

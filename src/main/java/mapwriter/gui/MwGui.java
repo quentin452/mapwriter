@@ -232,7 +232,7 @@ public class MwGui extends GuiScreen
 	public int getHeightAtBlockPos(int bX, int bZ)
 	{
 		int bY = 0;
-		int worldDimension = this.mw.mc.theWorld.provider.getDimension();
+		int worldDimension = this.mw.mc.theWorld.provider.getDimensionType().getId();
 		if ((worldDimension == this.mapView.getDimension()) && (worldDimension != -1))
 		{
 			bY = this.mw.mc.theWorld.getHeight(new BlockPos(bX, 0, bZ)).getY();
@@ -382,7 +382,6 @@ public class MwGui extends GuiScreen
 			else if (key == MwKeyHandler.keyUndergroundMode.getKeyCode())
 			{
 				this.mw.toggleUndergroundMode();
-				this.mapView.setUndergroundMode(Config.undergroundMode);
 			}
 			break;
 		}
@@ -659,7 +658,10 @@ public class MwGui extends GuiScreen
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float f)
 	{
-
+		//check every tick for a change in underground mode.
+		//this makes it posible to change to underground mode in the config screen.
+		this.mapView.setUndergroundMode(Config.undergroundMode);
+		
 		this.drawDefaultBackground();
 		double xOffset = 0.0;
 		double yOffset = 0.0;

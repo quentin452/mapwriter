@@ -45,7 +45,7 @@ public class ChunkManager
 		Map<BlockPos, TileEntity> TileEntityMap = Maps.newHashMap();
 		TileEntityMap = Utils.checkedMapByCopy(chunk.getTileEntityMap(), BlockPos.class, TileEntity.class, false);
 
-		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimension(), chunk.getBlockStorageArray(), Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length), TileEntityMap);
+		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimensionType().getId(), chunk.getBlockStorageArray(), Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length), TileEntityMap);
 	}
 
 	public synchronized void addChunk(Chunk chunk)

@@ -23,13 +23,11 @@ public class ConfigurationHandler
 			
 			configuration.get(Reference.catOptions, "overlayModeIndex", Config.overlayModeIndexDef).setShowInGui(false);
 			configuration.get(Reference.catOptions, "overlayZoomLevel", Config.zoomInLevelsDef).setShowInGui(false);
-			
-			
 		}
 	}
 
 	public static void loadConfig()
-	{		
+	{	
 		Config.linearTextureScaling = configuration.getBoolean("linearTextureScaling", Reference.catOptions, Config.linearTextureScalingDef, "", "mw.config.linearTextureScaling");
 		Config.useSavedBlockColours = configuration.getBoolean("useSavedBlockColours", Reference.catOptions, Config.useSavedBlockColoursDef, "", "mw.config.useSavedBlockColours");
 		Config.teleportEnabled = configuration.getBoolean("teleportEnabled", Reference.catOptions, Config.teleportEnabledDef, "", "mw.config.teleportEnabled");
