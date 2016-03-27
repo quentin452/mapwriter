@@ -32,6 +32,8 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.storage.ISaveHandler;
+import net.minecraftforge.common.DimensionManager;
 
 public class Mw
 {
@@ -356,7 +358,8 @@ public class Mw
 		}
 		else
 		{
-			this.worldDir = new File(new File(saveDir, "mapwriter_sp_worlds"), Utils.getWorldName());
+			saveDir = DimensionManager.getCurrentSaveRootDirectory();
+			this.worldDir = new File(saveDir, "mapwriter");
 		}
 
 		// create directories
