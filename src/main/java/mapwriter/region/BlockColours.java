@@ -79,7 +79,7 @@ public class BlockColours
 	{
 		Block block = BlockState.getBlock();
 		int meta = block.getMetaFromState(BlockState);
-		return this.getColour(block.delegate.name(), meta);
+		return this.getColour(block.delegate.name().toString(), meta);
 	}
 
 	public void setColour(String BlockName, String meta, int colour)
@@ -163,7 +163,7 @@ public class BlockColours
 		Block block = BlockState.getBlock();
 		int meta = block.getMetaFromState(BlockState);
 		
-		return this.getBiomeColour(block.delegate.name(), meta, biomeName);
+		return this.getBiomeColour(block.delegate.name().toString(), meta, biomeName);
 	}
 	
 	public void setBiomeData(String biomeName, int waterShading, int grassShading, int foliageShading)
@@ -258,7 +258,7 @@ public class BlockColours
 	{
 		Block block = Block.getBlockById(BlockAndMeta >> 4);
 		int meta = BlockAndMeta & 0xf;
-		return this.getBlockType(block.delegate.name(), meta);
+		return this.getBlockType(block.delegate.name().toString(), meta);
 	}
 
 	public void setBlockType(String BlockName, String meta, BlockType type)

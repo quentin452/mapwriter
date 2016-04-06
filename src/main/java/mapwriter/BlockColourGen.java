@@ -165,7 +165,7 @@ public class BlockColourGen
 						}
 					}
 				}
-				bc.setColour(block.delegate.name(), String.valueOf(dv), blockColour);
+				bc.setColour(block.delegate.name().toString(), String.valueOf(dv), blockColour);
 			}
 		}
 
