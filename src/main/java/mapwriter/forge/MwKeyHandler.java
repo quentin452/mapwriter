@@ -6,8 +6,6 @@ import org.lwjgl.input.Keyboard;
 
 import mapwriter.Mw;
 import mapwriter.util.Reference;
-import modwarriors.notenoughkeys.api.Api;
-import modwarriors.notenoughkeys.api.KeyBindingPressedEvent;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
@@ -50,27 +48,12 @@ public class MwKeyHandler
 			}
 			listKeyDescs.add(key.getKeyDescription());
 		}
-
-		if (Loader.isModLoaded("notenoughkeys"))
-		{
-			Api.registerMod(Reference.MOD_ID, listKeyDescs.toArray(new String[0]));
-		}
 	}
 
 	@SubscribeEvent
 	public void keyEvent(InputEvent.KeyInputEvent event)
 	{
-		if (!Loader.isModLoaded("notenoughkeys"))
-		{
-			this.checkKeys();
-		}
-	}
-
-	@Optional.Method(modid = "notenoughkeys")
-	@SubscribeEvent
-	public void keyEventSpecial(KeyBindingPressedEvent event)
-	{
-		Mw.getInstance().onKeyDown(event.keyBinding);
+		this.checkKeys();
 	}
 
 	private void checkKeys()
