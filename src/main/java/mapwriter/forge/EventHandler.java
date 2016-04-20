@@ -14,6 +14,7 @@ import mapwriter.config.Config;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.util.Logging;
 import mapwriter.util.Utils;
+import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreenRealmsProxy;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -102,18 +103,6 @@ public class EventHandler
 		}
 	}
 
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void eventPlayerDeath(LivingDeathEvent event)
-	{
-		if (!event.isCanceled())
-		{
-			if (event.getEntityLiving().getEntityId() == net.minecraft.client.Minecraft.getMinecraft().thePlayer.getEntityId())
-			{
-				this.mw.onPlayerDeath((EntityPlayerMP) event.getEntityLiving());
-			}
-		}
-	}
-
 	@SubscribeEvent
 	public void renderMap(RenderGameOverlayEvent.Post event)
 	{
@@ -156,7 +145,11 @@ public class EventHandler
 			this.mw.reloadBlockColours();
 			Config.reloadColours = false;
 		}
-		if (event.getGui() instanceof GuiScreenRealmsProxy)
+		else if (event.getGui() instanceof GuiGameOver)
+		{
+			this.mw.onPlayerDeath();
+		}
+		else if (event.getGui() instanceof GuiScreenRealmsProxy)
 		{
 			try
 			{

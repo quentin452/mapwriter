@@ -535,7 +535,7 @@ public class Mw
 
 	// from onTick when mc.currentScreen is an instance of GuiGameOver
 	// it's the only option to detect death client side
-	public void onPlayerDeath(EntityPlayerMP player)
+	public void onPlayerDeath()
 	{
 		if (this.ready && (Config.maxDeathMarkers > 0))
 		{
