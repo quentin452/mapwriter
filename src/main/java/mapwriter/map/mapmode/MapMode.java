@@ -23,7 +23,7 @@ public class MapMode
 	public int wPixels = 50;
 	public int hPixels = 50;
 
-	public int marginTop = 10;
+	public int marginTop = 53;
 	public int marginBottom = -1;
 	public int marginLeft = -1;
 	public int marginRight = 10;
@@ -68,11 +68,11 @@ public class MapMode
 		{
 			return;
 		}
-
+		this.lastPos = this.config.Position;
 		// top right
 		if (this.config.Position.equals(MapModeConfig.miniMapPositionStringArray[0]))
 		{
-			this.marginTop = 10;
+			this.marginTop = 53;
 			this.marginBottom = -1;
 			this.marginLeft = -1;
 			this.marginRight = 10;
