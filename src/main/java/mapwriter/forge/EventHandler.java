@@ -106,7 +106,7 @@ public class EventHandler
 	@SubscribeEvent
 	public void renderMap(RenderGameOverlayEvent.Post event)
 	{
-		if (event.getType() == RenderGameOverlayEvent.ElementType.ALL)
+		if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)
 		{
 			Mw.getInstance().onTick();
 		}

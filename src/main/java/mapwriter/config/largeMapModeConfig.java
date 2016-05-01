@@ -1,7 +1,7 @@
 package mapwriter.config;
 
 import mapwriter.gui.ModGuiConfig.ModBooleanEntry;
-import mapwriter.util.Reference;
+import mapwriter.gui.ModGuiConfigHUD.MapPosConfigEntry;
 
 public class largeMapModeConfig extends MapModeConfig
 {
@@ -14,12 +14,44 @@ public class largeMapModeConfig extends MapModeConfig
 	public void loadConfig()
 	{
 		super.loadConfig();
-		this.enabled = ConfigurationHandler.configuration.getBoolean("enabled", this.configCategory, this.enabledDef, "", "mw.config.map.enabled");
-		this.rotate = ConfigurationHandler.configuration.getBoolean("rotate", this.configCategory, this.rotateDef, "", "mw.config.map.rotate");
-		this.circular = ConfigurationHandler.configuration.getBoolean("circular", this.configCategory, this.circularDef, "", "mw.config.map.circular");
-		this.coordsMode = ConfigurationHandler.configuration.getString("coordsMode", this.configCategory, this.coordsModeDef, "", coordsModeStringArray, "mw.config.map.coordsMode");
-		this.borderMode = ConfigurationHandler.configuration.getBoolean("borderMode", this.configCategory, this.borderModeDef, "", "mw.config.map.borderMode");
-		this.biomeMode = ConfigurationHandler.configuration.getString("biomeMode", this.configCategory, this.biomeModeDef, "", coordsModeStringArray, "mw.config.map.biomeMode");
+		this.enabled = ConfigurationHandler.configuration.getBoolean(
+				"enabled",
+				this.configCategory,
+				this.enabledDef,
+				"",
+				"mw.config.map.enabled");
+		this.rotate = ConfigurationHandler.configuration.getBoolean(
+				"rotate",
+				this.configCategory,
+				this.rotateDef,
+				"",
+				"mw.config.map.rotate");
+		this.circular = ConfigurationHandler.configuration.getBoolean(
+				"circular",
+				this.configCategory,
+				this.circularDef,
+				"",
+				"mw.config.map.circular");
+		this.coordsMode = ConfigurationHandler.configuration.getString(
+				"coordsMode",
+				this.configCategory,
+				this.coordsModeDef,
+				"",
+				coordsModeStringArray,
+				"mw.config.map.coordsMode");
+		this.borderMode = ConfigurationHandler.configuration.getBoolean(
+				"borderMode",
+				this.configCategory,
+				this.borderModeDef,
+				"",
+				"mw.config.map.borderMode");
+		this.biomeMode = ConfigurationHandler.configuration.getString(
+				"biomeMode",
+				this.configCategory,
+				this.biomeModeDef,
+				"",
+				coordsModeStringArray,
+				"mw.config.map.biomeMode");
 	}
 
 	@Override
@@ -30,10 +62,21 @@ public class largeMapModeConfig extends MapModeConfig
 		this.coordsModeDef = coordsModeStringArray[1];
 		this.borderModeDef = true;
 		this.heightPercentDef = -1;
-		this.PositionDef = "Large";
-		this.Position = this.PositionDef;
+		this.xPosDef = 50;
+		this.yPosDef = 5;
+		this.heightPercentDef = 88;
+		this.widthPercentDef = 91;
 
-		ConfigurationHandler.configuration.get(Reference.catLargeMapConfig, "enabled", this.enabled).setRequiresWorldRestart(true);
-		ConfigurationHandler.configuration.get(this.configCategory, "rotate", this.rotate).setConfigEntryClass(ModBooleanEntry.class);
+		ConfigurationHandler.configuration
+				.get(this.configCategory, "enabled", this.enabled)
+				.setRequiresWorldRestart(true);
+		ConfigurationHandler.configuration
+				.get(this.configCategory, "rotate", this.rotate)
+				.setConfigEntryClass(ModBooleanEntry.class);
+		ConfigurationHandler.configuration
+				.getCategory(this.mapPosCategory)
+				.setConfigEntryClass(MapPosConfigEntry.class)
+				.setLanguageKey("mw.config.map.ctgy.position")
+				.setShowInGui(true);
 	}
 }

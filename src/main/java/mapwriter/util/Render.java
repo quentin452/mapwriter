@@ -345,11 +345,12 @@ public class Render
 		// always write to depth buffer
 		GlStateManager.depthFunc(GL11.GL_ALWAYS);
 
-		// draw stencil pattern (filled circle at z = 1000.0)
+		// draw stencil pattern (filled circle at z = 0000.0)
+		// map will be drawn behind the stencil
 		Render.setColour(0xffffffff);
-		Render.zDepth = 1000.0;
+		Render.zDepth = 0.0;
 		Render.drawCircle(x, y, r);
-		Render.zDepth = 200.0;
+		Render.zDepth = -1.0;
 
 		// re-enable drawing to colour buffer
 		GlStateManager.colorMask(true, true, true, true);

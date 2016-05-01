@@ -17,7 +17,6 @@ import mapwriter.forge.MwKeyHandler;
 import mapwriter.map.MapRenderer;
 import mapwriter.map.MapView;
 import mapwriter.map.Marker;
-import mapwriter.map.mapmode.FullScreenMapMode;
 import mapwriter.map.mapmode.MapMode;
 import mapwriter.tasks.MergeTask;
 import mapwriter.tasks.RebuildRegionsTask;
@@ -122,7 +121,7 @@ public class MwGui extends GuiScreen
 	public MwGui(Mw mw)
 	{
 		this.mw = mw;
-		this.mapMode = new FullScreenMapMode();
+		this.mapMode = new MapMode(Config.fullScreenMap);
 		this.mapView = new MapView(this.mw, true);
 		this.map = new MapRenderer(this.mw, this.mapMode, this.mapView);
 
