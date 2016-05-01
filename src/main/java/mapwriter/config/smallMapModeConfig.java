@@ -14,6 +14,8 @@ public class smallMapModeConfig extends largeMapModeConfig
 	public void loadConfig()
 	{
 		super.loadConfig();
+		ConfigurationHandler.configuration.getCategory(this.configCategory).remove("Position");
+		ConfigurationHandler.configuration.getCategory(this.configCategory).remove("heightPercent");
 	}
 
 	@Override
