@@ -218,7 +218,7 @@ public abstract class MwGuiSlot
 
 	public boolean isMouseYWithinSlotBounds()
 	{
-		return (this.mouseY >= this.top) && (this.mouseY <= this.bottom) && (this.mouseX >= this.left) && (this.mouseX <= this.right);
+		return (this.mouseY >= this.top) && (this.mouseY <= this.bottom);
 	}
 
 	public boolean isMouseXWithinSlotBounds()
