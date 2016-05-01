@@ -5,7 +5,7 @@
   "description": "An open source mini map mod",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "http://www.minecraftforum.net/topic/2523556/",
+  "url": "http://www.minecraftforum.net/forums/mapping-and-modding/minecraft-mods/2523556-mapwriter-continued-an-open-source-mini-map",
   "updateUrl": "http://www.curse.com/mc-mods/Minecraft/231387-mapwriter-2",
   "authorList": ["mapwriter"],
   "credits": "chrixian, ProfMobius, taelnia, jk-5, Vectron",
