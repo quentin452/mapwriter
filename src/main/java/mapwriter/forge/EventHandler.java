@@ -17,7 +17,6 @@ import mapwriter.util.Utils;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiMainMenu;
 import net.minecraft.client.gui.GuiScreenRealmsProxy;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.realms.RealmsScreen;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -26,9 +25,7 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.world.ChunkEvent;
-import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EventHandler
@@ -73,8 +70,7 @@ public class EventHandler
 				TextComponentTranslation component = (TextComponentTranslation) event.getMessage();
 				if (component.getKey().equals("commands.seed.success"))
 				{
-					String seed = (String) component.getFormatArgs()[0];
-					Long lSeed = Long.parseLong(seed);
+					Long lSeed = (Long) component.getFormatArgs()[0];
 					OverlaySlime.setSeed(lSeed);
 					event.setCanceled(true); // Don't let the player see this
 					// seed message, They didn't do
@@ -117,7 +113,9 @@ public class EventHandler
 	{
 		if (Config.reloadColours)
 		{
-			Logging.logInfo("Skipping the first generation of blockcolours, models are not loaded yet", (Object[]) null);
+			Logging.logInfo(
+					"Skipping the first generation of blockcolours, models are not loaded yet",
+					(Object[]) null);
 		}
 		else
 		{
@@ -156,7 +154,8 @@ public class EventHandler
 				RealmsScreen proxy = ((GuiScreenRealmsProxy) event.getGui()).getProxy();
 				RealmsMainScreen parrent = null;
 
-				if (proxy instanceof RealmsLongRunningMcoTaskScreen || proxy instanceof RealmsConfigureWorldScreen)
+				if (proxy instanceof RealmsLongRunningMcoTaskScreen
+						|| proxy instanceof RealmsConfigureWorldScreen)
 				{
 					Object obj = FieldUtils.readField(proxy, "lastScreen", true);
 					if (obj instanceof RealmsMainScreen)
@@ -169,7 +168,10 @@ public class EventHandler
 						long id = (Long) FieldUtils.readField(parrent, "selectedServerId", true);
 						if (id > 0)
 						{
-							ArrayList list = (ArrayList) FieldUtils.readField(parrent, "realmsServers", true);
+							ArrayList list = (ArrayList) FieldUtils.readField(
+									parrent,
+									"realmsServers",
+									true);
 							for (Object item : list)
 							{
 								RealmsServer server = (RealmsServer) item;
