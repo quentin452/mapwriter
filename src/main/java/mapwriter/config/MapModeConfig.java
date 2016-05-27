@@ -1,11 +1,12 @@
 package mapwriter.config;
 
+import mapwriter.api.IMapModeConfig;
 import mapwriter.gui.ModGuiConfig.ModNumberSliderEntry;
 import mapwriter.gui.ModGuiConfigHUD.MapPosConfigEntry;
 import mapwriter.util.Reference;
 import net.minecraftforge.common.config.Configuration;
 
-public class MapModeConfig
+public class MapModeConfig implements IMapModeConfig
 {
 	public final String configCategory;
 	public final String mapPosCategory;
@@ -140,5 +141,107 @@ public class MapModeConfig
 				.setLanguageKey("mw.config.map.ctgy.position")
 				.setConfigEntryClass(MapPosConfigEntry.class)
 				.setShowInGui(false);
+	}
+
+	@Override
+	public String getConfigCategory()
+	{
+		return this.configCategory;
+	}
+
+	@Override
+	public String getMapPosCategory()
+	{
+		return this.mapPosCategory;
+	}
+
+	@Override
+	public String[] getCoordsModeStringArray()
+	{
+		return this.coordsModeStringArray;
+	}
+
+	@Override
+	public boolean getEnabled()
+	{
+		return this.enabled;
+	}
+
+	@Override
+	public boolean getRotate()
+	{
+		return this.rotate;
+	}
+
+	@Override
+	public boolean getCircular()
+	{
+		return this.circular;
+	}
+
+	@Override
+	public String getCoordsMode()
+	{
+		return this.coordsMode;
+	}
+
+	@Override
+	public boolean getBorderMode()
+	{
+		return this.borderMode;
+	}
+
+	@Override
+	public int getPlayerArrowSize()
+	{
+		return this.playerArrowSize;
+	}
+
+	@Override
+	public int getMarkerSize()
+	{
+		return this.markerSize;
+	}
+
+	@Override
+	public int getTrailMarkerSize()
+	{
+		return this.trailMarkerSize;
+	}
+
+	@Override
+	public int getAlphaPercent()
+	{
+		return this.alphaPercent;
+	}
+
+	@Override
+	public String getBiomeMode()
+	{
+		return this.biomeMode;
+	}
+
+	@Override
+	public double getXPos()
+	{
+		return this.xPos;
+	}
+
+	@Override
+	public double getYPos()
+	{
+		return this.yPos;
+	}
+
+	@Override
+	public double getHeightPercent()
+	{
+		return this.heightPercent;
+	}
+
+	@Override
+	public double getWidthPercent()
+	{
+		return this.widthPercent;
 	}
 }

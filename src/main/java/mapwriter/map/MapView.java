@@ -3,13 +3,13 @@ package mapwriter.map;
 import java.util.List;
 
 import mapwriter.Mw;
+import mapwriter.api.IMapMode;
+import mapwriter.api.IMapView;
 import mapwriter.api.MwAPI;
 import mapwriter.config.Config;
-import mapwriter.map.mapmode.MapMode;
 
-public class MapView
+public class MapView implements IMapView
 {
-
 	private int zoomLevel = 0;
 	private int dimension = 0;
 	private int textureSize = 2048;
@@ -223,9 +223,9 @@ public class MapView
 		}
 	}
 
-	public void setMapWH(MapMode mapMode)
+	public void setMapWH(IMapMode mapMode)
 	{
-		this.setMapWH(mapMode.wPixels, mapMode.hPixels);
+		this.setMapWH(mapMode.getWPixels(), mapMode.getHPixels());
 	}
 
 	public double getMinX()
@@ -295,7 +295,8 @@ public class MapView
 			h /= 2;
 		}
 
-		// MwUtil.log("MapView.updateBaseWH: map = %dx%d, tsize = %d, base = %dx%d",
+		// MwUtil.log("MapView.updateBaseWH: map = %dx%d, tsize = %d, base =
+		// %dx%d",
 		// this.mapW, this.mapH, this.textureSize, w, h);
 
 		this.baseW = w;
@@ -314,7 +315,8 @@ public class MapView
 		boolean inside;
 		if (!circular)
 		{
-			inside = (bX > this.getMinX()) || (bX < this.getMaxX()) || (bZ > this.getMinZ()) || (bZ < this.getMaxZ());
+			inside = (bX > this.getMinX()) || (bX < this.getMaxX()) || (bZ > this.getMinZ())
+					|| (bZ < this.getMaxZ());
 		}
 		else
 		{

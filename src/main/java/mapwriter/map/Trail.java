@@ -37,15 +37,15 @@ public class Trail
 
 		public void draw(MapMode mapMode, MapView mapView)
 		{
-			if (mapView.isBlockWithinView(this.x, this.z, mapMode.config.circular))
+			if (mapView.isBlockWithinView(this.x, this.z, mapMode.getConfig().circular))
 			{
 				Point.Double p = mapMode.blockXZtoScreenXY(mapView, this.x, this.z);
 
 				// draw a coloured arrow centered on the calculated (x, y)
 				Render.setColourWithAlphaPercent(borderColour, this.alphaPercent);
-				Render.drawArrow(p.x, p.y, this.heading, mapMode.config.trailMarkerSize);
+				Render.drawArrow(p.x, p.y, this.heading, mapMode.getConfig().trailMarkerSize);
 				Render.setColourWithAlphaPercent(colour, this.alphaPercent);
-				Render.drawArrow(p.x, p.y, this.heading, mapMode.config.trailMarkerSize - 1.0);
+				Render.drawArrow(p.x, p.y, this.heading, mapMode.getConfig().trailMarkerSize - 1.0);
 			}
 		}
 	}
@@ -62,9 +62,25 @@ public class Trail
 	{
 		this.mw = mw;
 		this.name = name;
-		this.enabled = ConfigurationHandler.configuration.getBoolean(this.name + "TrailEnabled", Reference.catOptions, false, "");
-		this.maxLength = ConfigurationHandler.configuration.getInt(this.name + "TrailMaxLength", Reference.catOptions, this.maxLength, 1, 200, "");
-		this.intervalMillis = ConfigurationHandler.configuration.getInt(this.name + "TrailMarkerIntervalMillis", Reference.catOptions, (int) this.intervalMillis, 100, 360000, "");
+		this.enabled = ConfigurationHandler.configuration.getBoolean(
+				this.name + "TrailEnabled",
+				Reference.catOptions,
+				false,
+				"");
+		this.maxLength = ConfigurationHandler.configuration.getInt(
+				this.name + "TrailMaxLength",
+				Reference.catOptions,
+				this.maxLength,
+				1,
+				200,
+				"");
+		this.intervalMillis = ConfigurationHandler.configuration.getInt(
+				this.name + "TrailMarkerIntervalMillis",
+				Reference.catOptions,
+				(int) this.intervalMillis,
+				100,
+				360000,
+				"");
 	}
 
 	public void close()
@@ -86,7 +102,11 @@ public class Trail
 		if ((time - this.lastMarkerTime) > this.intervalMillis)
 		{
 			this.lastMarkerTime = time;
-			this.addMarker(this.mw.playerX, this.mw.playerY, this.mw.playerZ, this.mw.playerHeading);
+			this.addMarker(
+					this.mw.playerX,
+					this.mw.playerY,
+					this.mw.playerZ,
+					this.mw.playerHeading);
 		}
 	}
 

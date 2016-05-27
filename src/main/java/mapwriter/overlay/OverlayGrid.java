@@ -3,15 +3,15 @@ package mapwriter.overlay;
 import java.awt.Point;
 import java.util.ArrayList;
 
+import mapwriter.api.ILabelInfo;
+import mapwriter.api.IMapMode;
+import mapwriter.api.IMapView;
 import mapwriter.api.IMwChunkOverlay;
 import mapwriter.api.IMwDataProvider;
-import mapwriter.map.MapView;
-import mapwriter.map.mapmode.MapMode;
 import net.minecraft.util.math.MathHelper;
 
 public class OverlayGrid implements IMwDataProvider
 {
-
 	public class ChunkOverlay implements IMwChunkOverlay
 	{
 
@@ -61,7 +61,8 @@ public class OverlayGrid implements IMwDataProvider
 	}
 
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ)
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ,
+			double minX, double minZ, double maxX, double maxZ)
 	{
 		int minChunkX = (MathHelper.ceiling_double_int(minX) >> 4) - 1;
 		int minChunkZ = (MathHelper.ceiling_double_int(minZ) >> 4) - 1;
@@ -94,50 +95,55 @@ public class OverlayGrid implements IMwDataProvider
 	}
 
 	@Override
-	public void onMiddleClick(int dim, int bX, int bZ, MapView mapview)
+	public void onMiddleClick(int dim, int bX, int bZ, IMapView mapview)
 	{
 	}
 
 	@Override
-	public void onDimensionChanged(int dimension, MapView mapview)
+	public void onDimensionChanged(int dimension, IMapView mapview)
 	{
 	}
 
 	@Override
-	public void onMapCenterChanged(double vX, double vZ, MapView mapview)
-	{
-
-	}
-
-	@Override
-	public void onZoomChanged(int level, MapView mapview)
+	public void onMapCenterChanged(double vX, double vZ, IMapView mapview)
 	{
 
 	}
 
 	@Override
-	public void onOverlayActivated(MapView mapview)
+	public void onZoomChanged(int level, IMapView mapview)
 	{
 
 	}
 
 	@Override
-	public void onOverlayDeactivated(MapView mapview)
+	public void onOverlayActivated(IMapView mapview)
 	{
 
 	}
 
 	@Override
-	public void onDraw(MapView mapview, MapMode mapmode)
+	public void onOverlayDeactivated(IMapView mapview)
 	{
 
 	}
 
 	@Override
-	public boolean onMouseInput(MapView mapview, MapMode mapmode)
+	public void onDraw(IMapView mapview, IMapMode mapmode)
+	{
+
+	}
+
+	@Override
+	public boolean onMouseInput(IMapView mapview, IMapMode mapmode)
 	{
 
 		return false;
 	}
 
+	@Override
+	public ILabelInfo getLabelInfo(int mouseX, int mouseY)
+	{
+		return null;
+	}
 }

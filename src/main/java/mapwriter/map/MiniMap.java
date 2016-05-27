@@ -39,11 +39,11 @@ public class MiniMap
 
 		// add small, large and underground map modes if they
 		// are enabled.
-		if (this.smallMapMode.config.enabled)
+		if (this.smallMapMode.getConfig().enabled)
 		{
 			this.mapList.add(this.smallMap);
 		}
-		if (this.largeMapMode.config.enabled)
+		if (this.largeMapMode.getConfig().enabled)
 		{
 			this.mapList.add(this.largeMap);
 		}

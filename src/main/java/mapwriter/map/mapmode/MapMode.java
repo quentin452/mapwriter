@@ -2,30 +2,31 @@ package mapwriter.map.mapmode;
 
 import java.awt.Point;
 
+import mapwriter.api.IMapMode;
+import mapwriter.api.IMapView;
 import mapwriter.config.MapModeConfig;
-import mapwriter.map.MapView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 
-public class MapMode
+public class MapMode implements IMapMode
 {
 	private int sw = 320;
 	private int sh = 240;
 	private double screenScalingFactor = 1.0;
 
 	// calculated before every frame drawn by updateMapDimensions
-	public int xTranslation = 0;
-	public int yTranslation = 0;
-	public int x = -25; // x cordinate in the middle of the map
-	public int y = -25; // y cordinate in the middle of the map
-	public int w = 50;
-	public int h = 50;
-	public int wPixels = 50;
-	public int hPixels = 50;
+	private int xTranslation = 0;
+	private int yTranslation = 0;
+	private int x = -25; // x cordinate in the middle of the map
+	private int y = -25; // y cordinate in the middle of the map
+	private int w = 50;
+	private int h = 50;
+	private int wPixels = 50;
+	private int hPixels = 50;
 
-	public int textX = 0;
-	public int textY = 0;
-	public int textColour = 0xffffffff;
+	private int textX = 0;
+	private int textY = 0;
+	private int textColour = 0xffffffff;
 
 	// config settings
 	private double widthPercent;
@@ -36,7 +37,7 @@ public class MapMode
 	private int mouseXOffset;
 	private int mouseYOffset;
 
-	public MapModeConfig config;
+	private MapModeConfig config;
 
 	public MapMode(MapModeConfig config)
 	{
@@ -59,7 +60,12 @@ public class MapMode
 	{
 		Minecraft mc = Minecraft.getMinecraft();
 		ScaledResolution sRes = new ScaledResolution(mc);
-		this.setScreenRes(mc.displayWidth, mc.displayHeight, sRes.getScaledWidth(), sRes.getScaledHeight(), sRes.getScaleFactor());
+		this.setScreenRes(
+				mc.displayWidth,
+				mc.displayHeight,
+				sRes.getScaledWidth(),
+				sRes.getScaledHeight(),
+				sRes.getScaleFactor());
 	}
 
 	public void updateMargin()
@@ -110,7 +116,7 @@ public class MapMode
 		this.textY = (this.h >> 1) + 4;
 	}
 
-	public Point screenXYtoBlockXZ(MapView mapView, int sx, int sy)
+	public Point screenXYtoBlockXZ(IMapView mapView, int sx, int sy)
 	{
 		double withinMapX = ((double) (sx - this.xTranslation)) / ((double) this.w);
 		double withinMapY = ((double) (sy - this.yTranslation)) / ((double) this.h);
@@ -119,14 +125,14 @@ public class MapMode
 		return new Point(bx, bz);
 	}
 
-	public Point.Double blockXZtoScreenXY(MapView mapView, double bX, double bZ)
+	public Point.Double blockXZtoScreenXY(IMapView mapView, double bX, double bZ)
 	{
 		double xNorm = (bX - mapView.getX()) / mapView.getWidth();
 		double zNorm = (bZ - mapView.getZ()) / mapView.getHeight();
 		return new Point.Double(this.w * xNorm, this.h * zNorm);
 	}
 
-	public Point.Double getClampedScreenXY(MapView mapView, double bX, double bZ)
+	public Point.Double getClampedScreenXY(IMapView mapView, double bX, double bZ)
 	{
 		double xRel = (bX - mapView.getX()) / mapView.getWidth();
 		double zRel = (bZ - mapView.getZ()) / mapView.getHeight();
@@ -226,5 +232,65 @@ public class MapMode
 
 		Point.Double pos = new Point.Double(x, y);
 		return pos;
+	}
+
+	public int getXTranslation()
+	{
+		return this.xTranslation;
+	}
+
+	public int getYTranslation()
+	{
+		return this.yTranslation;
+	}
+
+	public int getX()
+	{
+		return this.x;
+	}
+
+	public int getY()
+	{
+		return this.y;
+	}
+
+	public int getW()
+	{
+		return this.w;
+	}
+
+	public int getH()
+	{
+		return this.h;
+	}
+
+	public int getWPixels()
+	{
+		return this.wPixels;
+	}
+
+	public int getHPixels()
+	{
+		return this.hPixels;
+	}
+
+	public MapModeConfig getConfig()
+	{
+		return this.config;
+	}
+
+	public int getTextX()
+	{
+		return this.textX;
+	}
+
+	public int getTextY()
+	{
+		return this.textY;
+	}
+
+	public int getTextColour()
+	{
+		return this.textColour;
 	}
 }

@@ -33,7 +33,15 @@ public class Marker
 
 	public String getString()
 	{
-		return String.format("%s %s (%d, %d, %d) %d %06x", this.name, this.groupName, this.x, this.y, this.z, this.dimension, this.colour & 0xffffff);
+		return String.format(
+				"%s %s (%d, %d, %d) %d %06x",
+				this.name,
+				this.groupName,
+				this.x,
+				this.y,
+				this.z,
+				this.dimension,
+				this.colour & 0xffffff);
 	}
 
 	public void colourNext()
@@ -50,11 +58,13 @@ public class Marker
 	{
 		double scale = mapView.getDimensionScaling(this.dimension);
 		Point.Double p = mapMode.getClampedScreenXY(mapView, this.x * scale, this.z * scale);
-		this.screenPos.setLocation(p.x + mapMode.xTranslation, p.y + mapMode.yTranslation);
+		this.screenPos.setLocation(
+				p.x + mapMode.getXTranslation(),
+				p.y + mapMode.getYTranslation());
 
 		// draw a coloured rectangle centered on the calculated (x, y)
-		double mSize = mapMode.config.markerSize;
-		double halfMSize = mapMode.config.markerSize / 2.0;
+		double mSize = mapMode.getConfig().markerSize;
+		double halfMSize = mapMode.getConfig().markerSize / 2.0;
 		Render.setColour(borderColour);
 		Render.drawRect(p.x - halfMSize, p.y - halfMSize, mSize, mSize);
 		Render.setColour(this.colour);
@@ -73,7 +83,8 @@ public class Marker
 		if (o instanceof Marker)
 		{
 			Marker m = (Marker) o;
-			return (this.name == m.name) && (this.groupName == m.groupName) && (this.x == m.x) && (this.y == m.y) && (this.z == m.z) && (this.dimension == m.dimension);
+			return (this.name == m.name) && (this.groupName == m.groupName) && (this.x == m.x)
+					&& (this.y == m.y) && (this.z == m.z) && (this.dimension == m.dimension);
 		}
 		return false;
 	}
@@ -90,10 +101,12 @@ public class Marker
 	{
 		return (((colour >> 16) & 0xff) / 255.0f);
 	}
+
 	public float getGreen()
 	{
 		return (((colour >> 8) & 0xff) / 255.0f);
 	}
+
 	public float getBlue()
 	{
 		return (((colour) & 0xff) / 255.0f);

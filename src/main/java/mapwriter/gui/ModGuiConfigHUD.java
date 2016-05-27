@@ -222,19 +222,19 @@ public class ModGuiConfigHUD extends GuiConfig
 	protected void actionPerformed(GuiButton button)
 	{
 		double bottomOffset = 0;
-		if (!this.mapMode.config.biomeMode.equals(MapModeConfig.coordsModeStringArray[0]))
+		if (!this.mapMode.getConfig().biomeMode.equals(MapModeConfig.coordsModeStringArray[0]))
 		{
 			bottomOffset = bottomOffset + mc.fontRendererObj.FONT_HEIGHT + 3;
 		}
-		if (!this.mapMode.config.biomeMode.equals(MapModeConfig.coordsModeStringArray[0]))
+		if (!this.mapMode.getConfig().biomeMode.equals(MapModeConfig.coordsModeStringArray[0]))
 		{
 			bottomOffset = bottomOffset + mc.fontRendererObj.FONT_HEIGHT + 3;
 		}
 		bottomOffset = (bottomOffset / this.height) * 100;
 
-		double SmallMarginY = (10.00 / (double) (this.height - this.mapMode.h)) * 100.0;
-		double SmallMarginX = (10.00 / (double) (this.width - this.mapMode.w)) * 100.0;
-		double LargeMarginBottom = (40.00 / (double) (this.height - this.mapMode.h)) * 100.0;
+		double SmallMarginY = (10.00 / (double) (this.height - this.mapMode.getH())) * 100.0;
+		double SmallMarginX = (10.00 / (double) (this.width - this.mapMode.getW())) * 100.0;
+		double LargeMarginBottom = (40.00 / (double) (this.height - this.mapMode.getH())) * 100.0;
 
 		bottomOffset = bottomOffset < SmallMarginY ? SmallMarginY : bottomOffset;
 		// top left
@@ -362,7 +362,7 @@ public class ModGuiConfigHUD extends GuiConfig
 			else if (entry.getName().equals("widthPercent"))
 			{
 				dummyMapConfig.widthPercent = (Double) entry.getCurrentValue();
-				if (this.mapMode.config.circular)
+				if (this.mapMode.getConfig().circular)
 				{
 					((ModNumberSliderEntry) entry).setEnabled(false);
 				}
