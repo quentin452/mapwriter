@@ -84,7 +84,7 @@ public class MarkerManager
 			config.get(category, key, "").set(value);
 			i++;
 		}
-		
+
 		if (config.hasChanged())
 		{
 			config.save();
@@ -118,7 +118,15 @@ public class MarkerManager
 
 	public String markerToString(Marker marker)
 	{
-		return String.format("%s:%d:%d:%d:%d:%06x:%s", marker.name, marker.x, marker.y, marker.z, marker.dimension, marker.colour & 0xffffff, marker.groupName);
+		return String.format(
+				"%s:%d:%d:%d:%d:%06x:%s",
+				marker.name,
+				marker.x,
+				marker.y,
+				marker.z,
+				marker.dimension,
+				marker.colour & 0xffffff,
+				marker.groupName);
 	}
 
 	public Marker stringToMarker(String s)
@@ -160,8 +168,9 @@ public class MarkerManager
 	{
 		this.markerList.add(marker);
 	}
-	
-	public void addMarker(String name, String groupName, int x, int y, int z, int dimension, int colour)
+
+	public void addMarker(String name, String groupName, int x, int y, int z, int dimension,
+			int colour)
 	{
 		this.addMarker(new Marker(name, groupName, x, y, z, dimension, colour));
 		this.save(WorldConfig.getInstance().worldConfiguration, Reference.catMarkers);
@@ -176,9 +185,9 @@ public class MarkerManager
 			this.selectedMarker = null;
 		}
 		boolean result = this.markerList.remove(markerToDelete);
-		
+
 		this.save(WorldConfig.getInstance().worldConfiguration, Reference.catMarkers);
-		
+
 		return result;
 	}
 
@@ -189,7 +198,8 @@ public class MarkerManager
 		Marker markerToDelete = null;
 		for (Marker marker : this.markerList)
 		{
-			if (((name == null) || marker.name.equals(name)) && ((group == null) || marker.groupName.equals(group)))
+			if (((name == null) || marker.name.equals(name)) && ((group == null) || marker.groupName
+					.equals(group)))
 			{
 				markerToDelete = marker;
 				break;
@@ -208,7 +218,8 @@ public class MarkerManager
 		this.groupList.add("all");
 		for (Marker marker : this.markerList)
 		{
-			if (marker.groupName.equals(this.visibleGroupName) || this.visibleGroupName.equals("all"))
+			if (marker.groupName.equals(this.visibleGroupName) || this.visibleGroupName.equals(
+					"all"))
 			{
 				this.visibleMarkerList.add(marker);
 			}
@@ -399,67 +410,67 @@ public class MarkerManager
 		// size of the square from middle to edge
 		double d4 = 0.2D;
 
-		double d5  = 0.5D + (Math.cos(d3 + 2.356194490192345D) 	* d4);
-		double d6  = 0.5D + (Math.sin(d3 + 2.356194490192345D) 	* d4);
-		double d7  = 0.5D + (Math.cos(d3 + (Math.PI / 4D)) 		* d4);
-		double d8  = 0.5D + (Math.sin(d3 + (Math.PI / 4D)) 		* d4);
-		double d9  = 0.5D + (Math.cos(d3 + 3.9269908169872414D) * d4);
+		double d5 = 0.5D + (Math.cos(d3 + 2.356194490192345D) * d4);
+		double d6 = 0.5D + (Math.sin(d3 + 2.356194490192345D) * d4);
+		double d7 = 0.5D + (Math.cos(d3 + (Math.PI / 4D)) * d4);
+		double d8 = 0.5D + (Math.sin(d3 + (Math.PI / 4D)) * d4);
+		double d9 = 0.5D + (Math.cos(d3 + 3.9269908169872414D) * d4);
 		double d10 = 0.5D + (Math.sin(d3 + 3.9269908169872414D) * d4);
-		double d11 = 0.5D + (Math.cos(d3 + 5.497787143782138D) 	* d4);
-		double d12 = 0.5D + (Math.sin(d3 + 5.497787143782138D) 	* d4);
+		double d11 = 0.5D + (Math.cos(d3 + 5.497787143782138D) * d4);
+		double d12 = 0.5D + (Math.sin(d3 + 5.497787143782138D) * d4);
 
 		float fRed = m.getRed();
 		float fGreen = m.getGreen();
 		float fBlue = m.getBlue();
 		float fAlpha = 0.125f;
-		
-		vertexbuffer.pos(x + d5,  y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d5,  y, 		z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y, 		z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+
+		vertexbuffer.pos(x + d5, y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		vertexbuffer.pos(x + d11, y + d17, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d11, y, 		z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y, 		z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y, 		z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d11, y, 		z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d11, y, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d11, y, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		vertexbuffer.pos(x + d11, y + d17, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y, 		z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d5,  y, 		z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d5,  y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		tessellator.draw();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 		// size of the square from middle to edge
 		d4 = 0.5D;
 
-		d5 	= 0.5D + (Math.sin(d3 + 2.356194490192345D) 	* d4);
-		d6 	= 0.5D + (Math.cos(d3 + 2.356194490192345D) 	* d4);
-		d7 	= 0.5D + (Math.sin(d3 + (Math.PI / 4D)) 		* d4);
-		d8 	= 0.5D + (Math.cos(d3 + (Math.PI / 4D)) 		* d4);
-		d9 	= 0.5D + (Math.sin(d3 + 3.9269908169872414D)	* d4);
-		d10 = 0.5D + (Math.cos(d3 + 3.9269908169872414D) 	* d4);
-		d11 = 0.5D + (Math.sin(d3 + 5.497787143782138D) 	* d4);
-		d12 = 0.5D + (Math.cos(d3 + 5.497787143782138D) 	* d4);
+		d5 = 0.5D + (Math.sin(d3 + 2.356194490192345D) * d4);
+		d6 = 0.5D + (Math.cos(d3 + 2.356194490192345D) * d4);
+		d7 = 0.5D + (Math.sin(d3 + (Math.PI / 4D)) * d4);
+		d8 = 0.5D + (Math.cos(d3 + (Math.PI / 4D)) * d4);
+		d9 = 0.5D + (Math.sin(d3 + 3.9269908169872414D) * d4);
+		d10 = 0.5D + (Math.cos(d3 + 3.9269908169872414D) * d4);
+		d11 = 0.5D + (Math.sin(d3 + 5.497787143782138D) * d4);
+		d12 = 0.5D + (Math.cos(d3 + 5.497787143782138D) * d4);
 
-		vertexbuffer.pos(x + d5,  y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d5,  y, 		z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y, 		z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		vertexbuffer.pos(x + d11, y + d17, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d11, y, 		z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y, 		z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d7,  y, 		z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d11, y, 		z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d11, y, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y + d17, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d7, y, z + d8).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d11, y, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		vertexbuffer.pos(x + d11, y + d17, z + d12).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d9,  y, 		z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d5,  y, 		z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(x + d5,  y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y + d17, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d9, y, z + d10).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(x + d5, y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		tessellator.draw();
 
 		GlStateManager.enableLighting();
@@ -484,8 +495,8 @@ public class MarkerManager
 		float fGreen = m.getGreen();
 		float fBlue = m.getBlue();
 		float fAlpha = 0.2f;
-		
-		double distance = m.getDistanceToMarker(renderManager.livingPlayer);
+
+		double distance = m.getDistanceToMarker(renderManager.pointedEntity);
 
 		String strText = m.name;
 		String strDistance = " (" + (int) distance + "m)";
@@ -516,17 +527,41 @@ public class MarkerManager
 		GlStateManager.disableTexture2D();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer.pos(-strTextWidth - 1, (-1), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(-strTextWidth - 1, (8), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(strTextWidth + 1, (8), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(strTextWidth + 1, (-1), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer
+				.pos(-strTextWidth - 1, (-1), 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
+		vertexbuffer
+				.pos(-strTextWidth - 1, (8), 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
+		vertexbuffer
+				.pos(strTextWidth + 1, (8), 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
+		vertexbuffer
+				.pos(strTextWidth + 1, (-1), 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
 		tessellator.draw();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer.pos(-strDistanceWidth - 1, -1 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(-strDistanceWidth - 1, 8 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(strDistanceWidth + 1, 8 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(strDistanceWidth + 1, -1 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer
+				.pos(-strDistanceWidth - 1, -1 + offstet, 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
+		vertexbuffer
+				.pos(-strDistanceWidth - 1, 8 + offstet, 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
+		vertexbuffer
+				.pos(strDistanceWidth + 1, 8 + offstet, 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
+		vertexbuffer
+				.pos(strDistanceWidth + 1, -1 + offstet, 0.0D)
+				.color(fRed, fGreen, fBlue, fAlpha)
+				.endVertex();
 		tessellator.draw();
 
 		GlStateManager.enableTexture2D();

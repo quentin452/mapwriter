@@ -711,7 +711,7 @@ public class MwGui extends GuiScreen
 						I18n.format(
 								"mw.gui.mwgui.status.biome",
 								this.mc.theWorld
-										.getBiomeGenForCoords(new BlockPos(bX, 0, bZ))
+										.getBiomeGenForCoordsBody(new BlockPos(bX, 0, bZ))
 										.getBiomeName()));
 			}
 		}

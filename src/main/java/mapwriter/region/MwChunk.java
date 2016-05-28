@@ -157,7 +157,7 @@ public class MwChunk implements IChunk
 					for (int i1 = 0; i1 < nbttaglist2.tagCount(); ++i1)
 					{
 						NBTTagCompound nbttagcompound4 = nbttaglist2.getCompoundTagAt(i1);
-						TileEntity tileentity = TileEntity.createTileEntity(null, nbttagcompound4);
+						TileEntity tileentity = TileEntity.func_184246_b(null, nbttagcompound4);
 						if (tileentity != null)
 						{
 							TileEntityMap.put(tileentity.getPos(), tileentity);
@@ -294,7 +294,7 @@ public class MwChunk implements IChunk
 
 		return ((this.dataArray != null) && (this.dataArray[yi] != null)) ? this.dataArray[yi]
 				.getData()
-				.get(x & 15, y & 15, z & 15) : Blocks.air.getDefaultState();
+				.get(x & 15, y & 15, z & 15) : Blocks.AIR.getDefaultState();
 	}
 
 	// changed to use the NBTTagCompound that minecraft uses. this makes the
@@ -365,7 +365,7 @@ public class MwChunk implements IChunk
 			try
 			{
 				NBTTagCompound nbttagcompound3 = new NBTTagCompound();
-				tileentity.writeToNBT(nbttagcompound3);
+				tileentity.func_145841_b(nbttagcompound3);
 				nbttaglist2.appendTag(nbttagcompound3);
 			}
 			catch (Exception e)
