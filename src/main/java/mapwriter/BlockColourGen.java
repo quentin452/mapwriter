@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.ColorizerGrass;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.Biome;
 
 // Static class to generate BlockColours.
 // This is separate from BlockColours because it needs to run in the GL
@@ -53,10 +53,8 @@ public class BlockColourGen
 		// generate array of foliage, grass, and water colour multipliers
 		// for each biome.
 
-		for (Object oBiome : BiomeGenBase.REGISTRY)
+		for (Biome biome : Biome.REGISTRY)
 		{
-			BiomeGenBase biome = (BiomeGenBase) oBiome;
-
 			if (biome != null)
 			{
 				double temp = MathHelper.clamp_float(biome.getTemperature(), 0.0F, 1.0F);

@@ -8,7 +8,7 @@ import mapwriter.Mw;
 import mapwriter.map.MapTexture;
 import mapwriter.region.MwChunk;
 import mapwriter.region.RegionManager;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 
 public class UpdateSurfaceChunksTask extends Task
 {
@@ -34,7 +34,13 @@ public class UpdateSurfaceChunksTask extends Task
 			// update the chunk in the region pixels
 			this.regionManager.updateChunk(this.chunk);
 			// copy updated region pixels to maptexture
-			this.mapTexture.updateArea(this.regionManager, this.chunk.x << 4, this.chunk.z << 4, MwChunk.SIZE, MwChunk.SIZE, this.chunk.dimension);
+			this.mapTexture.updateArea(
+					this.regionManager,
+					this.chunk.x << 4,
+					this.chunk.z << 4,
+					MwChunk.SIZE,
+					MwChunk.SIZE,
+					this.chunk.dimension);
 		}
 	}
 
@@ -54,7 +60,7 @@ public class UpdateSurfaceChunksTask extends Task
 	@Override
 	public boolean CheckForDuplicate()
 	{
-		Long coords = ChunkCoordIntPair.chunkXZ2Int(this.chunk.x, this.chunk.z);
+		Long coords = ChunkPos.chunkXZ2Int(this.chunk.x, this.chunk.z);
 
 		if (!UpdateSurfaceChunksTask.chunksUpdating.containsKey(coords))
 		{
@@ -63,7 +69,8 @@ public class UpdateSurfaceChunksTask extends Task
 		}
 		else
 		{
-			UpdateSurfaceChunksTask task2 = (UpdateSurfaceChunksTask) UpdateSurfaceChunksTask.chunksUpdating.get(coords);
+			UpdateSurfaceChunksTask task2 = (UpdateSurfaceChunksTask) UpdateSurfaceChunksTask.chunksUpdating
+					.get(coords);
 			if (task2.Running.get() == false)
 			{
 				task2.UpdateChunkData(this.chunk);

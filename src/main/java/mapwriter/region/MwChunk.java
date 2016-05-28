@@ -14,7 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -157,7 +157,7 @@ public class MwChunk implements IChunk
 					for (int i1 = 0; i1 < nbttaglist2.tagCount(); ++i1)
 					{
 						NBTTagCompound nbttagcompound4 = nbttaglist2.getCompoundTagAt(i1);
-						TileEntity tileentity = TileEntity.func_184246_b(null, nbttagcompound4);
+						TileEntity tileentity = TileEntity.create(nbttagcompound4);
 						if (tileentity != null)
 						{
 							TileEntityMap.put(tileentity.getPos(), tileentity);
@@ -364,8 +364,7 @@ public class MwChunk implements IChunk
 		{
 			try
 			{
-				NBTTagCompound nbttagcompound3 = new NBTTagCompound();
-				tileentity.func_145841_b(nbttagcompound3);
+				NBTTagCompound nbttagcompound3 = tileentity.writeToNBT(new NBTTagCompound());
 				nbttaglist2.appendTag(nbttagcompound3);
 			}
 			catch (Exception e)
@@ -449,6 +448,6 @@ public class MwChunk implements IChunk
 
 	public Long getCoordIntPair()
 	{
-		return ChunkCoordIntPair.chunkXZ2Int(this.x, this.z);
+		return ChunkPos.chunkXZ2Int(this.x, this.z);
 	}
 }

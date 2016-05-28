@@ -153,7 +153,7 @@ public class Mw
 					.isEmpty())
 			{
 				this.playerBiome = this.mc.theWorld
-						.getBiomeGenForCoordsBody(new BlockPos(this.playerX, 0, this.playerZ))
+						.getBiomeForCoordsBody(new BlockPos(this.playerX, 0, this.playerZ))
 						.getBiomeName();
 			}
 		}
