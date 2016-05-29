@@ -8,6 +8,8 @@ import java.util.Map;
 
 import mapwriter.util.Logging;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.init.Biomes;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,6 +17,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.NibbleArray;
 import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
@@ -199,9 +202,21 @@ public class MwChunk implements IChunk
 	}
 
 	@Override
-	public byte getBiome(int x, int z)
+	public int getBiome(int x, int y, int z)
 	{
-		return (this.biomeArray != null) ? (this.biomeArray[((z & 0xf) << 4) | (x & 0xf)]) : 0;
+		int i = x & 15;
+		int j = z & 15;
+		int k = this.biomeArray[j << 4 | i] & 255;
+
+		if (k == 255)
+		{
+			Biome biome = Minecraft.getMinecraft().theWorld.getBiomeProvider().getBiome(
+					new BlockPos(k, k, k),
+					Biomes.PLAINS);
+			k = Biome.getIdForBiome(biome);
+		}
+		;
+		return k;
 	}
 
 	@Override

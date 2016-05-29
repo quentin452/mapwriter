@@ -20,6 +20,7 @@ import mapwriter.util.Reference;
 import mapwriter.util.Render;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Biomes;
 import net.minecraft.world.biome.Biome;
 
 public class BlockColours
@@ -125,6 +126,10 @@ public class BlockColours
 
 	private int getGrassColourMultiplier(String biomeName)
 	{
+		if (!biomeName.equals("Plains"))
+		{
+			int test = 0;
+		}
 		BiomeData data = this.biomeMap.get(biomeName);
 		return (data != null) ? data.grassMultiplier : 0xffffff;
 	}
@@ -167,13 +172,19 @@ public class BlockColours
 		return colourMultiplier;
 	}
 
-	public int getBiomeColour(IBlockState BlockState, byte biomeId)
+	public int getBiomeColour(IBlockState BlockState, int biomeId)
 	{
 		String biomeName = "";
 		Biome biome = Biome.getBiomeForId(biomeId);
+
+		if (biomeId == 255)
+		{
+			biome = Biomes.PLAINS;
+		}
+
 		if (biome != null)
 		{
-			biomeName = Biome.getBiomeForId(biomeId).getBiomeName();
+			biomeName = biome.getBiomeName();
 		}
 
 		Block block = BlockState.getBlock();
