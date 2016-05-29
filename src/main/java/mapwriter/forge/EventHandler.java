@@ -70,7 +70,15 @@ public class EventHandler
 				TextComponentTranslation component = (TextComponentTranslation) event.getMessage();
 				if (component.getKey().equals("commands.seed.success"))
 				{
-					Long lSeed = (Long) component.getFormatArgs()[0];
+					Long lSeed = (long) 0;
+					if (component.getFormatArgs()[0] instanceof Long)
+					{
+						lSeed = (Long) component.getFormatArgs()[0];
+					}
+					else
+					{
+						lSeed = Long.parseLong((String) component.getFormatArgs()[0]);
+					}
 					OverlaySlime.setSeed(lSeed);
 					event.setCanceled(true); // Don't let the player see this
 					// seed message, They didn't do
