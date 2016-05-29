@@ -11,8 +11,11 @@ import mapwriter.region.IChunk;
 import mapwriter.util.Texture;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 
 public class UndergroundTexture extends Texture
@@ -53,9 +56,21 @@ public class UndergroundTexture extends Texture
 		}
 
 		@Override
-		public byte getBiome(int x, int z)
+		public int getBiome(int x, int y, int z)
 		{
-			return this.chunk.getBiomeArray()[(z * 16) + x];
+			int i = x & 15;
+			int j = z & 15;
+			int k = this.chunk.getBiomeArray()[j << 4 | i] & 255;
+
+			if (k == 255)
+			{
+				BiomeGenBase biome = Minecraft.getMinecraft().theWorld.getBiomeProvider().getBiome(
+						new BlockPos(k, k, k),
+						Biomes.PLAINS);
+				k = BiomeGenBase.getIdForBiome(biome);
+			}
+			;
+			return k;
 		}
 
 		@Override
@@ -67,7 +82,13 @@ public class UndergroundTexture extends Texture
 
 	public UndergroundTexture(Mw mw, int textureSize, boolean linearScaling)
 	{
-		super(textureSize, textureSize, 0x00000000, GL11.GL_NEAREST, GL11.GL_NEAREST, GL11.GL_REPEAT);
+		super(
+				textureSize,
+				textureSize,
+				0x00000000,
+				GL11.GL_NEAREST,
+				GL11.GL_NEAREST,
+				GL11.GL_REPEAT);
 		this.setLinearScaling(false);
 		this.textureSize = textureSize;
 		this.textureChunks = textureSize >> 4;
@@ -182,7 +203,14 @@ public class UndergroundTexture extends Texture
 					int tz = (cz << 4) & (this.textureSize - 1);
 					int pixelOffset = (tz * this.textureSize) + tx;
 					byte[] mask = this.updateFlags[flagOffset];
-					ChunkRender.renderUnderground(this.mw.blockColours, new RenderChunk(chunk), this.pixels, pixelOffset, this.textureSize, this.py, mask);
+					ChunkRender.renderUnderground(
+							this.mw.blockColours,
+							new RenderChunk(chunk),
+							this.pixels,
+							pixelOffset,
+							this.textureSize,
+							this.py,
+							mask);
 				}
 				flagOffset += 1;
 			}
