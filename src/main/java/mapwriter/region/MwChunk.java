@@ -211,7 +211,7 @@ public class MwChunk implements IChunk
 		if (k == 255)
 		{
 			BiomeGenBase biome = Minecraft.getMinecraft().theWorld.getBiomeProvider().getBiome(
-					new BlockPos(k, k, k),
+					new BlockPos(x, y, z),
 					Biomes.PLAINS);
 			k = BiomeGenBase.getIdForBiome(biome);
 		}
