@@ -173,7 +173,19 @@ public class BlockColourGen
 						}
 					}
 				}
-				bc.setColour(block.delegate.name().toString(), String.valueOf(dv), blockColour);
+				try
+				{
+					bc.setColour(block.delegate.name().toString(), String.valueOf(dv), blockColour);
+				}
+				catch (Exception e)
+				{
+					// MwUtil.log("genFromTextures: exception caught when
+					// requesting block texture for %03x:%x",
+					// blockID, dv);
+					// e.printStackTrace();
+					e_count++;
+				}
+
 			}
 		}
 
