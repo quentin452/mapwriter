@@ -160,7 +160,7 @@ public class MwChunk implements IChunk
 					for (int i1 = 0; i1 < nbttaglist2.tagCount(); ++i1)
 					{
 						NBTTagCompound nbttagcompound4 = nbttaglist2.getCompoundTagAt(i1);
-						TileEntity tileentity = TileEntity.create(nbttagcompound4);
+						TileEntity tileentity = TileEntity.func_190200_a(null, nbttagcompound4);
 						if (tileentity != null)
 						{
 							TileEntityMap.put(tileentity.getPos(), tileentity);
