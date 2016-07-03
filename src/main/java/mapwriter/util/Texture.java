@@ -26,7 +26,16 @@ public class Texture
 		this.fillRect(0, 0, w, h, fillColour);
 		this.pixelBuf.position(0);
 		this.bind();
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, w, h, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, this.pixelBuf);
+		GL11.glTexImage2D(
+				GL11.GL_TEXTURE_2D,
+				0,
+				GL11.GL_RGBA8,
+				w,
+				h,
+				0,
+				GL12.GL_BGRA,
+				GL11.GL_UNSIGNED_BYTE,
+				this.pixelBuf);
 		this.setTexParameters(minFilter, maxFilter, textureWrap);
 	}
 
@@ -44,7 +53,12 @@ public class Texture
 		this.h = Render.getTextureHeight();
 		this.pixelBuf = Utils.allocateDirectIntBuffer(this.w * this.h);
 		this.getPixelsFromExistingTexture();
-		Logging.log("created new MwTexture from GL texture id %d (%dx%d) (%d pixels)", this.id, this.w, this.h, this.pixelBuf.limit());
+		Logging.log(
+				"created new MwTexture from GL texture id %d (%dx%d) (%d pixels)",
+				this.id,
+				this.w,
+				this.h,
+				this.pixelBuf.limit());
 	}
 
 	// free up the resources used by the GL texture
@@ -89,7 +103,8 @@ public class Texture
 
 	// Copy a rectangular sub-region of dimensions 'w' x 'h' from the pixel
 	// buffer to the array 'pixels'.
-	public synchronized void getRGB(int x, int y, int w, int h, int[] pixels, int offset, int scanSize, TextureAtlasSprite icon)
+	public synchronized void getRGB(int x, int y, int w, int h, int[] pixels, int offset,
+			int scanSize, TextureAtlasSprite icon)
 	{
 		int bufOffset = (y * this.w) + x;
 		for (int i = 0; i < h; i++)
@@ -101,9 +116,21 @@ public class Texture
 			}
 			catch (IllegalArgumentException e)
 			{
-				Logging.logWarning("MwTexture.getRGB: IllegalArgumentException (icon name: %s; height: %d; width: %d; MaxU: %f; MinU: %f; MaxV: %f; MinV: %f)", icon.getIconName(), icon.getIconHeight(), icon.getIconWidth(), icon.getMaxU(), icon.getMinU(), icon.getMaxV(), icon.getMinV());
-				Logging.logWarning("MwTexture.getRGB: IllegalArgumentException (pos: %d)", bufOffset + (i * this.w));
-				Logging.logWarning("MwTexture.getRGB: IllegalArgumentException (buffersize: %d)", this.pixelBuf.limit());
+				Logging.logWarning(
+						"MwTexture.getRGB: IllegalArgumentException (icon name: %s; height: %d; width: %d; MaxU: %f; MinU: %f; MaxV: %f; MinV: %f)",
+						icon.getIconName(),
+						icon.getIconHeight(),
+						icon.getIconWidth(),
+						icon.getMaxU(),
+						icon.getMinU(),
+						icon.getMaxV(),
+						icon.getMinV());
+				Logging.logWarning(
+						"MwTexture.getRGB: IllegalArgumentException (pos: %d)",
+						bufOffset + (i * this.w));
+				Logging.logWarning(
+						"MwTexture.getRGB: IllegalArgumentException (buffersize: %d)",
+						this.pixelBuf.limit());
 			}
 
 		}
@@ -111,7 +138,8 @@ public class Texture
 
 	// Copy a rectangular sub-region of dimensions 'w' x 'h' from the array
 	// 'pixels' to the pixel buffer.
-	public synchronized void setRGB(int x, int y, int w, int h, int[] pixels, int offset, int scanSize)
+	public synchronized void setRGB(int x, int y, int w, int h, int[] pixels, int offset,
+			int scanSize)
 	{
 		int bufOffset = (y * this.w) + x;
 		for (int i = 0; i < h; i++)
@@ -133,7 +161,11 @@ public class Texture
 
 	public void bind()
 	{
-		GlStateManager.bindTexture(this.id);
+		synchronized (net.minecraftforge.fml.client.SplashProgress.class)
+		{
+			GlStateManager.bindTexture(this.id);
+		}
+
 	}
 
 	// set texture scaling and wrapping parameters
@@ -169,7 +201,16 @@ public class Texture
 			this.bind();
 			GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, this.w);
 			this.pixelBuf.position((y * this.w) + x);
-			GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, x, y, w, h, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, this.pixelBuf);
+			GL11.glTexSubImage2D(
+					GL11.GL_TEXTURE_2D,
+					0,
+					x,
+					y,
+					w,
+					h,
+					GL12.GL_BGRA,
+					GL11.GL_UNSIGNED_BYTE,
+					this.pixelBuf);
 			GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, 0);
 		}
 		catch (NullPointerException e)
@@ -182,7 +223,16 @@ public class Texture
 	{
 		this.bind();
 		this.pixelBuf.position(0);
-		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, this.w, this.h, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, this.pixelBuf);
+		GL11.glTexImage2D(
+				GL11.GL_TEXTURE_2D,
+				0,
+				GL11.GL_RGBA8,
+				this.w,
+				this.h,
+				0,
+				GL12.GL_BGRA,
+				GL11.GL_UNSIGNED_BYTE,
+				this.pixelBuf);
 	}
 
 	// copy pixels from GL texture to pixelBuf
@@ -192,7 +242,12 @@ public class Texture
 		{
 			this.bind();
 			this.pixelBuf.clear();
-			GL11.glGetTexImage(GL11.GL_TEXTURE_2D, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, this.pixelBuf);
+			GL11.glGetTexImage(
+					GL11.GL_TEXTURE_2D,
+					0,
+					GL12.GL_BGRA,
+					GL11.GL_UNSIGNED_BYTE,
+					this.pixelBuf);
 			// getTexImage does not seem to advance the buffer position, so flip
 			// does not work here
 			// this.pixelBuf.flip()
