@@ -130,21 +130,19 @@ public class MwChunk implements IChunk
 				{
 					NBTTagCompound section = sections.getCompoundTagAt(k);
 					int y = section.getByte("Y");
-					ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(
-							y << 4,
-							flag);
+					ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(y << 4, flag);
 					byte[] abyte = nbttagcompound.getByteArray("Blocks");
 					NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
-					NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(
-							nbttagcompound.getByteArray("Add")) : null;
+					NibbleArray nibblearray1 =
+							nbttagcompound.hasKey("Add", 7)
+									? new NibbleArray(nbttagcompound.getByteArray("Add"))
+									: null;
 					extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
-					extendedblockstorage.setBlocklightArray(
-							new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
+					extendedblockstorage.setBlocklightArray(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
 
 					if (flag)
 					{
-						extendedblockstorage.setSkylightArray(
-								new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
+						extendedblockstorage.setSkylightArray(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
 					}
 
 					extendedblockstorage.removeInvalidBlocks();
@@ -160,7 +158,7 @@ public class MwChunk implements IChunk
 					for (int i1 = 0; i1 < nbttaglist2.tagCount(); ++i1)
 					{
 						NBTTagCompound nbttagcompound4 = nbttaglist2.getCompoundTagAt(i1);
-						TileEntity tileentity = TileEntity.func_190200_a(null, nbttagcompound4);
+						TileEntity tileentity = TileEntity.create(null, nbttagcompound4);
 						if (tileentity != null)
 						{
 							TileEntityMap.put(tileentity.getPos(), tileentity);
@@ -210,9 +208,8 @@ public class MwChunk implements IChunk
 
 		if (k == 255)
 		{
-			Biome biome = Minecraft.getMinecraft().theWorld.getBiomeProvider().getBiome(
-					new BlockPos(k, k, k),
-					Biomes.PLAINS);
+			Biome biome =
+					Minecraft.getMinecraft().world.getBiomeProvider().getBiome(new BlockPos(k, k, k), Biomes.PLAINS);
 			k = Biome.getIdForBiome(biome);
 		}
 		;
@@ -307,9 +304,9 @@ public class MwChunk implements IChunk
 	{
 		int yi = (y >> 4) & 0xf;
 
-		return ((this.dataArray != null) && (this.dataArray[yi] != null)) ? this.dataArray[yi]
-				.getData()
-				.get(x & 15, y & 15, z & 15) : Blocks.AIR.getDefaultState();
+		return ((this.dataArray != null) && (this.dataArray[yi] != null))
+				? this.dataArray[yi].getData().get(x & 15, y & 15, z & 15)
+				: Blocks.AIR.getDefaultState();
 	}
 
 	// changed to use the NBTTagCompound that minecraft uses. this makes the
@@ -331,14 +328,10 @@ public class MwChunk implements IChunk
 			if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE)
 			{
 				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte(
-						"Y",
-						(byte) (extendedblockstorage.getYLocation() >> 4 & 255));
+				nbttagcompound.setByte("Y", (byte) (extendedblockstorage.getYLocation() >> 4 & 255));
 				byte[] abyte = new byte[4096];
 				NibbleArray nibblearray = new NibbleArray();
-				NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(
-						abyte,
-						nibblearray);
+				NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(abyte, nibblearray);
 				nbttagcompound.setByteArray("Blocks", abyte);
 				nbttagcompound.setByteArray("Data", nibblearray.getData());
 
@@ -347,17 +340,12 @@ public class MwChunk implements IChunk
 					nbttagcompound.setByteArray("Add", nibblearray1.getData());
 				}
 
-				nbttagcompound.setByteArray(
-						"BlockLight",
-						extendedblockstorage.getBlocklightArray().getData());
+				nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlocklightArray().getData());
 
-				if (extendedblockstorage.getSkylightArray() != null && extendedblockstorage
-						.getSkylightArray()
-						.getData() != null)
+				if (extendedblockstorage.getSkylightArray() != null &&
+						extendedblockstorage.getSkylightArray().getData() != null)
 				{
-					nbttagcompound.setByteArray(
-							"SkyLight",
-							extendedblockstorage.getSkylightArray().getData());
+					nbttagcompound.setByteArray("SkyLight", extendedblockstorage.getSkylightArray().getData());
 				}
 				else
 				{
@@ -397,10 +385,7 @@ public class MwChunk implements IChunk
 	public synchronized boolean write(RegionFileCache regionFileCache)
 	{
 		boolean error = false;
-		RegionFile regionFile = regionFileCache.getRegionFile(
-				this.x << 4,
-				this.z << 4,
-				this.dimension);
+		RegionFile regionFile = regionFileCache.getRegionFile(this.x << 4, this.z << 4, this.dimension);
 		if (!regionFile.isOpen())
 		{
 			error = regionFile.open();
@@ -423,11 +408,7 @@ public class MwChunk implements IChunk
 				}
 				catch (IOException e)
 				{
-					Logging.logError(
-							"%s: could not write chunk (%d, %d) to region file",
-							e,
-							this.x,
-							this.z);
+					Logging.logError("%s: could not write chunk (%d, %d) to region file", e, this.x, this.z);
 					error = true;
 				}
 				finally
@@ -444,18 +425,12 @@ public class MwChunk implements IChunk
 			}
 			else
 			{
-				Logging.logError(
-						"error: could not get output stream for chunk (%d, %d)",
-						this.x,
-						this.z);
+				Logging.logError("error: could not get output stream for chunk (%d, %d)", this.x, this.z);
 			}
 		}
 		else
 		{
-			Logging.logError(
-					"error: could not open region file for chunk (%d, %d)",
-					this.x,
-					this.z);
+			Logging.logError("error: could not open region file for chunk (%d, %d)", this.x, this.z);
 		}
 
 		return error;
@@ -463,6 +438,6 @@ public class MwChunk implements IChunk
 
 	public Long getCoordIntPair()
 	{
-		return ChunkPos.chunkXZ2Int(this.x, this.z);
+		return ChunkPos.asLong(this.x, this.z);
 	}
 }

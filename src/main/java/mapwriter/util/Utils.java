@@ -81,10 +81,10 @@ public class Utils
 	// send an ingame chat message and console log
 	public static void printBoth(String msg)
 	{
-		EntityPlayerSP thePlayer = Minecraft.getMinecraft().thePlayer;
+		EntityPlayerSP thePlayer = Minecraft.getMinecraft().player;
 		if (thePlayer != null)
 		{
-			thePlayer.addChatMessage(new TextComponentString(msg));
+			thePlayer.sendMessage(new TextComponentString(msg));
 		}
 		Logging.log("%s", msg);
 	}
@@ -108,10 +108,7 @@ public class Utils
 		if (size < 1)
 		{
 			int NewSize = Minecraft.getGLMaximumTextureSize();
-			return ByteBuffer
-					.allocateDirect((NewSize * NewSize) * 4)
-					.order(ByteOrder.nativeOrder())
-					.asIntBuffer();
+			return ByteBuffer.allocateDirect((NewSize * NewSize) * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
 
 		}
 		return ByteBuffer.allocateDirect(size * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
@@ -214,9 +211,7 @@ public class Utils
 		try
 		{
 			Class<?> oclass = Class.forName("java.awt.Desktop");
-			Object object = oclass.getMethod("getDesktop", new Class[0]).invoke(
-					(Object) null,
-					new Object[0]);
+			Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
 			oclass.getMethod("browse", new Class[]
 			{
 					URI.class
@@ -300,8 +295,7 @@ public class Utils
 
 	public static int getPrevColour()
 	{
-		Utils.colourIndex = ((Utils.colourIndex + Utils.getColoursLengt()) - 1) % Utils
-				.getColoursLengt();
+		Utils.colourIndex = ((Utils.colourIndex + Utils.getColoursLengt()) - 1) % Utils.getColoursLengt();
 		return Utils.getCurrentColour();
 	}
 
@@ -367,8 +361,8 @@ public class Utils
 	 * well-typed, and only if <code>strict</code> was true
 	 */
 	@SuppressWarnings("rawtypes")
-	public static <K, V> Map<K, V> checkedMapByCopy(Map rawMap, Class<K> keyType,
-			Class<V> valueType, boolean strict) throws ClassCastException
+	public static <K, V> Map<K, V> checkedMapByCopy(Map rawMap, Class<K> keyType, Class<V> valueType, boolean strict)
+			throws ClassCastException
 	{
 		Map<K, V> m2 = new HashMap<K, V>(((rawMap.size() * 4) / 3) + 1);
 		Iterator it = rawMap.entrySet().iterator();

@@ -1,5 +1,5 @@
 # eclipse
-bin
+/bin/
 *.launch
 .settings
 .metadata
@@ -7,19 +7,20 @@ bin
 .project
 
 # idea
-out
+/out/
 *.ipr
 *.iws
 *.iml
 .idea
 
 # gradle
-build
+/build/
 .gradle
 
 # other
-eclipse
-run
+/eclipse/
+/run/
 /Run.bat
 /mapwriter_Client.launch
 /mapwriter_Server.launch
+/gradle/

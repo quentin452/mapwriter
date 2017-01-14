@@ -64,9 +64,10 @@ public class UndergroundTexture extends Texture
 
 			if (k == 255)
 			{
-				Biome biome = Minecraft.getMinecraft().theWorld.getBiomeProvider().getBiome(
-						new BlockPos(k, k, k),
-						Biomes.PLAINS);
+				Biome biome =
+						Minecraft.getMinecraft().world.getBiomeProvider().getBiome(
+								new BlockPos(k, k, k),
+								Biomes.PLAINS);
 				k = Biome.getIdForBiome(biome);
 			}
 			;
@@ -82,13 +83,7 @@ public class UndergroundTexture extends Texture
 
 	public UndergroundTexture(Mw mw, int textureSize, boolean linearScaling)
 	{
-		super(
-				textureSize,
-				textureSize,
-				0x00000000,
-				GL11.GL_NEAREST,
-				GL11.GL_NEAREST,
-				GL11.GL_REPEAT);
+		super(textureSize, textureSize, 0x00000000, GL11.GL_NEAREST, GL11.GL_NEAREST, GL11.GL_REPEAT);
 		this.setLinearScaling(false);
 		this.textureSize = textureSize;
 		this.textureChunks = textureSize >> 4;
@@ -190,7 +185,7 @@ public class UndergroundTexture extends Texture
 
 		int cxMax = this.updateX + 2;
 		int czMax = this.updateZ + 2;
-		WorldClient world = this.mw.mc.theWorld;
+		WorldClient world = this.mw.mc.world;
 		int flagOffset = 0;
 		for (int cz = this.updateZ; cz <= czMax; cz++)
 		{
@@ -248,7 +243,7 @@ public class UndergroundTexture extends Texture
 				if (columnFlag == ChunkRender.FLAG_UNPROCESSED)
 				{
 					// if column not yet processed
-					WorldClient world = this.mw.mc.theWorld;
+					WorldClient world = this.mw.mc.world;
 					IBlockState state = world.getBlockState(new BlockPos(x, y, z));
 					Block block = state.getBlock();
 					if ((block == null) || !block.isOpaqueCube(state))

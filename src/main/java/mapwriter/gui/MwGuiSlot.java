@@ -47,7 +47,9 @@ public abstract class MwGuiSlot
 	protected int selectedElement = -1;
 	/** The time when this button was last clicked. */
 	protected long lastClicked;
-	/** Set to true if a selected element in this gui will show an outline box */
+	/**
+	 * Set to true if a selected element in this gui will show an outline box
+	 */
 	protected boolean showSelectionBox = true;
 	protected boolean hasListHeader;
 	public int headerPadding;
@@ -101,7 +103,8 @@ public abstract class MwGuiSlot
 	 * The element in the slot that was clicked, boolean for whether it was
 	 * double clicked or not
 	 */
-	protected abstract void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY, int mouseButton);
+	protected abstract void elementClicked(int slotIndex, boolean isDoubleClick, int mouseX, int mouseY,
+			int mouseButton);
 
 	/**
 	 * Returns true if the element passed in is currently selected
@@ -200,7 +203,7 @@ public abstract class MwGuiSlot
 			i = 0;
 		}
 
-		this.amountScrolled = MathHelper.clamp_float(this.amountScrolled, 0.0F, i);
+		this.amountScrolled = MathHelper.clamp(this.amountScrolled, 0.0F, i);
 	}
 
 	public int func_148135_f()
@@ -299,7 +302,7 @@ public abstract class MwGuiSlot
 			if (k1 > 0)
 			{
 				int l1 = ((this.bottom - this.top) * (this.bottom - this.top)) / this.getContentHeight();
-				l1 = MathHelper.clamp_int(l1, 32, this.bottom - this.top - 8);
+				l1 = MathHelper.clamp(l1, 32, this.bottom - this.top - 8);
 				int i2 = (((int) this.amountScrolled * (this.bottom - this.top - l1)) / k1) + this.top;
 
 				if (i2 < this.top)
@@ -307,19 +310,19 @@ public abstract class MwGuiSlot
 					i2 = this.top;
 				}
 				// draw the scrollbar
-				vertexbuffer.begin(GL11.GL_QUADS , DefaultVertexFormats.POSITION_TEX_COLOR);
+				vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				vertexbuffer.pos(k, this.bottom, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
 				vertexbuffer.pos(l, this.bottom, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
 				vertexbuffer.pos(l, this.top, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				vertexbuffer.pos(k, this.top, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				tessellator.draw();
-				vertexbuffer.begin(GL11.GL_QUADS , DefaultVertexFormats.POSITION_TEX_COLOR);
+				vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				vertexbuffer.pos(k, i2 + l1, 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
 				vertexbuffer.pos(l, i2 + l1, 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
 				vertexbuffer.pos(l, i2, 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
 				vertexbuffer.pos(k, i2, 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
 				tessellator.draw();
-				vertexbuffer.begin(GL11.GL_QUADS , DefaultVertexFormats.POSITION_TEX_COLOR);
+				vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
 				vertexbuffer.pos(k, (i2 + l1) - 1, 0.0D).tex(0.0D, 1.0D).color(192, 192, 192, 255).endVertex();
 				vertexbuffer.pos(l - 1, (i2 + l1) - 1, 0.0D).tex(1.0D, 1.0D).color(192, 192, 192, 255).endVertex();
 				vertexbuffer.pos(l - 1, i2, 0.0D).tex(1.0D, 0.0D).color(192, 192, 192, 255).endVertex();
@@ -354,7 +357,9 @@ public abstract class MwGuiSlot
 
 						if ((this.mouseX >= i) && (this.mouseX <= j) && (l >= 0) && (k >= 0) && (l < this.getSize()))
 						{
-							boolean flag1 = (l == this.selectedElement) && ((Minecraft.getSystemTime() - this.lastClicked) < 250L);
+							boolean flag1 =
+									(l == this.selectedElement) &&
+											((Minecraft.getSystemTime() - this.lastClicked) < 250L);
 							this.elementClicked(l, flag1, this.mouseX, this.mouseY, 0);
 							this.selectedElement = l;
 							this.lastClicked = Minecraft.getSystemTime();
@@ -378,8 +383,10 @@ public abstract class MwGuiSlot
 								j1 = 1;
 							}
 
-							int k1 = (int) ((float) ((this.bottom - this.top) * (this.bottom - this.top)) / (float) this.getContentHeight());
-							k1 = MathHelper.clamp_int(k1, 32, this.bottom - this.top - 8);
+							int k1 =
+									(int) ((float) ((this.bottom - this.top) * (this.bottom - this.top)) /
+											(float) this.getContentHeight());
+							k1 = MathHelper.clamp(k1, 32, this.bottom - this.top - 8);
 							this.scrollMultiplier /= (float) (this.bottom - this.top - k1) / (float) j1;
 						}
 						else
@@ -425,7 +432,9 @@ public abstract class MwGuiSlot
 
 						if ((this.mouseX >= i) && (this.mouseX <= j) && (l >= 0) && (k >= 0) && (l < this.getSize()))
 						{
-							boolean flag1 = (l == this.selectedElement) && ((Minecraft.getSystemTime() - this.lastClicked) < 250L);
+							boolean flag1 =
+									(l == this.selectedElement) &&
+											((Minecraft.getSystemTime() - this.lastClicked) < 250L);
 							this.elementClicked(l, flag1, this.mouseX, this.mouseY, 1);
 							this.selectedElement = l;
 							this.lastClicked = Minecraft.getSystemTime();
@@ -503,13 +512,29 @@ public abstract class MwGuiSlot
 
 				GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 				GlStateManager.disableTexture2D();
-				vertexbuffer.begin( GL11.GL_QUADS , DefaultVertexFormats.POSITION_TEX_COLOR);
-				vertexbuffer.pos(xLeft, yTotal + slotHeight, 0.0D).tex(0.0D, 1.0D).color(128, 128, 128, 255).endVertex();
-				vertexbuffer.pos(xRight, yTotal + slotHeight, 0.0D).tex(1.0D, 1.0D).color(128, 128, 128, 255).endVertex();
+				vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
+				vertexbuffer
+						.pos(xLeft, yTotal + slotHeight, 0.0D)
+						.tex(0.0D, 1.0D)
+						.color(128, 128, 128, 255)
+						.endVertex();
+				vertexbuffer
+						.pos(xRight, yTotal + slotHeight, 0.0D)
+						.tex(1.0D, 1.0D)
+						.color(128, 128, 128, 255)
+						.endVertex();
 				vertexbuffer.pos(xRight, (yTotal), 0.0D).tex(1.0D, 0.0D).color(128, 128, 128, 255).endVertex();
 				vertexbuffer.pos(xLeft, (yTotal), 0.0D).tex(0.0D, 0.0D).color(128, 128, 128, 255).endVertex();
-				vertexbuffer.pos(xLeft + 1, (yTotal + slotHeight) - 1, 0.0D).tex(0.0D, 1.0D).color(0, 0, 0, 255).endVertex();
-				vertexbuffer.pos(xRight - 1, (yTotal + slotHeight) - 1, 0.0D).tex(1.0D, 1.0D).color(0, 0, 0, 255).endVertex();
+				vertexbuffer
+						.pos(xLeft + 1, (yTotal + slotHeight) - 1, 0.0D)
+						.tex(0.0D, 1.0D)
+						.color(0, 0, 0, 255)
+						.endVertex();
+				vertexbuffer
+						.pos(xRight - 1, (yTotal + slotHeight) - 1, 0.0D)
+						.tex(1.0D, 1.0D)
+						.color(0, 0, 0, 255)
+						.endVertex();
 				vertexbuffer.pos(xRight - 1, yTotal + 1, 0.0D).tex(1.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				vertexbuffer.pos(xLeft + 1, yTotal + 1, 0.0D).tex(0.0D, 0.0D).color(0, 0, 0, 255).endVertex();
 				tessellator.draw();

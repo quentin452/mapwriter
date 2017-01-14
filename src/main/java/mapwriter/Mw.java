@@ -139,33 +139,30 @@ public class Mw
 	public void updatePlayer()
 	{
 		// get player pos
-		this.playerX = this.mc.thePlayer.posX;
-		this.playerY = this.mc.thePlayer.posY;
-		this.playerZ = this.mc.thePlayer.posZ;
+		this.playerX = this.mc.player.posX;
+		this.playerY = this.mc.player.posY;
+		this.playerZ = this.mc.player.posZ;
 		this.playerXInt = (int) Math.floor(this.playerX);
 		this.playerYInt = (int) Math.floor(this.playerY);
 		this.playerZInt = (int) Math.floor(this.playerZ);
 
-		if (this.mc.theWorld != null)
+		if (this.mc.world != null)
 		{
-			if (!this.mc.theWorld
-					.getChunkFromBlockCoords(new BlockPos(this.playerX, 0, this.playerZ))
-					.isEmpty())
+			if (!this.mc.world.getChunkFromBlockCoords(new BlockPos(this.playerX, 0, this.playerZ)).isEmpty())
 			{
-				this.playerBiome = this.mc.theWorld
-						.getBiomeForCoordsBody(new BlockPos(this.playerX, 0, this.playerZ))
-						.getBiomeName();
+				this.playerBiome =
+						this.mc.world.getBiomeForCoordsBody(new BlockPos(this.playerX, 0, this.playerZ)).getBiomeName();
 			}
 		}
 
 		// rotationYaw of 0 points due north, we want it to point due east
 		// instead
 		// so add pi/2 radians (90 degrees)
-		this.playerHeading = Math.toRadians(this.mc.thePlayer.rotationYaw) + (Math.PI / 2.0D);
-		this.mapRotationDegrees = -this.mc.thePlayer.rotationYaw + 180;
+		this.playerHeading = Math.toRadians(this.mc.player.rotationYaw) + (Math.PI / 2.0D);
+		this.mapRotationDegrees = -this.mc.player.rotationYaw + 180;
 
 		// set by onWorldLoad
-		this.playerDimension = this.mc.theWorld.provider.getDimensionType().getId();
+		this.playerDimension = this.mc.world.provider.getDimensionType().getId();
 		if (this.miniMap.view.getDimension() != this.playerDimension)
 		{
 			WorldConfig.getInstance().addDimension(this.playerDimension);
@@ -177,8 +174,7 @@ public class Mw
 	{
 		this.markerManager.nextGroup();
 		this.markerManager.update();
-		this.mc.thePlayer.addChatMessage(
-				new TextComponentTranslation("mw.msg.groupselected", new Object[]
+		this.mc.player.sendMessage(new TextComponentTranslation("mw.msg.groupselected", new Object[]
 		{
 				this.markerManager.getVisibleGroupName()
 		}));
@@ -189,8 +185,7 @@ public class Mw
 	{
 		if (Config.teleportEnabled)
 		{
-			this.mc.thePlayer.sendChatMessage(
-					String.format("/%s %d %d %d", Config.teleportCommand, x, y, z));
+			this.mc.player.sendChatMessage(String.format("/%s %d %d %d", Config.teleportCommand, x, y, z));
 		}
 		else
 		{
@@ -203,7 +198,7 @@ public class Mw
 		if (Config.teleportEnabled)
 		{
 			// MwUtil.printBoth(String.format("warping to %s", name));
-			this.mc.thePlayer.sendChatMessage(String.format("/warp %s", name));
+			this.mc.player.sendChatMessage(String.format("/warp %s", name));
 		}
 		else
 		{
@@ -306,18 +301,16 @@ public class Mw
 			oldMapTexture.close();
 		}
 		this.executor = new BackgroundExecutor();
-		this.regionManager = new RegionManager(
-				this.worldDir,
-				this.imageDir,
-				this.blockColours,
-				Config.zoomInLevels,
-				Config.zoomOutLevels);
+		this.regionManager =
+				new RegionManager(
+						this.worldDir,
+						this.imageDir,
+						this.blockColours,
+						Config.zoomInLevels,
+						Config.zoomOutLevels);
 
 		UndergroundTexture oldTexture = this.undergroundMapTexture;
-		UndergroundTexture newTexture = new UndergroundTexture(
-				this,
-				this.textureSize,
-				Config.linearTextureScaling);
+		UndergroundTexture newTexture = new UndergroundTexture(this, this.textureSize, Config.linearTextureScaling);
 		this.undergroundMapTexture = newTexture;
 		if (oldTexture != null)
 		{
@@ -329,9 +322,8 @@ public class Mw
 	{
 		Config.undergroundMode = !Config.undergroundMode;
 		// save the new value of underground mode.
-		ConfigurationHandler.configuration
-				.get(Reference.catOptions, "undergroundMode", Config.undergroundModeDef)
-				.set(Config.undergroundMode);
+		ConfigurationHandler.configuration.get(Reference.catOptions, "undergroundMode", Config.undergroundModeDef).set(
+				Config.undergroundMode);
 	}
 
 	// //////////////////////////////
@@ -345,7 +337,7 @@ public class Mw
 			return;
 		}
 
-		if ((this.mc.theWorld == null) || (this.mc.thePlayer == null))
+		if ((this.mc.world == null) || (this.mc.player == null))
 		{
 			Logging.log("Mw.load: world or player is null, cannot load yet");
 			return;
@@ -371,9 +363,7 @@ public class Mw
 		if (!this.mc.isSingleplayer())
 		{
 
-			this.worldDir = new File(
-					new File(saveDir, "mapwriter_mp_worlds"),
-					Utils.getWorldName());
+			this.worldDir = new File(new File(saveDir, "mapwriter_mp_worlds"), Utils.getWorldName());
 		}
 		else
 		{
@@ -389,9 +379,7 @@ public class Mw
 		}
 		if (!this.imageDir.isDirectory())
 		{
-			Logging.log(
-					"Mapwriter: ERROR: could not create images directory '%s'",
-					this.imageDir.getPath());
+			Logging.log("Mapwriter: ERROR: could not create images directory '%s'", this.imageDir.getPath());
 		}
 
 		this.tickCounter = 0;
@@ -409,21 +397,19 @@ public class Mw
 
 		// mapTexture depends on config being loaded
 		this.mapTexture = new MapTexture(this.textureSize, Config.linearTextureScaling);
-		this.undergroundMapTexture = new UndergroundTexture(
-				this,
-				this.textureSize,
-				Config.linearTextureScaling);
+		this.undergroundMapTexture = new UndergroundTexture(this, this.textureSize, Config.linearTextureScaling);
 		// this.reloadBlockColours();
 		// region manager depends on config, mapTexture, and block colours
-		this.regionManager = new RegionManager(
-				this.worldDir,
-				this.imageDir,
-				this.blockColours,
-				Config.zoomInLevels,
-				Config.zoomOutLevels);
+		this.regionManager =
+				new RegionManager(
+						this.worldDir,
+						this.imageDir,
+						this.blockColours,
+						Config.zoomInLevels,
+						Config.zoomOutLevels);
 		// overlay manager depends on mapTexture
 		this.miniMap = new MiniMap(this);
-		this.miniMap.view.setDimension(this.mc.thePlayer.dimension);
+		this.miniMap.view.setDimension(this.mc.player.dimension);
 
 		this.chunkManager = new ChunkManager(this);
 
@@ -461,9 +447,7 @@ public class Mw
 
 			this.playerTrail.close();
 
-			this.markerManager.save(
-					WorldConfig.getInstance().worldConfiguration,
-					Reference.catMarkers);
+			this.markerManager.save(WorldConfig.getInstance().worldConfiguration, Reference.catMarkers);
 			this.markerManager.clear();
 
 			// close overlay
@@ -490,7 +474,7 @@ public class Mw
 	public void onTick()
 	{
 		this.load();
-		if (this.ready && (this.mc.thePlayer != null))
+		if (this.ready && (this.mc.player != null))
 		{
 			this.setTextureSize();
 
@@ -510,10 +494,7 @@ public class Mw
 			{
 				// if in game (no gui screen) center the minimap on the player
 				// and render it.
-				this.miniMap.view.setViewCentreScaled(
-						this.playerX,
-						this.playerZ,
-						this.playerDimension);
+				this.miniMap.view.setViewCentreScaled(this.playerX, this.playerZ, this.playerDimension);
 				this.miniMap.drawCurrentMap();
 			}
 
@@ -545,8 +526,7 @@ public class Mw
 	public void onChunkLoad(Chunk chunk)
 	{
 		this.load();
-		if ((chunk != null) && (chunk
-				.getWorld() instanceof net.minecraft.client.multiplayer.WorldClient))
+		if ((chunk != null) && (chunk.getWorld() instanceof net.minecraft.client.multiplayer.WorldClient))
 		{
 			if (this.ready)
 			{
@@ -563,8 +543,7 @@ public class Mw
 	// convert to mwchunk and write chunk to region file if in multiplayer.
 	public void onChunkUnload(Chunk chunk)
 	{
-		if (this.ready && (chunk != null) && (chunk
-				.getWorld() instanceof net.minecraft.client.multiplayer.WorldClient))
+		if (this.ready && (chunk != null) && (chunk.getWorld() instanceof net.minecraft.client.multiplayer.WorldClient))
 		{
 			this.chunkManager.removeChunk(chunk);
 		}
@@ -577,8 +556,7 @@ public class Mw
 		if (this.ready && (Config.maxDeathMarkers > 0))
 		{
 			this.updatePlayer();
-			int deleteCount = (this.markerManager.countMarkersInGroup("playerDeaths")
-					- Config.maxDeathMarkers) + 1;
+			int deleteCount = (this.markerManager.countMarkersInGroup("playerDeaths") - Config.maxDeathMarkers) + 1;
 			for (int i = 0; i < deleteCount; i++)
 			{
 				// delete the first marker found in the group "playerDeaths".
@@ -660,8 +638,7 @@ public class Mw
 				// toggle marker mode
 				this.markerManager.nextGroup();
 				this.markerManager.update();
-				this.mc.thePlayer.addChatMessage(
-						new TextComponentTranslation("mw.msg.groupselected", new Object[]
+				this.mc.player.sendMessage(new TextComponentTranslation("mw.msg.groupselected", new Object[]
 				{
 						this.markerManager.getVisibleGroupName()
 				}));
@@ -670,10 +647,11 @@ public class Mw
 			else if (kb == MwKeyHandler.keyTeleport)
 			{
 				// set or remove marker
-				Marker marker = this.markerManager.getNearestMarkerInDirection(
-						this.playerXInt,
-						this.playerZInt,
-						this.playerHeading);
+				Marker marker =
+						this.markerManager.getNearestMarkerInDirection(
+								this.playerXInt,
+								this.playerZInt,
+								this.playerHeading);
 				if (marker != null)
 				{
 					this.teleportToMarker(marker);

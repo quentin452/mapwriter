@@ -18,8 +18,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
-		guiFactory = Reference.MOD_GUIFACTORY_CLASS, clientSideOnly = true,
-		updateJSON = Reference.ForgeVersionURL, acceptedMinecraftVersions = "@ACCEPTED_MC_VERSION@")
+		guiFactory = Reference.MOD_GUIFACTORY_CLASS, clientSideOnly = true, updateJSON = Reference.ForgeVersionURL,
+		acceptedMinecraftVersions = "@ACCEPTED_MC_VERSION@")
 public class MwForge
 {
 
@@ -59,7 +59,7 @@ public class MwForge
 			// null.
 			// a bit hacky, but simpler than checking if the connection has
 			// closed.
-			if ((Mw.getInstance().ready) && (Minecraft.getMinecraft().thePlayer == null))
+			if ((Mw.getInstance().ready) && (Minecraft.getMinecraft().player == null))
 			{
 				Mw.getInstance().close();
 			}

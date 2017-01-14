@@ -61,15 +61,15 @@ public class OverlayGrid implements IMwDataProvider
 	}
 
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ,
-			double minX, double minZ, double maxX, double maxZ)
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ, double minX,
+			double minZ, double maxX, double maxZ)
 	{
-		int minChunkX = (MathHelper.ceiling_double_int(minX) >> 4) - 1;
-		int minChunkZ = (MathHelper.ceiling_double_int(minZ) >> 4) - 1;
-		int maxChunkX = (MathHelper.ceiling_double_int(maxX) >> 4) + 1;
-		int maxChunkZ = (MathHelper.ceiling_double_int(maxZ) >> 4) + 1;
-		int cX = (MathHelper.ceiling_double_int(centerX) >> 4) + 1;
-		int cZ = (MathHelper.ceiling_double_int(centerZ) >> 4) + 1;
+		int minChunkX = (MathHelper.ceil(minX) >> 4) - 1;
+		int minChunkZ = (MathHelper.ceil(minZ) >> 4) - 1;
+		int maxChunkX = (MathHelper.ceil(maxX) >> 4) + 1;
+		int maxChunkZ = (MathHelper.ceil(maxZ) >> 4) + 1;
+		int cX = (MathHelper.ceil(centerX) >> 4) + 1;
+		int cZ = (MathHelper.ceil(centerZ) >> 4) + 1;
 
 		int limitMinX = Math.max(minChunkX, cX - 100);
 		int limitMaxX = Math.min(maxChunkX, cX + 100);

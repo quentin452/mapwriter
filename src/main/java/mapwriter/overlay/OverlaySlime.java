@@ -27,7 +27,7 @@ public class OverlaySlime implements IMwDataProvider
 
 	public static void askSeed()
 	{
-		EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
 		if (player == null)
 		{
 			return;
@@ -91,26 +91,24 @@ public class OverlaySlime implements IMwDataProvider
 	}
 
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ,
-			double minX, double minZ, double maxX, double maxZ)
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ, double minX,
+			double minZ, double maxX, double maxZ)
 	{
 		// We should pass the center of the map too to reduce the display like
 		// in this case
 		// and the zoom lvl, to provide higher level informations
 
-		if (Minecraft.getMinecraft().thePlayer.getEntityWorld().provider
-				.getDimensionType()
-				.getId() != dim)
+		if (Minecraft.getMinecraft().player.getEntityWorld().provider.getDimensionType().getId() != dim)
 		{
 			return new ArrayList<IMwChunkOverlay>();
 		}
 
-		int minChunkX = (MathHelper.ceiling_double_int(minX) >> 4) - 1;
-		int minChunkZ = (MathHelper.ceiling_double_int(minZ) >> 4) - 1;
-		int maxChunkX = (MathHelper.ceiling_double_int(maxX) >> 4) + 1;
-		int maxChunkZ = (MathHelper.ceiling_double_int(maxZ) >> 4) + 1;
-		int cX = (MathHelper.ceiling_double_int(centerX) >> 4) + 1;
-		int cZ = (MathHelper.ceiling_double_int(centerZ) >> 4) + 1;
+		int minChunkX = (MathHelper.ceil(minX) >> 4) - 1;
+		int minChunkZ = (MathHelper.ceil(minZ) >> 4) - 1;
+		int maxChunkX = (MathHelper.ceil(maxX) >> 4) + 1;
+		int maxChunkZ = (MathHelper.ceil(maxZ) >> 4) + 1;
+		int cX = (MathHelper.ceil(centerX) >> 4) + 1;
+		int cZ = (MathHelper.ceil(centerZ) >> 4) + 1;
 
 		int limitMinX = Math.max(minChunkX, cX - 100);
 		int limitMaxX = Math.min(maxChunkX, cX + 100);
@@ -131,9 +129,10 @@ public class OverlaySlime implements IMwDataProvider
 				for (int z = limitMinZ; z <= limitMaxZ; z++)
 				{
 
-					Random rnd = new Random(
-							(seed + (x * x * 0x4c1906) + (x * 0x5ac0db) + (z * z * 0x4307a7L) + (z
-									* 0x5f24f)) ^ 0x3ad8025f);
+					Random rnd =
+							new Random(
+									(seed + (x * x * 0x4c1906) + (x * 0x5ac0db) + (z * z * 0x4307a7L) + (z * 0x5f24f)) ^
+											0x3ad8025f);
 					if (rnd.nextInt(10) == 0)
 					{
 						chunks.add(new ChunkOverlay(x, z));

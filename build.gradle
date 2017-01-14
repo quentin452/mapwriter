@@ -1,33 +1,22 @@
-
-// For those who want the bleeding edge
 buildscript {
     repositories {
         jcenter()
-        maven {
-            name = "forge"
-            url = "http://files.minecraftforge.net/maven"
-        }
-		maven { 
-			url = 'https://oss.sonatype.org/content/groups/public' 
-		}
+        maven { url = "http://files.minecraftforge.net/maven" }
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
-		//classpath 'com.matthewprenger:CurseGradle:1.0.5-SNAPSHOT'
     }
 }
 
-// for people who want stable
 plugins {
-    //id "net.minecraftforge.gradle.forge" version "2.0.2"
-	id 'com.matthewprenger.cursegradle' version '1.0.4'
+    id 'com.matthewprenger.cursegradle' version '1.0.4'
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.matthewprenger.cursegradle'
 
 repositories {
-	mavenLocal()
+    mavenLocal()
 } 
 
 // Define properties file
@@ -40,17 +29,14 @@ prop.load(it)
 project.ext.config = new ConfigSlurper().parse prop
 }
 
-dependencies {
-	if (config.isSet('dependicies'))	{
-		def dep = config.dependicies.split(", ")
-		dep.each { compile it }
-	}
-}
-
-group= config.mod_group
 version = config.mod_version
+group= config.mod_group
 archivesBaseName = config.mod_name
 
+sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
+compileJava {
+    sourceCompatibility = targetCompatibility = "1.6"
+}
 
 minecraft {
 version = config.mc_version + "-" + config.forge_version
@@ -58,6 +44,13 @@ runDir = "eclipse"
 mappings = config.mcp_version
 replace '@MOD_VERSION@', config.mod_version
 replace '@ACCEPTED_MC_VERSION@', config.accepted_mc_version
+}
+
+dependencies {
+    if (config.isSet('dependicies'))    {
+        def dep = config.dependicies.split(", ")
+        dep.each { compile it }
+    }
 }
 
 processResources
@@ -87,13 +80,13 @@ jar {
 }
 
 task devJar(type: Jar) {
-	from sourceSets.main.output
-	classifier = 'dev'
+    from sourceSets.main.output
+    classifier = 'dev'
 }
 
 artifacts {
-    		archives sourceJar
-			archives devJar
+            archives sourceJar
+            archives devJar
 }
 
 eclipse {
@@ -115,7 +108,7 @@ gradle.taskGraph.whenReady { taskGraph ->
   if (!taskGraph.allTasks.findAll{ it.name == 'eclipseClasspath' }.empty) {
     gradle.buildFinished {
       println '----------------------------------------------------------------------'
-      print   "Please set the Eclipse classpath variable 'GRADLE_USER_HOME' in Preferences "
+      print   "Please set the Eclipse classpath variable 'GRADLE_CACHE' in Preferences "
       println "-> Java -> Build path -> Classpath Variable to $gradle.gradleUserHomeDir"
       println '----------------------------------------------------------------------'
     }
@@ -125,11 +118,11 @@ gradle.taskGraph.whenReady { taskGraph ->
 curseforge {
   apiKey = project.hasProperty('curseForgeApiKey') ? project.curseForgeApiKey : ''
   project {
-	//changelogType = "text"
+    //changelogType = "text"
     id = config.curse_project_id
     changelog = "" // A file can also be set using: changelog = file('changelog.txt')
     releaseType = config.release_type
-	mainArtifact jar
-	addGameVersion config.mc_version
+    mainArtifact jar
+    addGameVersion config.mc_version
   }
 }

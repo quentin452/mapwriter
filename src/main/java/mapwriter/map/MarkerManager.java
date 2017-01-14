@@ -169,8 +169,7 @@ public class MarkerManager
 		this.markerList.add(marker);
 	}
 
-	public void addMarker(String name, String groupName, int x, int y, int z, int dimension,
-			int colour)
+	public void addMarker(String name, String groupName, int x, int y, int z, int dimension, int colour)
 	{
 		this.addMarker(new Marker(name, groupName, x, y, z, dimension, colour));
 		this.save(WorldConfig.getInstance().worldConfiguration, Reference.catMarkers);
@@ -198,8 +197,7 @@ public class MarkerManager
 		Marker markerToDelete = null;
 		for (Marker marker : this.markerList)
 		{
-			if (((name == null) || marker.name.equals(name)) && ((group == null) || marker.groupName
-					.equals(group)))
+			if (((name == null) || marker.name.equals(name)) && ((group == null) || marker.groupName.equals(group)))
 			{
 				markerToDelete = marker;
 				break;
@@ -218,8 +216,7 @@ public class MarkerManager
 		this.groupList.add("all");
 		for (Marker marker : this.markerList)
 		{
-			if (marker.groupName.equals(this.visibleGroupName) || this.visibleGroupName.equals(
-					"all"))
+			if (marker.groupName.equals(this.visibleGroupName) || this.visibleGroupName.equals("all"))
 			{
 				this.visibleMarkerList.add(marker);
 			}
@@ -370,7 +367,7 @@ public class MarkerManager
 
 		for (Marker m : this.visibleMarkerList)
 		{
-			if (m.dimension == Minecraft.getMinecraft().thePlayer.dimension)
+			if (m.dimension == Minecraft.getMinecraft().player.dimension)
 			{
 				if (Config.drawMarkersInWorld)
 				{
@@ -389,7 +386,7 @@ public class MarkerManager
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 
-		float f2 = Minecraft.getMinecraft().theWorld.getTotalWorldTime() + partialTicks;
+		float f2 = Minecraft.getMinecraft().world.getTotalWorldTime() + partialTicks;
 		double d3 = f2 * 0.025D * -1.5D;
 		// the height of the beam always to the max height
 		double d17 = 255.0D;
@@ -527,41 +524,17 @@ public class MarkerManager
 		GlStateManager.disableTexture2D();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer
-				.pos(-strTextWidth - 1, (-1), 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
-		vertexbuffer
-				.pos(-strTextWidth - 1, (8), 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
-		vertexbuffer
-				.pos(strTextWidth + 1, (8), 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
-		vertexbuffer
-				.pos(strTextWidth + 1, (-1), 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
+		vertexbuffer.pos(-strTextWidth - 1, (-1), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(-strTextWidth - 1, (8), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(strTextWidth + 1, (8), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(strTextWidth + 1, (-1), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		tessellator.draw();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer
-				.pos(-strDistanceWidth - 1, -1 + offstet, 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
-		vertexbuffer
-				.pos(-strDistanceWidth - 1, 8 + offstet, 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
-		vertexbuffer
-				.pos(strDistanceWidth + 1, 8 + offstet, 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
-		vertexbuffer
-				.pos(strDistanceWidth + 1, -1 + offstet, 0.0D)
-				.color(fRed, fGreen, fBlue, fAlpha)
-				.endVertex();
+		vertexbuffer.pos(-strDistanceWidth - 1, -1 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(-strDistanceWidth - 1, 8 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(strDistanceWidth + 1, 8 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(strDistanceWidth + 1, -1 + offstet, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		tessellator.draw();
 
 		GlStateManager.enableTexture2D();

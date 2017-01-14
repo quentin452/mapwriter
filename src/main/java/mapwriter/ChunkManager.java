@@ -46,9 +46,16 @@ public class ChunkManager
 		Map<BlockPos, TileEntity> TileEntityMap = Maps.newHashMap();
 		TileEntityMap = Utils.checkedMapByCopy(chunk.getTileEntityMap(), BlockPos.class, TileEntity.class, false);
 		byte[] biomeArray = Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length);
-		ExtendedBlockStorage[] dataArray = Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
-		
-		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimensionType().getId(), dataArray, biomeArray, TileEntityMap);
+		ExtendedBlockStorage[] dataArray =
+				Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
+
+		return new MwChunk(
+				chunk.xPosition,
+				chunk.zPosition,
+				chunk.getWorld().provider.getDimensionType().getId(),
+				dataArray,
+				biomeArray,
+				TileEntityMap);
 	}
 
 	public synchronized void addChunk(Chunk chunk)
@@ -97,7 +104,7 @@ public class ChunkManager
 		{
 			for (int x = 0; x < 3; x++)
 			{
-				Chunk chunk = this.mw.mc.theWorld.getChunkFromChunkCoords(chunkArrayX + x, chunkArrayZ + z);
+				Chunk chunk = this.mw.mc.world.getChunkFromChunkCoords(chunkArrayX + x, chunkArrayZ + z);
 				if (!chunk.isEmpty())
 				{
 					chunkArray[(z * 3) + x] = copyToMwChunk(chunk);
@@ -163,7 +170,8 @@ public class ChunkManager
 
 	private void addSaveChunkTask(Chunk chunk)
 	{
-		if ((Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledMP) || (!Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledSP))
+		if ((Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledMP) ||
+				(!Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledSP))
 		{
 			if (!chunk.isEmpty())
 			{

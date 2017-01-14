@@ -57,8 +57,8 @@ public class BlockColourGen
 		{
 			if (biome != null)
 			{
-				double temp = MathHelper.clamp_float(biome.getTemperature(), 0.0F, 1.0F);
-				double rain = MathHelper.clamp_float(biome.getRainfall(), 0.0F, 1.0F);
+				double temp = MathHelper.clamp(biome.getTemperature(), 0.0F, 1.0F);
+				double rain = MathHelper.clamp(biome.getRainfall(), 0.0F, 1.0F);
 				int grasscolor = ColorizerGrass.getGrassColor(temp, rain);
 				int foliagecolor = ColorizerFoliage.getFoliageColor(temp, rain);
 				int watercolor = biome.getWaterColorMultiplier();
@@ -84,9 +84,8 @@ public class BlockColourGen
 		// get the bound texture id
 		// int terrainTextureId = Render.getBoundTextureId();
 
-		int terrainTextureId = Minecraft.getMinecraft().renderEngine
-				.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE)
-				.getGlTextureId();
+		int terrainTextureId =
+				Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).getGlTextureId();
 
 		// create texture object from the currently bound GL texture
 		if (terrainTextureId == 0)
@@ -114,18 +113,15 @@ public class BlockColourGen
 			{
 				int blockColour = 0;
 
-				if (block != null && block.getRenderType(
-						block.getDefaultState()) != EnumBlockRenderType.INVISIBLE)
+				if (block != null && block.getRenderType(block.getDefaultState()) != EnumBlockRenderType.INVISIBLE)
 				{
 
 					TextureAtlasSprite icon = null;
 					try
 					{
-						icon = Minecraft
-								.getMinecraft()
-								.getBlockRendererDispatcher()
-								.getBlockModelShapes()
-								.getTexture(block.getStateFromMeta(dv));
+						icon =
+								Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(
+										block.getStateFromMeta(dv));
 					}
 					catch (Exception e)
 					{
@@ -177,11 +173,7 @@ public class BlockColourGen
 			}
 		}
 
-		Logging.log(
-				"processed %d block textures, %d skipped, %d exceptions",
-				b_count,
-				s_count,
-				e_count);
+		Logging.log("processed %d block textures, %d skipped, %d exceptions", b_count, s_count, e_count);
 
 		genBiomeColours(bc);
 	}

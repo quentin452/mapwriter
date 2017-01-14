@@ -17,7 +17,8 @@ public class MwGuiMarkerListOverlay extends MwGuiSlot
 
 	public MwGuiMarkerListOverlay(GuiScreen parentScreen, MarkerManager markerManager)
 	{
-		super(Minecraft.getMinecraft(), // mcIn
+		super(
+				Minecraft.getMinecraft(), // mcIn
 				listWidth, // width
 				parentScreen.height - 20, // height
 				ListY, // topIn
@@ -35,7 +36,7 @@ public class MwGuiMarkerListOverlay extends MwGuiSlot
 	protected int getSlotHeight(int index)
 	{
 		String str = Utils.stringArrayToString(this.getLabelString(index));
-		int height = this.mc.fontRendererObj.splitStringWidth(str, MwGuiMarkerListOverlay.listWidth - 6);
+		int height = this.mc.fontRendererObj.getWordWrappedHeight(str, MwGuiMarkerListOverlay.listWidth - 6);
 
 		height += this.spacingY * 2;
 
@@ -93,7 +94,16 @@ public class MwGuiMarkerListOverlay extends MwGuiSlot
 	@Override
 	protected void drawSlot(int entryID, int x, int y, int slotHeight, int mouseXIn, int mouseYIn)
 	{
-		MwGuiLabel label = new MwGuiLabel(this.getLabelString(entryID), null, x, y, false, false, MwGuiMarkerListOverlay.listWidth, this.height);
+		MwGuiLabel label =
+				new MwGuiLabel(
+						this.getLabelString(entryID),
+						null,
+						x,
+						y,
+						false,
+						false,
+						MwGuiMarkerListOverlay.listWidth,
+						this.height);
 
 		label.draw();
 	}

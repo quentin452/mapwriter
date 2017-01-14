@@ -32,7 +32,8 @@ public class MwGuiLabel
 		none
 	}
 
-	public MwGuiLabel(String[] s1, String[] s2, int x, int y, Boolean Background, Boolean AllowFlip, int parentWidth, int parentHeight)
+	public MwGuiLabel(String[] s1, String[] s2, int x, int y, Boolean Background, Boolean AllowFlip, int parentWidth,
+			int parentHeight)
 	{
 		this.Background = Background;
 		this.AllowFlip = AllowFlip;
@@ -51,7 +52,12 @@ public class MwGuiLabel
 		{
 			if (this.Background)
 			{
-				Gui.drawRect(this.x - spacingX, this.y - MwGuiLabel.spacingY, this.x + this.w + MwGuiLabel.spacingX, this.h + this.y + MwGuiLabel.spacingY, 0x80000000);
+				Gui.drawRect(
+						this.x - spacingX,
+						this.y - MwGuiLabel.spacingY,
+						this.x + this.w + MwGuiLabel.spacingX,
+						this.h + this.y + MwGuiLabel.spacingY,
+						0x80000000);
 			}
 
 			this.fontRendererObj.drawSplitString(this.str1, this.x, this.y, this.w, 0xffffff);
@@ -91,30 +97,33 @@ public class MwGuiLabel
 	{
 		switch (this.side)
 		{
-		case left:
-			this.setCoords(this.label.x - (this.w + (2 * spacingX) + 2), this.label.y);
-			break;
+			case left:
+				this.setCoords(this.label.x - (this.w + (2 * spacingX) + 2), this.label.y);
+				break;
 
-		case right:
-			this.setCoords(this.label.x + this.label.w + (2 * spacingX) + 2, this.label.y);
-			break;
+			case right:
+				this.setCoords(this.label.x + this.label.w + (2 * spacingX) + 2, this.label.y);
+				break;
 
-		case bottom:
-			this.setCoords(this.label.x, this.label.y + this.label.h + (2 * spacingY) + 2);
-			break;
+			case bottom:
+				this.setCoords(this.label.x, this.label.y + this.label.h + (2 * spacingY) + 2);
+				break;
 
-		case top:
-			this.setCoords(this.label.x, this.label.y - (this.h + (2 * spacingY) + 2));
-			break;
+			case top:
+				this.setCoords(this.label.x, this.label.y - (this.h + (2 * spacingY) + 2));
+				break;
 
-		default:
-			break;
+			default:
+				break;
 		}
 	}
 
 	public boolean posWithin(int x, int y)
 	{
-		return (x >= (this.x + spacingX)) && (y >= (this.y + spacingY)) && (x <= (this.x + this.w + spacingX)) && (y <= (this.y + this.h + spacingY));
+		return (x >= (this.x + spacingX)) &&
+				(y >= (this.y + spacingY)) &&
+				(x <= (this.x + this.w + spacingX)) &&
+				(y <= (this.y + this.h + spacingY));
 	}
 
 	public void setDrawBackground(boolean enable)
@@ -209,7 +218,7 @@ public class MwGuiLabel
 		{
 			int stringwidth = Utils.getMaxWidth(this.s1, this.s2);
 			this.w = stringwidth < (this.parentWidth - 20) ? stringwidth : this.parentWidth - 20;
-			this.h = this.fontRendererObj.splitStringWidth(this.str1, this.parentWidth > 0 ? this.parentWidth : 10);
+			this.h = this.fontRendererObj.getWordWrappedHeight(this.str1, this.parentWidth > 0 ? this.parentWidth : 10);
 		}
 	}
 }

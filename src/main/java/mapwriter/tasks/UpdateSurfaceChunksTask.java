@@ -60,7 +60,7 @@ public class UpdateSurfaceChunksTask extends Task
 	@Override
 	public boolean CheckForDuplicate()
 	{
-		Long coords = ChunkPos.chunkXZ2Int(this.chunk.x, this.chunk.z);
+		Long coords = ChunkPos.asLong(this.chunk.x, this.chunk.z);
 
 		if (!UpdateSurfaceChunksTask.chunksUpdating.containsKey(coords))
 		{
@@ -69,8 +69,8 @@ public class UpdateSurfaceChunksTask extends Task
 		}
 		else
 		{
-			UpdateSurfaceChunksTask task2 = (UpdateSurfaceChunksTask) UpdateSurfaceChunksTask.chunksUpdating
-					.get(coords);
+			UpdateSurfaceChunksTask task2 =
+					(UpdateSurfaceChunksTask) UpdateSurfaceChunksTask.chunksUpdating.get(coords);
 			if (task2.Running.get() == false)
 			{
 				task2.UpdateChunkData(this.chunk);
