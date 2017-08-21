@@ -35,7 +35,11 @@ public class MwChunk implements IChunk
 	public final byte[] biomeArray;
 	public final int maxY;
 
-	public MwChunk(int x, int z, int dimension, ExtendedBlockStorage[] data, byte[] biomeArray,
+	public MwChunk(int x,
+			int z,
+			int dimension,
+			ExtendedBlockStorage[] data,
+			byte[] biomeArray,
 			Map<BlockPos, TileEntity> TileEntityMap)
 	{
 		this.x = x;
@@ -119,7 +123,7 @@ public class MwChunk implements IChunk
 				int xNbt = level.getInteger("xPos");
 				int zNbt = level.getInteger("zPos");
 
-				if ((xNbt != x) || (zNbt != z))
+				if (xNbt != x || zNbt != z)
 				{
 					Logging.logWarning("chunk (%d, %d) has NBT coords (%d, %d)", x, z, xNbt, zNbt);
 				}
@@ -134,9 +138,9 @@ public class MwChunk implements IChunk
 					byte[] abyte = nbttagcompound.getByteArray("Blocks");
 					NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
 					NibbleArray nibblearray1 =
-							nbttagcompound.hasKey("Add", 7)
-									? new NibbleArray(nbttagcompound.getByteArray("Add"))
-									: null;
+							nbttagcompound.hasKey("Add", 7) ?
+									new NibbleArray(nbttagcompound.getByteArray("Add")) :
+									null;
 					extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
 					extendedblockstorage.setBlocklightArray(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
 
@@ -145,7 +149,7 @@ public class MwChunk implements IChunk
 						extendedblockstorage.setSkylightArray(new NibbleArray(nbttagcompound.getByteArray("SkyLight")));
 					}
 
-					extendedblockstorage.removeInvalidBlocks();
+					extendedblockstorage.recalculateRefCounts();
 					data[y] = extendedblockstorage;
 				}
 
@@ -196,7 +200,7 @@ public class MwChunk implements IChunk
 
 	public boolean isEmpty()
 	{
-		return (this.maxY <= 0);
+		return this.maxY <= 0;
 	}
 
 	@Override
@@ -242,7 +246,7 @@ public class MwChunk implements IChunk
 		try
 		{
 			Class<?> act = Class.forName("com.carpentersblocks.tileentity.TEBase");
-			CarpenterMethod = act.getMethod("getAttribute", byte.class);
+			MwChunk.CarpenterMethod = act.getMethod("getAttribute", byte.class);
 		}
 		catch (SecurityException e)
 		{
@@ -269,16 +273,16 @@ public class MwChunk implements IChunk
 		try
 		{
 			Class<?> act = Class.forName("codechicken.multipart.TileMultipart");
-			FMPMethodParts = act.getMethod("jPartList");
+			MwChunk.FMPMethodParts = act.getMethod("jPartList");
 			act = Class.forName("codechicken.microblock.Microblock");
-			FMPMethodMaterial = act.getMethod("getIMaterial");
+			MwChunk.FMPMethodMaterial = act.getMethod("getIMaterial");
 
 			act = Class.forName("codechicken.microblock.BlockMicroMaterial");
-			FMPFieldBlock = act.getDeclaredField("block");
-			FMPFieldBlock.setAccessible(true);
+			MwChunk.FMPFieldBlock = act.getDeclaredField("block");
+			MwChunk.FMPFieldBlock.setAccessible(true);
 
-			FMPFieldMeta = act.getDeclaredField("meta");
-			FMPFieldMeta.setAccessible(true);
+			MwChunk.FMPFieldMeta = act.getDeclaredField("meta");
+			MwChunk.FMPFieldMeta.setAccessible(true);
 
 		}
 		catch (SecurityException e)
@@ -302,11 +306,11 @@ public class MwChunk implements IChunk
 	@Override
 	public IBlockState getBlockState(int x, int y, int z)
 	{
-		int yi = (y >> 4) & 0xf;
+		int yi = y >> 4 & 0xf;
 
-		return ((this.dataArray != null) && (this.dataArray[yi] != null))
-				? this.dataArray[yi].getData().get(x & 15, y & 15, z & 15)
-				: Blocks.AIR.getDefaultState();
+		return this.dataArray != null && this.dataArray[yi] != null ?
+				this.dataArray[yi].getData().get(x & 15, y & 15, z & 15) :
+				Blocks.AIR.getDefaultState();
 	}
 
 	// changed to use the NBTTagCompound that minecraft uses. this makes the
@@ -359,11 +363,11 @@ public class MwChunk implements IChunk
 		}
 
 		compound.setTag("Sections", nbttaglist);
-		compound.setByteArray("Biomes", biomeArray);
+		compound.setByteArray("Biomes", this.biomeArray);
 
 		NBTTagList nbttaglist2 = new NBTTagList();
 
-		for (TileEntity tileentity : tileentityMap.values())
+		for (TileEntity tileentity : this.tileentityMap.values())
 		{
 			try
 			{

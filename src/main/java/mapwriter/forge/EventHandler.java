@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class EventHandler
 {
-
 	Mw mw;
 
 	public EventHandler(Mw mw)
@@ -100,10 +99,7 @@ public class EventHandler
 		}
 		catch (Exception e)
 		{
-			Logging.logError("Something went wrong getting the seed. %s", new Object[]
-			{
-					e.toString()
-			});
+			Logging.logError("Something went wrong getting the seed. %s", new Object[] { e.toString() });
 		}
 	}
 
@@ -162,8 +158,7 @@ public class EventHandler
 				RealmsScreen proxy = ((GuiScreenRealmsProxy) event.getGui()).getProxy();
 				RealmsMainScreen parrent = null;
 
-				if (proxy instanceof RealmsLongRunningMcoTaskScreen
-						|| proxy instanceof RealmsConfigureWorldScreen)
+				if (proxy instanceof RealmsLongRunningMcoTaskScreen || proxy instanceof RealmsConfigureWorldScreen)
 				{
 					Object obj = FieldUtils.readField(proxy, "lastScreen", true);
 					if (obj instanceof RealmsMainScreen)
@@ -176,10 +171,7 @@ public class EventHandler
 						long id = (Long) FieldUtils.readField(parrent, "selectedServerId", true);
 						if (id > 0)
 						{
-							ArrayList list = (ArrayList) FieldUtils.readField(
-									parrent,
-									"realmsServers",
-									true);
+							ArrayList list = (ArrayList) FieldUtils.readField(parrent, "realmsServers", true);
 							for (Object item : list)
 							{
 								RealmsServer server = (RealmsServer) item;

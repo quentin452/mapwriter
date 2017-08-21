@@ -22,16 +22,16 @@ public class ClientProxy extends CommonProxy
 	{
 		ConfigurationHandler.init(configFile);
 		MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
-	}
-
-	@Override
-	public void load()
-	{
 		EventHandler eventHandler = new EventHandler(Mw.getInstance());
 		MinecraftForge.EVENT_BUS.register(eventHandler);
 
 		MwKeyHandler keyEventHandler = new MwKeyHandler();
 		MinecraftForge.EVENT_BUS.register(keyEventHandler);
+	}
+
+	@Override
+	public void load()
+	{
 	}
 
 	@Override

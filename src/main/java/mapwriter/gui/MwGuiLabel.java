@@ -10,7 +10,7 @@ public class MwGuiLabel
 	int x = 0, y = 0, w = 1, h = 12;
 	static int spacingX = 4;
 	static int spacingY = 2;
-	private FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;;
+	private FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRenderer;
 	private Boolean Background;
 	private Boolean AllowFlip;
 	private int parentWidth;
@@ -32,7 +32,13 @@ public class MwGuiLabel
 		none
 	}
 
-	public MwGuiLabel(String[] s1, String[] s2, int x, int y, Boolean Background, Boolean AllowFlip, int parentWidth,
+	public MwGuiLabel(String[] s1,
+			String[] s2,
+			int x,
+			int y,
+			Boolean Background,
+			Boolean AllowFlip,
+			int parentWidth,
 			int parentHeight)
 	{
 		this.Background = Background;
@@ -53,7 +59,7 @@ public class MwGuiLabel
 			if (this.Background)
 			{
 				Gui.drawRect(
-						this.x - spacingX,
+						this.x - MwGuiLabel.spacingX,
 						this.y - MwGuiLabel.spacingY,
 						this.x + this.w + MwGuiLabel.spacingX,
 						this.h + this.y + MwGuiLabel.spacingY,
@@ -97,33 +103,33 @@ public class MwGuiLabel
 	{
 		switch (this.side)
 		{
-			case left:
-				this.setCoords(this.label.x - (this.w + (2 * spacingX) + 2), this.label.y);
-				break;
+		case left:
+			this.setCoords(this.label.x - (this.w + 2 * MwGuiLabel.spacingX + 2), this.label.y);
+			break;
 
-			case right:
-				this.setCoords(this.label.x + this.label.w + (2 * spacingX) + 2, this.label.y);
-				break;
+		case right:
+			this.setCoords(this.label.x + this.label.w + 2 * MwGuiLabel.spacingX + 2, this.label.y);
+			break;
 
-			case bottom:
-				this.setCoords(this.label.x, this.label.y + this.label.h + (2 * spacingY) + 2);
-				break;
+		case bottom:
+			this.setCoords(this.label.x, this.label.y + this.label.h + 2 * MwGuiLabel.spacingY + 2);
+			break;
 
-			case top:
-				this.setCoords(this.label.x, this.label.y - (this.h + (2 * spacingY) + 2));
-				break;
+		case top:
+			this.setCoords(this.label.x, this.label.y - (this.h + 2 * MwGuiLabel.spacingY + 2));
+			break;
 
-			default:
-				break;
+		default:
+			break;
 		}
 	}
 
 	public boolean posWithin(int x, int y)
 	{
-		return (x >= (this.x + spacingX)) &&
-				(y >= (this.y + spacingY)) &&
-				(x <= (this.x + this.w + spacingX)) &&
-				(y <= (this.y + this.h + spacingY));
+		return x >= this.x + MwGuiLabel.spacingX &&
+				y >= this.y + MwGuiLabel.spacingY &&
+				x <= this.x + this.w + MwGuiLabel.spacingX &&
+				y <= this.y + this.h + MwGuiLabel.spacingY;
 	}
 
 	public void setDrawBackground(boolean enable)
@@ -160,7 +166,7 @@ public class MwGuiLabel
 	{
 		if (this.AllowFlip)
 		{
-			if ((x + this.w + MwGuiLabel.spacingX) > this.parentWidth)
+			if (x + this.w + MwGuiLabel.spacingX > this.parentWidth)
 			{
 				this.x = x - this.w - MwGuiLabel.spacingX - 5;
 			}
@@ -168,7 +174,7 @@ public class MwGuiLabel
 			{
 				this.x = x;
 			}
-			if ((y + this.h + MwGuiLabel.spacingY) > this.parentHeight)
+			if (y + this.h + MwGuiLabel.spacingY > this.parentHeight)
 			{
 				this.y = y - this.h - MwGuiLabel.spacingY;
 			}
@@ -201,11 +207,11 @@ public class MwGuiLabel
 
 	private void UpdateStrings()
 	{
-		if ((this.s1 != null) && (this.s1.length > 0))
+		if (this.s1 != null && this.s1.length > 0)
 		{
 			this.str1 = Utils.stringArrayToString(this.s1);
 		}
-		if ((this.s2 != null) && (this.s2.length > 0))
+		if (this.s2 != null && this.s2.length > 0)
 		{
 			this.str2 = Utils.stringArrayToString(this.s2);
 		}
@@ -217,7 +223,7 @@ public class MwGuiLabel
 		if (this.s1 != null)
 		{
 			int stringwidth = Utils.getMaxWidth(this.s1, this.s2);
-			this.w = stringwidth < (this.parentWidth - 20) ? stringwidth : this.parentWidth - 20;
+			this.w = stringwidth < this.parentWidth - 20 ? stringwidth : this.parentWidth - 20;
 			this.h = this.fontRendererObj.getWordWrappedHeight(this.str1, this.parentWidth > 0 ? this.parentWidth : 10);
 		}
 	}

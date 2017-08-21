@@ -19,10 +19,10 @@ public class MwGuiMarkerListOverlay extends MwGuiSlot
 	{
 		super(
 				Minecraft.getMinecraft(), // mcIn
-				listWidth, // width
+				MwGuiMarkerListOverlay.listWidth, // width
 				parentScreen.height - 20, // height
-				ListY, // topIn
-				(10 + parentScreen.height) - 20, // bottomIn
+				MwGuiMarkerListOverlay.ListY, // topIn
+				10 + parentScreen.height - 20, // bottomIn
 				parentScreen.width - 110 // left
 		);
 
@@ -36,7 +36,7 @@ public class MwGuiMarkerListOverlay extends MwGuiSlot
 	protected int getSlotHeight(int index)
 	{
 		String str = Utils.stringArrayToString(this.getLabelString(index));
-		int height = this.mc.fontRendererObj.getWordWrappedHeight(str, MwGuiMarkerListOverlay.listWidth - 6);
+		int height = this.mc.fontRenderer.getWordWrappedHeight(str, MwGuiMarkerListOverlay.listWidth - 6);
 
 		height += this.spacingY * 2;
 
@@ -68,10 +68,9 @@ public class MwGuiMarkerListOverlay extends MwGuiSlot
 			if (this.parentScreen instanceof MwGui)
 			{
 				((MwGui) this.parentScreen).openMarkerGui(this.markerManager.selectedMarker, mouseX, mouseY);
-				;
 			}
 		}
-		if ((mouseButton == 0) && isDoubleClick)
+		if (mouseButton == 0 && isDoubleClick)
 		{
 			if (this.parentScreen instanceof MwGui)
 			{

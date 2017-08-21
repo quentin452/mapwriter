@@ -63,7 +63,7 @@ public class Utils
 		{
 			outputFile = new File(baseName + "." + ext);
 		}
-		while (outputFile.exists() && (i < 1000))
+		while (outputFile.exists() && i < 1000)
 		{
 			if (dir != null)
 			{
@@ -75,7 +75,7 @@ public class Utils
 			}
 			i++;
 		}
-		return (i < 1000) ? outputFile : null;
+		return i < 1000 ? outputFile : null;
 	}
 
 	// send an ingame chat message and console log
@@ -108,7 +108,7 @@ public class Utils
 		if (size < 1)
 		{
 			int NewSize = Minecraft.getGLMaximumTextureSize();
-			return ByteBuffer.allocateDirect((NewSize * NewSize) * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+			return ByteBuffer.allocateDirect(NewSize * NewSize * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
 
 		}
 		return ByteBuffer.allocateDirect(size * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
@@ -144,9 +144,9 @@ public class Utils
 
 	public static int distToChunkSq(int x, int z, Chunk chunk)
 	{
-		int dx = ((chunk.xPosition << 4) + 8) - x;
-		int dz = ((chunk.zPosition << 4) + 8) - z;
-		return (dx * dx) + (dz * dz);
+		int dx = (chunk.xPosition << 4) + 8 - x;
+		int dz = (chunk.zPosition << 4) + 8 - z;
+		return dx * dx + dz * dz;
 	}
 
 	public static String RealmsWorldName = "";
@@ -160,13 +160,13 @@ public class Utils
 			// cannot use this.mc.theWorld.getWorldInfo().getWorldName() as it
 			// is set statically to "MpServer".
 			IntegratedServer server = Minecraft.getMinecraft().getIntegratedServer();
-			worldName = (server != null) ? server.getFolderName() : "sp_world";
+			worldName = server != null ? server.getFolderName() : "sp_world";
 		}
 		else if (Minecraft.getMinecraft().isConnectedToRealms())
 		{
-			if (RealmsWorldName != "")
+			if (Utils.RealmsWorldName != "")
 			{
-				worldName = RealmsWorldName;
+				worldName = Utils.RealmsWorldName;
 			}
 			else
 			{
@@ -212,13 +212,7 @@ public class Utils
 		{
 			Class<?> oclass = Class.forName("java.awt.Desktop");
 			Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object) null, new Object[0]);
-			oclass.getMethod("browse", new Class[]
-			{
-					URI.class
-			}).invoke(object, new Object[]
-			{
-					p_175282_1_
-			});
+			oclass.getMethod("browse", new Class[] { URI.class }).invoke(object, new Object[] { p_175282_1_ });
 		}
 		catch (Throwable throwable)
 		{
@@ -239,7 +233,7 @@ public class Utils
 
 	public static int getMaxWidth(String[] arr, String[] arr2)
 	{
-		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRendererObj;
+		FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRenderer;
 		int Width = 1;
 		for (int i = 0; i < arr.length; i++)
 		{
@@ -251,7 +245,7 @@ public class Utils
 				String s = I18n.format(arr[i]);
 				w1 = fontRendererObj.getStringWidth(s);
 			}
-			if ((arr2 != null) && (i < arr2.length))
+			if (arr2 != null && i < arr2.length)
 			{
 				String s = I18n.format(arr2[i]);
 				w2 = fontRendererObj.getStringWidth(s);
@@ -263,28 +257,19 @@ public class Utils
 		return Width;
 	}
 
-	private static int[] colours = new int[]
-	{
-			0xff0000,
-			0x00ff00,
-			0x0000ff,
-			0xffff00,
-			0xff00ff,
-			0x00ffff,
-			0xff8000,
-			0x8000ff
-	};
+	private static int[] colours =
+			new int[] { 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8000, 0x8000ff };
 	// static so that current index is shared between all markers
 	public static int colourIndex = 0;
 
 	private static int getColoursLengt()
 	{
-		return colours.length;
+		return Utils.colours.length;
 	}
 
 	public static int getCurrentColour()
 	{
-		return 0xff000000 | colours[colourIndex];
+		return 0xff000000 | Utils.colours[Utils.colourIndex];
 	}
 
 	public static int getNextColour()
@@ -295,15 +280,15 @@ public class Utils
 
 	public static int getPrevColour()
 	{
-		Utils.colourIndex = ((Utils.colourIndex + Utils.getColoursLengt()) - 1) % Utils.getColoursLengt();
+		Utils.colourIndex = (Utils.colourIndex + Utils.getColoursLengt() - 1) % Utils.getColoursLengt();
 		return Utils.getCurrentColour();
 	}
 
 	/*
 	 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
-	 * 
+	 *
 	 * Copyright 1997-2007 Sun Microsystems, Inc. All rights reserved.
-	 * 
+	 *
 	 * The contents of this file are subject to the terms of either the GNU
 	 * General Public License Version 2 only ("GPL") or the Common Development
 	 * and Distribution License("CDDL") (collectively, the "License"). You may
@@ -319,13 +304,13 @@ public class Utils
 	 * Header, with the fields enclosed by brackets [] replaced by your own
 	 * identifying information:
 	 * "Portions Copyrighted [year] [name of copyright owner]"
-	 * 
+	 *
 	 * Contributor(s):
-	 * 
+	 *
 	 * The Original Software is NetBeans. The Initial Developer of the Original
 	 * Software is Sun Microsystems, Inc. Portions Copyright 1997-2006 Sun
 	 * Microsystems, Inc. All Rights Reserved.
-	 * 
+	 *
 	 * If you wish your version of this file to be governed by only the CDDL or
 	 * only the GPL Version 2, indicate your decision by adding "[Contributor]
 	 * elects to include this software in this distribution under the [CDDL or
@@ -336,27 +321,27 @@ public class Utils
 	 * Version 2 code and therefore, elected the GPL Version 2 license, then the
 	 * option applies only if the new code is made subject to such option by the
 	 * copyright holder.
-	 * 
+	 *
 	 * @since 4.37
-	 * 
+	 *
 	 * @author Jaroslav Tulach
 	 */
 	/*
 	 * Create a typesafe copy of a raw map.
-	 * 
+	 *
 	 * @param rawMap an unchecked map
-	 * 
+	 *
 	 * @param keyType the desired supertype of the keys
-	 * 
+	 *
 	 * @param valueType the desired supertype of the values
-	 * 
+	 *
 	 * @param strict true to throw a <code>ClassCastException</code> if the raw
 	 * map has an invalid key or value, false to skip over such map entries
 	 * (warnings may be logged)
-	 * 
+	 *
 	 * @return a typed map guaranteed to contain only keys and values assignable
 	 * to the named types (or they may be null)
-	 * 
+	 *
 	 * @throws ClassCastException if some key or value in the raw map was not
 	 * well-typed, and only if <code>strict</code> was true
 	 */
@@ -364,7 +349,7 @@ public class Utils
 	public static <K, V> Map<K, V> checkedMapByCopy(Map rawMap, Class<K> keyType, Class<V> valueType, boolean strict)
 			throws ClassCastException
 	{
-		Map<K, V> m2 = new HashMap<K, V>(((rawMap.size() * 4) / 3) + 1);
+		Map<K, V> m2 = new HashMap<K, V>(rawMap.size() * 4 / 3 + 1);
 		Iterator it = rawMap.entrySet().iterator();
 		while (it.hasNext())
 		{

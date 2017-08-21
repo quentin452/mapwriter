@@ -43,9 +43,14 @@ public class ModGuiConfigHUD extends GuiConfig
 
 	private MapModeConfig dummyMapConfig;
 
-	public ModGuiConfigHUD(GuiScreen parentScreen, List<IConfigElement> configElements,
-			String modID, String configID, boolean allRequireWorldRestart,
-			boolean allRequireMcRestart, String title, String Config)
+	public ModGuiConfigHUD(GuiScreen parentScreen,
+			List<IConfigElement> configElements,
+			String modID,
+			String configID,
+			boolean allRequireWorldRestart,
+			boolean allRequireMcRestart,
+			String title,
+			String Config)
 	{
 		super(
 				parentScreen,
@@ -59,21 +64,21 @@ public class ModGuiConfigHUD extends GuiConfig
 
 		if (Config.equals(Reference.catFullMapConfig))
 		{
-			dummyMapConfig = new MapModeConfig(Reference.catFullMapConfig);
+			this.dummyMapConfig = new MapModeConfig(Reference.catFullMapConfig);
 		}
 		else if (Config.equals(Reference.catLargeMapConfig))
 		{
-			dummyMapConfig = new largeMapModeConfig(Reference.catLargeMapConfig);
+			this.dummyMapConfig = new largeMapModeConfig(Reference.catLargeMapConfig);
 		}
 		else if (Config.equals(Reference.catSmallMapConfig))
 		{
-			dummyMapConfig = new smallMapModeConfig(Reference.catSmallMapConfig);
+			this.dummyMapConfig = new smallMapModeConfig(Reference.catSmallMapConfig);
 		}
-		dummyMapConfig.setDefaults();
-		dummyMapConfig.loadConfig();
+		this.dummyMapConfig.setDefaults();
+		this.dummyMapConfig.loadConfig();
 
 		this.mw = Mw.getInstance();
-		this.mapMode = new MapMode(dummyMapConfig);
+		this.mapMode = new MapMode(this.dummyMapConfig);
 		this.map = new MapRenderer(this.mw, this.mapMode, null);
 	}
 
@@ -81,50 +86,52 @@ public class ModGuiConfigHUD extends GuiConfig
 	public void initGui()
 	{
 		super.initGui();
-		int topLeftWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.topleft")) + 20,
-				100);
+		int topLeftWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.topleft")) + 20,
+						100);
 
-		int topRightWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.topright")) + 20,
-				100);
+		int topRightWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.topright")) + 20,
+						100);
 
-		int bottomLeftWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.botleft")) + 20,
-				100);
+		int bottomLeftWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.botleft")) + 20,
+						100);
 
-		int bottomRightWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.botright")) + 20,
-				100);
+		int bottomRightWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.botright")) + 20,
+						100);
 
-		int CenterTopWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.centertop")) + 20,
-				100);
+		int CenterTopWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.centertop")) + 20,
+						100);
 
-		int CenterBottomWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.centerbottom")) + 20,
-				100);
+		int CenterBottomWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.centerbottom")) +
+								20,
+						100);
 
-		int CenterWidth = Math.max(
-				mc.fontRendererObj.getStringWidth(I18n.format("mw.config.map.ctgy.position.center"))
-						+ 20,
-				100);
+		int CenterWidth =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.center")) + 20,
+						100);
 
-		int CenterLeft = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.centerleft")) + 20,
-				100);
+		int CenterLeft =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.centerleft")) + 20,
+						100);
 
-		int CenterRight = Math.max(
-				mc.fontRendererObj.getStringWidth(
-						I18n.format("mw.config.map.ctgy.position.centerright")) + 20,
-				100);
+		int CenterRight =
+				Math.max(
+						this.mc.fontRenderer.getStringWidth(I18n.format("mw.config.map.ctgy.position.centerright")) +
+								20,
+						100);
 
 		int buttonWidthHalf1 = (bottomLeftWidth + 5 + bottomRightWidth + CenterTopWidth + 5) / 2;
 		int buttonWidthHalf2 = (CenterLeft + 5 + CenterWidth + CenterRight + 5) / 2;
@@ -209,8 +216,7 @@ public class ModGuiConfigHUD extends GuiConfig
 		this.buttonList.add(
 				new GuiButtonExt(
 						3022,
-						this.width / 2 - buttonWidthHalf3 + bottomLeftWidth + 5 + CenterBottomWidth
-								+ 5,
+						this.width / 2 - buttonWidthHalf3 + bottomLeftWidth + 5 + CenterBottomWidth + 5,
 						buttonHeigth3,
 						bottomRightWidth,
 						20,
@@ -219,22 +225,23 @@ public class ModGuiConfigHUD extends GuiConfig
 		UpdateParrentSettings();
 	}
 
+	@Override
 	protected void actionPerformed(GuiButton button)
 	{
 		double bottomOffset = 0;
 		if (!this.mapMode.getConfig().biomeMode.equals(MapModeConfig.coordsModeStringArray[0]))
 		{
-			bottomOffset = bottomOffset + mc.fontRendererObj.FONT_HEIGHT + 3;
+			bottomOffset = bottomOffset + this.mc.fontRenderer.FONT_HEIGHT + 3;
 		}
 		if (!this.mapMode.getConfig().biomeMode.equals(MapModeConfig.coordsModeStringArray[0]))
 		{
-			bottomOffset = bottomOffset + mc.fontRendererObj.FONT_HEIGHT + 3;
+			bottomOffset = bottomOffset + this.mc.fontRenderer.FONT_HEIGHT + 3;
 		}
-		bottomOffset = (bottomOffset / this.height) * 100;
+		bottomOffset = bottomOffset / this.height * 100;
 
-		double SmallMarginY = (10.00 / (double) (this.height - this.mapMode.getH())) * 100.0;
-		double SmallMarginX = (10.00 / (double) (this.width - this.mapMode.getW())) * 100.0;
-		double LargeMarginBottom = (40.00 / (double) (this.height - this.mapMode.getH())) * 100.0;
+		double SmallMarginY = 10.00 / (this.height - this.mapMode.getH()) * 100.0;
+		double SmallMarginX = 10.00 / (this.width - this.mapMode.getW()) * 100.0;
+		double LargeMarginBottom = 40.00 / (this.height - this.mapMode.getH()) * 100.0;
 
 		bottomOffset = bottomOffset < SmallMarginY ? SmallMarginY : bottomOffset;
 		// top left
@@ -299,14 +306,14 @@ public class ModGuiConfigHUD extends GuiConfig
 		}
 		else
 		{
-			DraggingMap = true;
+			this.DraggingMap = true;
 		}
 	}
 
 	@Override
 	protected void mouseClickMove(int x, int y, int mouseEvent, long timeSinceLastClick)
 	{
-		if (DraggingMap)
+		if (this.DraggingMap)
 		{
 			updateMap(this.mapMode.getNewPosPoint(x, y));
 		}
@@ -321,9 +328,9 @@ public class ModGuiConfigHUD extends GuiConfig
 	@Override
 	public void mouseReleased(int x, int y, int mouseEvent)
 	{
-		if (DraggingMap)
+		if (this.DraggingMap)
 		{
-			DraggingMap = false;
+			this.DraggingMap = false;
 		}
 		else
 		{
@@ -349,19 +356,19 @@ public class ModGuiConfigHUD extends GuiConfig
 		{
 			if (entry.getName().equals("xPos"))
 			{
-				dummyMapConfig.xPos = (Double) entry.getCurrentValue();
+				this.dummyMapConfig.xPos = (Double) entry.getCurrentValue();
 			}
 			else if (entry.getName().equals("yPos"))
 			{
-				dummyMapConfig.yPos = (Double) entry.getCurrentValue();
+				this.dummyMapConfig.yPos = (Double) entry.getCurrentValue();
 			}
 			else if (entry.getName().equals("heightPercent"))
 			{
-				dummyMapConfig.heightPercent = (Double) entry.getCurrentValue();
+				this.dummyMapConfig.heightPercent = (Double) entry.getCurrentValue();
 			}
 			else if (entry.getName().equals("widthPercent"))
 			{
-				dummyMapConfig.widthPercent = (Double) entry.getCurrentValue();
+				this.dummyMapConfig.widthPercent = (Double) entry.getCurrentValue();
 				if (this.mapMode.getConfig().circular)
 				{
 					((ModNumberSliderEntry) entry).setEnabled(false);
@@ -386,24 +393,23 @@ public class ModGuiConfigHUD extends GuiConfig
 				{
 					if (entry.getName().equals("circular"))
 					{
-						dummyMapConfig.circular = (Boolean) entry.getCurrentValue();
+						this.dummyMapConfig.circular = (Boolean) entry.getCurrentValue();
 					}
 					else if (entry.getName().equals("coordsMode"))
 					{
-						dummyMapConfig.coordsMode = (String) entry.getCurrentValue();
+						this.dummyMapConfig.coordsMode = (String) entry.getCurrentValue();
 					}
 					else if (entry.getName().equals("borderMode"))
 					{
-						dummyMapConfig.borderMode = (Boolean) entry.getCurrentValue();
+						this.dummyMapConfig.borderMode = (Boolean) entry.getCurrentValue();
 					}
 					else if (entry.getName().equals("playerArrowSize"))
 					{
-						dummyMapConfig.playerArrowSize = Integer.valueOf(
-								(String) entry.getCurrentValue());
+						this.dummyMapConfig.playerArrowSize = Integer.valueOf((String) entry.getCurrentValue());
 					}
 					else if (entry.getName().equals("biomeMode"))
 					{
-						dummyMapConfig.biomeMode = (String) entry.getCurrentValue();
+						this.dummyMapConfig.biomeMode = (String) entry.getCurrentValue();
 					}
 				}
 			}
@@ -430,8 +436,7 @@ public class ModGuiConfigHUD extends GuiConfig
 
 	public static class MapPosConfigEntry extends CategoryEntry
 	{
-		public MapPosConfigEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList,
-				IConfigElement prop)
+		public MapPosConfigEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement prop)
 		{
 			super(owningScreen, owningEntryList, prop);
 		}
@@ -440,17 +445,17 @@ public class ModGuiConfigHUD extends GuiConfig
 		protected GuiScreen buildChildScreen()
 		{
 			String QualifiedName = this.configElement.getQualifiedName();
-			String config = QualifiedName
-					.substring(0, QualifiedName.indexOf(Configuration.CATEGORY_SPLITTER))
-					.replace(Configuration.CATEGORY_SPLITTER, "");
+			String config =
+					QualifiedName.substring(0, QualifiedName.indexOf(Configuration.CATEGORY_SPLITTER)).replace(
+							Configuration.CATEGORY_SPLITTER,
+							"");
 
 			return new ModGuiConfigHUD(
 					this.owningScreen,
 					this.getConfigElement().getChildElements(),
 					this.owningScreen.modID,
 					null,
-					this.configElement.requiresWorldRestart()
-							|| this.owningScreen.allRequireWorldRestart,
+					this.configElement.requiresWorldRestart() || this.owningScreen.allRequireWorldRestart,
 					this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
 					this.owningScreen.title,
 					config);

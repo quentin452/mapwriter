@@ -1,10 +1,9 @@
 package mapwriter.map;
 
-import static org.lwjgl.opengl.ARBDepthClamp.GL_DEPTH_CLAMP;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.opengl.ARBDepthClamp;
 import org.lwjgl.opengl.GL11;
 
 import mapwriter.config.Config;
@@ -197,7 +196,7 @@ public class MarkerManager
 		Marker markerToDelete = null;
 		for (Marker marker : this.markerList)
 		{
-			if (((name == null) || marker.name.equals(name)) && ((group == null) || marker.groupName.equals(group)))
+			if ((name == null || marker.name.equals(name)) && (group == null || marker.groupName.equals(group)))
 			{
 				markerToDelete = marker;
 				break;
@@ -309,7 +308,7 @@ public class MarkerManager
 		{
 			int dx = x - marker.x;
 			int dz = z - marker.z;
-			int d = (dx * dx) + (dz * dz);
+			int d = dx * dx + dz * dz;
 			if (d < nearestDistance)
 			{
 				nearestMarker = marker;
@@ -327,13 +326,13 @@ public class MarkerManager
 		{
 			int dx = marker.x - x;
 			int dz = marker.z - z;
-			int d = (dx * dx) + (dz * dz);
+			int d = dx * dx + dz * dz;
 			double angle = Math.atan2(dz, dx);
 			// use cos instead of abs as it will wrap at 2 * Pi.
 			// cos will be closer to 1.0 the closer desiredAngle and angle are.
 			// 0.8 is the threshold corresponding to a maximum of
 			// acos(0.8) = 37 degrees difference between the two angles.
-			if ((Math.cos(desiredAngle - angle) > 0.8D) && (d < nearestDistance) && (d > 4))
+			if (Math.cos(desiredAngle - angle) > 0.8D && d < nearestDistance && d > 4)
 			{
 				nearestMarker = marker;
 				nearestDistance = d;
@@ -407,14 +406,14 @@ public class MarkerManager
 		// size of the square from middle to edge
 		double d4 = 0.2D;
 
-		double d5 = 0.5D + (Math.cos(d3 + 2.356194490192345D) * d4);
-		double d6 = 0.5D + (Math.sin(d3 + 2.356194490192345D) * d4);
-		double d7 = 0.5D + (Math.cos(d3 + (Math.PI / 4D)) * d4);
-		double d8 = 0.5D + (Math.sin(d3 + (Math.PI / 4D)) * d4);
-		double d9 = 0.5D + (Math.cos(d3 + 3.9269908169872414D) * d4);
-		double d10 = 0.5D + (Math.sin(d3 + 3.9269908169872414D) * d4);
-		double d11 = 0.5D + (Math.cos(d3 + 5.497787143782138D) * d4);
-		double d12 = 0.5D + (Math.sin(d3 + 5.497787143782138D) * d4);
+		double d5 = 0.5D + Math.cos(d3 + 2.356194490192345D) * d4;
+		double d6 = 0.5D + Math.sin(d3 + 2.356194490192345D) * d4;
+		double d7 = 0.5D + Math.cos(d3 + Math.PI / 4D) * d4;
+		double d8 = 0.5D + Math.sin(d3 + Math.PI / 4D) * d4;
+		double d9 = 0.5D + Math.cos(d3 + 3.9269908169872414D) * d4;
+		double d10 = 0.5D + Math.sin(d3 + 3.9269908169872414D) * d4;
+		double d11 = 0.5D + Math.cos(d3 + 5.497787143782138D) * d4;
+		double d12 = 0.5D + Math.sin(d3 + 5.497787143782138D) * d4;
 
 		float fRed = m.getRed();
 		float fGreen = m.getGreen();
@@ -443,14 +442,14 @@ public class MarkerManager
 		// size of the square from middle to edge
 		d4 = 0.5D;
 
-		d5 = 0.5D + (Math.sin(d3 + 2.356194490192345D) * d4);
-		d6 = 0.5D + (Math.cos(d3 + 2.356194490192345D) * d4);
-		d7 = 0.5D + (Math.sin(d3 + (Math.PI / 4D)) * d4);
-		d8 = 0.5D + (Math.cos(d3 + (Math.PI / 4D)) * d4);
-		d9 = 0.5D + (Math.sin(d3 + 3.9269908169872414D) * d4);
-		d10 = 0.5D + (Math.cos(d3 + 3.9269908169872414D) * d4);
-		d11 = 0.5D + (Math.sin(d3 + 5.497787143782138D) * d4);
-		d12 = 0.5D + (Math.cos(d3 + 5.497787143782138D) * d4);
+		d5 = 0.5D + Math.sin(d3 + 2.356194490192345D) * d4;
+		d6 = 0.5D + Math.cos(d3 + 2.356194490192345D) * d4;
+		d7 = 0.5D + Math.sin(d3 + Math.PI / 4D) * d4;
+		d8 = 0.5D + Math.cos(d3 + Math.PI / 4D) * d4;
+		d9 = 0.5D + Math.sin(d3 + 3.9269908169872414D) * d4;
+		d10 = 0.5D + Math.cos(d3 + 3.9269908169872414D) * d4;
+		d11 = 0.5D + Math.sin(d3 + 5.497787143782138D) * d4;
+		d12 = 0.5D + Math.cos(d3 + 5.497787143782138D) * d4;
 
 		vertexbuffer.pos(x + d5, y + d17, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		vertexbuffer.pos(x + d5, y, z + d6).color(fRed, fGreen, fBlue, fAlpha).endVertex();
@@ -482,11 +481,11 @@ public class MarkerManager
 		float growFactor = 0.17F;
 		Minecraft mc = Minecraft.getMinecraft();
 		RenderManager renderManager = mc.getRenderManager();
-		FontRenderer fontrenderer = mc.fontRendererObj;
+		FontRenderer fontrenderer = mc.fontRenderer;
 
-		double x = (0.5D + m.x) - TileEntityRendererDispatcher.staticPlayerX;
-		double y = (0.5D + m.y) - TileEntityRendererDispatcher.staticPlayerY;
-		double z = (0.5D + m.z) - TileEntityRendererDispatcher.staticPlayerZ;
+		double x = 0.5D + m.x - TileEntityRendererDispatcher.staticPlayerX;
+		double y = 0.5D + m.y - TileEntityRendererDispatcher.staticPlayerY;
+		double z = 0.5D + m.z - TileEntityRendererDispatcher.staticPlayerZ;
 
 		float fRed = m.getRed();
 		float fGreen = m.getGreen();
@@ -502,7 +501,7 @@ public class MarkerManager
 		int strDistanceWidth = fontrenderer.getStringWidth(strDistance) / 2;
 		int offstet = 9;
 
-		float f = (float) (1.0F + ((distance) * growFactor));
+		float f = (float) (1.0F + distance * growFactor);
 		float f1 = 0.016666668F * f;
 
 		GlStateManager.pushMatrix();
@@ -516,7 +515,7 @@ public class MarkerManager
 		GlStateManager.disableDepth();
 		GlStateManager.enableBlend();
 		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-		GL11.glEnable(GL_DEPTH_CLAMP);
+		GL11.glEnable(ARBDepthClamp.GL_DEPTH_CLAMP);
 
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
@@ -524,10 +523,10 @@ public class MarkerManager
 		GlStateManager.disableTexture2D();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		vertexbuffer.pos(-strTextWidth - 1, (-1), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(-strTextWidth - 1, (8), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(strTextWidth + 1, (8), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
-		vertexbuffer.pos(strTextWidth + 1, (-1), 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(-strTextWidth - 1, -1, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(-strTextWidth - 1, 8, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(strTextWidth + 1, 8, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
+		vertexbuffer.pos(strTextWidth + 1, -1, 0.0D).color(fRed, fGreen, fBlue, fAlpha).endVertex();
 		tessellator.draw();
 
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
@@ -543,7 +542,7 @@ public class MarkerManager
 		fontrenderer.drawString(strText, -strTextWidth, 0, -1);
 		fontrenderer.drawString(strDistance, -strDistanceWidth, offstet, -1);
 
-		GL11.glDisable(GL_DEPTH_CLAMP);
+		GL11.glDisable(ARBDepthClamp.GL_DEPTH_CLAMP);
 		GlStateManager.enableDepth();
 		GlStateManager.enableLighting();
 		GlStateManager.disableBlend();

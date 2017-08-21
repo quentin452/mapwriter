@@ -24,7 +24,12 @@ public class ScrollableTextBox extends ScrollableField
 		this.init();
 	}
 
-	ScrollableTextBox(int x, int y, int width, String label, List<String> scrollableElements, FontRenderer fontrendererObj)
+	ScrollableTextBox(int x,
+			int y,
+			int width,
+			String label,
+			List<String> scrollableElements,
+			FontRenderer fontrendererObj)
 	{
 		super(x, y, width, label, fontrendererObj);
 		this.scrollableElements = scrollableElements;
@@ -35,9 +40,16 @@ public class ScrollableTextBox extends ScrollableField
 	{
 		this.textFieldX = this.x + ScrollableField.arrowsWidth + 3;
 		this.textFieldY = this.y;
-		this.textFieldWidth = this.width - 5 - (ScrollableField.arrowsWidth * 2);
+		this.textFieldWidth = this.width - 5 - ScrollableField.arrowsWidth * 2;
 
-		this.textField = new GuiTextField(0, this.fontrendererObj, this.textFieldX, this.textFieldY, this.textFieldWidth, ScrollableTextBox.textFieldHeight);
+		this.textField =
+				new GuiTextField(
+						0,
+						this.fontrendererObj,
+						this.textFieldX,
+						this.textFieldY,
+						this.textFieldWidth,
+						ScrollableTextBox.textFieldHeight);
 
 		this.textField.setMaxStringLength(32);
 
@@ -88,7 +100,10 @@ public class ScrollableTextBox extends ScrollableField
 
 	public boolean posWithinTextField(int x, int y)
 	{
-		return (x >= this.textFieldX) && (y >= this.textFieldY) && (x <= (this.textFieldWidth + this.textFieldX)) && (y <= (ScrollableTextBox.textFieldHeight + this.textFieldY));
+		return x >= this.textFieldX &&
+				y >= this.textFieldY &&
+				x <= this.textFieldWidth + this.textFieldX &&
+				y <= ScrollableTextBox.textFieldHeight + this.textFieldY;
 	}
 
 	public void textFieldScroll(int direction)
@@ -98,7 +113,7 @@ public class ScrollableTextBox extends ScrollableField
 			int index = this.scrollableElements.indexOf(this.getText().trim());
 			if (direction > 0)
 			{
-				if ((index == -1) || (index == (this.scrollableElements.size() - 1)))
+				if (index == -1 || index == this.scrollableElements.size() - 1)
 				{
 					index = 0;
 				}
@@ -109,7 +124,7 @@ public class ScrollableTextBox extends ScrollableField
 			}
 			else if (direction < 0)
 			{
-				if ((index == -1) || (index == 0))
+				if (index == -1 || index == 0)
 				{
 					index = this.scrollableElements.size() - 1;
 				}
@@ -175,7 +190,6 @@ public class ScrollableTextBox extends ScrollableField
 
 class ScrollableNumericTextBox extends ScrollableTextBox
 {
-
 	public int maxValue = -1;
 	public int minValue = -1;
 
@@ -193,14 +207,14 @@ class ScrollableNumericTextBox extends ScrollableTextBox
 			newValue = this.getTextFieldIntValue();
 			if (direction > 0)
 			{
-				if ((this.maxValue < 0) || ((newValue + 1) <= this.maxValue))
+				if (this.maxValue < 0 || newValue + 1 <= this.maxValue)
 				{
 					newValue += 1;
 				}
 			}
 			else if (direction < 0)
 			{
-				if ((this.minValue < 0) || ((newValue - 1) >= this.minValue))
+				if (this.minValue < 0 || newValue - 1 >= this.minValue)
 				{
 					newValue -= 1;
 				}
@@ -223,7 +237,7 @@ class ScrollableNumericTextBox extends ScrollableTextBox
 
 	public void setText(int num)
 	{
-		if ((this.maxValue < 0) || (num <= this.maxValue) || (num >= this.minValue))
+		if (this.maxValue < 0 || num <= this.maxValue || num >= this.minValue)
 		{
 			this.setText(Integer.toString(num));
 		}
@@ -232,9 +246,13 @@ class ScrollableNumericTextBox extends ScrollableTextBox
 	@Override
 	public void KeyTyped(char c, int key)
 	{
-		if (((c >= '0') && (c <= '9')) || (key == Keyboard.KEY_BACK) || (key == Keyboard.KEY_LEFT) || (key == Keyboard.KEY_RIGHT) || ((c == '-') && (this.getCursorPosition() == 0)))
+		if (c >= '0' && c <= '9' ||
+				key == Keyboard.KEY_BACK ||
+				key == Keyboard.KEY_LEFT ||
+				key == Keyboard.KEY_RIGHT ||
+				c == '-' && this.getCursorPosition() == 0)
 		{
-			if (Character.isDigit(c) && ((this.maxValue > -1) && (Integer.parseInt(this.getText() + c) > this.maxValue)))
+			if (Character.isDigit(c) && this.maxValue > -1 && Integer.parseInt(this.getText() + c) > this.maxValue)
 			{
 				return;
 			}

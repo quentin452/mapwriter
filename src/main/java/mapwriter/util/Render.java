@@ -24,7 +24,7 @@ public class Render
 
 	public static void setColourWithAlphaPercent(int colour, int alphaPercent)
 	{
-		setColour(((((alphaPercent * 0xff) / 100) & 0xff) << 24) | (colour & 0xffffff));
+		setColour((alphaPercent * 0xff / 100 & 0xff) << 24 | colour & 0xffffff);
 	}
 
 	public static void setColour(int colour)
@@ -32,7 +32,11 @@ public class Render
 
 		GlStateManager.enableBlend();
 		GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		GlStateManager.color(((colour >> 16) & 0xff) / 255.0f, ((colour >> 8) & 0xff) / 255.0f, ((colour) & 0xff) / 255.0f, ((colour >> 24) & 0xff) / 255.0f);
+		GlStateManager.color(
+				(colour >> 16 & 0xff) / 255.0f,
+				(colour >> 8 & 0xff) / 255.0f,
+				(colour & 0xff) / 255.0f,
+				(colour >> 24 & 0xff) / 255.0f);
 		GlStateManager.disableBlend();
 	}
 
@@ -43,19 +47,19 @@ public class Render
 
 	public static int multiplyColours(int c1, int c2)
 	{
-		float c1A = (c1 >> 24) & 0xff;
-		float c1R = (c1 >> 16) & 0xff;
-		float c1G = (c1 >> 8) & 0xff;
-		float c1B = (c1 >> 0) & 0xff;
-		float c2A = (c2 >> 24) & 0xff;
-		float c2R = (c2 >> 16) & 0xff;
-		float c2G = (c2 >> 8) & 0xff;
-		float c2B = (c2 >> 0) & 0xff;
-		int r = (int) ((c1R * c2R) / 255.0f) & 0xff;
-		int g = (int) ((c1G * c2G) / 255.0f) & 0xff;
-		int b = (int) ((c1B * c2B) / 255.0f) & 0xff;
-		int a = (int) ((c1A * c2A) / 255.0f) & 0xff;
-		return (a << 24) | (r << 16) | (g << 8) | b;
+		float c1A = c1 >> 24 & 0xff;
+		float c1R = c1 >> 16 & 0xff;
+		float c1G = c1 >> 8 & 0xff;
+		float c1B = c1 >> 0 & 0xff;
+		float c2A = c2 >> 24 & 0xff;
+		float c2R = c2 >> 16 & 0xff;
+		float c2G = c2 >> 8 & 0xff;
+		float c2B = c2 >> 0 & 0xff;
+		int r = (int) (c1R * c2R / 255.0f) & 0xff;
+		int g = (int) (c1G * c2G / 255.0f) & 0xff;
+		int b = (int) (c1B * c2B / 255.0f) & 0xff;
+		int a = (int) (c1A * c2A / 255.0f) & 0xff;
+		return a << 24 | r << 16 | g << 8 | b;
 	}
 
 	public static int getAverageOfPixelQuad(int[] pixels, int offset, int scanSize)
@@ -66,13 +70,13 @@ public class Render
 		int p11 = pixels[offset + scanSize + 1];
 
 		// ignore alpha channel
-		int r = ((p00 >> 16) & 0xff) + ((p01 >> 16) & 0xff) + ((p10 >> 16) & 0xff) + ((p11 >> 16) & 0xff);
+		int r = (p00 >> 16 & 0xff) + (p01 >> 16 & 0xff) + (p10 >> 16 & 0xff) + (p11 >> 16 & 0xff);
 		r >>= 2;
-		int g = ((p00 >> 8) & 0xff) + ((p01 >> 8) & 0xff) + ((p10 >> 8) & 0xff) + ((p11 >> 8) & 0xff);
+		int g = (p00 >> 8 & 0xff) + (p01 >> 8 & 0xff) + (p10 >> 8 & 0xff) + (p11 >> 8 & 0xff);
 		g >>= 2;
 		int b = (p00 & 0xff) + (p01 & 0xff) + (p10 & 0xff) + (p11 & 0xff);
 		b >>= 2;
-		return 0xff000000 | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+		return 0xff000000 | (r & 0xff) << 16 | (g & 0xff) << 8 | b & 0xff;
 	}
 
 	public static int getAverageColourOfArray(int[] pixels)
@@ -84,36 +88,39 @@ public class Render
 		double totalB = 0.0;
 		for (int pixel : pixels)
 		{
-			double a = (pixel >> 24) & 0xff;
-			double r = (pixel >> 16) & 0xff;
-			double g = (pixel >> 8) & 0xff;
-			double b = (pixel >> 0) & 0xff;
+			double a = pixel >> 24 & 0xff;
+			double r = pixel >> 16 & 0xff;
+			double g = pixel >> 8 & 0xff;
+			double b = pixel >> 0 & 0xff;
 
 			totalA += a;
-			totalR += (r * a) / 255.0;
-			totalG += (g * a) / 255.0;
-			totalB += (b * a) / 255.0;
+			totalR += r * a / 255.0;
+			totalG += g * a / 255.0;
+			totalB += b * a / 255.0;
 
 			count++;
 		}
 
-		totalR = (totalR * 255.0) / totalA;
-		totalG = (totalG * 255.0) / totalA;
-		totalB = (totalB * 255.0) / totalA;
-		totalA = totalA / (count);
+		totalR = totalR * 255.0 / totalA;
+		totalG = totalG * 255.0 / totalA;
+		totalB = totalB * 255.0 / totalA;
+		totalA = totalA / count;
 
-		return ((((int) (totalA)) & 0xff) << 24) | ((((int) (totalR)) & 0xff) << 16) | ((((int) (totalG)) & 0xff) << 8) | ((((int) (totalB)) & 0xff));
+		return ((int) totalA & 0xff) << 24 |
+				((int) totalR & 0xff) << 16 |
+				((int) totalG & 0xff) << 8 |
+				(int) totalB & 0xff;
 	}
 
 	public static int adjustPixelBrightness(int colour, int brightness)
 	{
-		int r = ((colour >> 16) & 0xff);
-		int g = ((colour >> 8) & 0xff);
-		int b = ((colour >> 0) & 0xff);
+		int r = colour >> 16 & 0xff;
+		int g = colour >> 8 & 0xff;
+		int b = colour >> 0 & 0xff;
 		r = Math.min(Math.max(0, r + brightness), 0xff);
 		g = Math.min(Math.max(0, g + brightness), 0xff);
 		b = Math.min(Math.max(0, b + brightness), 0xff);
-		return (colour & 0xff000000) | (r << 16) | (g << 8) | (b);
+		return colour & 0xff000000 | r << 16 | g << 8 | b;
 	}
 
 	public static int getTextureWidth()
@@ -147,7 +154,7 @@ public class Render
 
 	/*
 	 * Drawing Methods
-	 * 
+	 *
 	 * Note that EntityRenderer.setupOverlayRendering must be called before
 	 * drawing for the scene to appear correctly on the overlay. If these
 	 * functions are called from the hookUpdateCameraAndRender method of Mw this
@@ -162,7 +169,8 @@ public class Render
 
 	// draw rectangle with texture UV coordinates specified (so only part of the
 	// texture fills the rectangle).
-	public static void drawTexturedRect(double x, double y, double w, double h, double u1, double v1, double u2, double v2)
+	public static void drawTexturedRect(double x, double y, double w, double h, double u1, double v1, double u2,
+			double v2)
 	{
 		try
 		{
@@ -171,11 +179,11 @@ public class Render
 			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			Tessellator tessellator = Tessellator.getInstance();
 			VertexBuffer vertexbuffer = tessellator.getBuffer();
-			vertexbuffer.begin(GL11.GL_QUADS , DefaultVertexFormats.POSITION_TEX );;
-			vertexbuffer.pos(x + w, y, zDepth).tex(u2, v1).endVertex();
-			vertexbuffer.pos(x, y, zDepth).tex(u1, v1).endVertex();
-			vertexbuffer.pos(x, y + h, zDepth).tex(u1, v2).endVertex();
-			vertexbuffer.pos(x + w, y + h, zDepth).tex(u2, v2).endVertex();
+			vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+			vertexbuffer.pos(x + w, y, Render.zDepth).tex(u2, v1).endVertex();
+			vertexbuffer.pos(x, y, Render.zDepth).tex(u1, v1).endVertex();
+			vertexbuffer.pos(x, y + h, Render.zDepth).tex(u1, v2).endVertex();
+			vertexbuffer.pos(x + w, y + h, Render.zDepth).tex(u2, v2).endVertex();
 			// renderer.finishDrawing();
 			tessellator.draw();
 			GlStateManager.disableBlend();
@@ -197,10 +205,19 @@ public class Render
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(x + (length * Math.cos(angle)), y + (length * Math.sin(angle)), zDepth).endVertex();
-		vertexbuffer.pos(x + (length * 0.5D * Math.cos(angle - arrowBackAngle)), y + (length * 0.5D * Math.sin(angle - arrowBackAngle)), zDepth).endVertex();
-		vertexbuffer.pos(x + (length * 0.3D * Math.cos(angle + Math.PI)), y + (length * 0.3D * Math.sin(angle + Math.PI)), zDepth).endVertex();
-		vertexbuffer.pos(x + (length * 0.5D * Math.cos(angle + arrowBackAngle)), y + (length * 0.5D * Math.sin(angle + arrowBackAngle)), zDepth).endVertex();
+		vertexbuffer.pos(x + length * Math.cos(angle), y + length * Math.sin(angle), Render.zDepth).endVertex();
+		vertexbuffer.pos(
+				x + length * 0.5D * Math.cos(angle - arrowBackAngle),
+				y + length * 0.5D * Math.sin(angle - arrowBackAngle),
+				Render.zDepth).endVertex();
+		vertexbuffer.pos(
+				x + length * 0.3D * Math.cos(angle + Math.PI),
+				y + length * 0.3D * Math.sin(angle + Math.PI),
+				Render.zDepth).endVertex();
+		vertexbuffer.pos(
+				x + length * 0.5D * Math.cos(angle + arrowBackAngle),
+				y + length * 0.5D * Math.sin(angle + arrowBackAngle),
+				Render.zDepth).endVertex();
 		// renderer.finishDrawing();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
@@ -215,9 +232,9 @@ public class Render
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(x1, y1, zDepth).endVertex();
-		vertexbuffer.pos(x2, y2, zDepth).endVertex();
-		vertexbuffer.pos(x3, y3, zDepth).endVertex();
+		vertexbuffer.pos(x1, y1, Render.zDepth).endVertex();
+		vertexbuffer.pos(x2, y2, Render.zDepth).endVertex();
+		vertexbuffer.pos(x3, y3, Render.zDepth).endVertex();
 		// renderer.finishDrawing();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
@@ -232,10 +249,10 @@ public class Render
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(x + w, y, zDepth).endVertex();
-		vertexbuffer.pos(x, y, zDepth).endVertex();
-		vertexbuffer.pos(x, y + h, zDepth).endVertex();
-		vertexbuffer.pos(x + w, y + h, zDepth).endVertex();
+		vertexbuffer.pos(x + w, y, Render.zDepth).endVertex();
+		vertexbuffer.pos(x, y, Render.zDepth).endVertex();
+		vertexbuffer.pos(x, y + h, Render.zDepth).endVertex();
+		vertexbuffer.pos(x + w, y + h, Render.zDepth).endVertex();
 		// renderer.finishDrawing();
 		tessellator.draw();
 		GlStateManager.enableTexture2D();
@@ -250,14 +267,14 @@ public class Render
 		Tessellator tessellator = Tessellator.getInstance();
 		VertexBuffer vertexbuffer = tessellator.getBuffer();
 		vertexbuffer.begin(GL11.GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION);
-		vertexbuffer.pos(x, y, zDepth).endVertex();
+		vertexbuffer.pos(x, y, Render.zDepth).endVertex();
 		// for some the circle is only drawn if theta is decreasing rather than
 		// ascending
 		double end = Math.PI * 2.0;
-		double incr = end / circleSteps;
+		double incr = end / Render.circleSteps;
 		for (double theta = -incr; theta < end; theta += incr)
 		{
-			vertexbuffer.pos(x + (r * Math.cos(-theta)), y + (r * Math.sin(-theta)), zDepth).endVertex();
+			vertexbuffer.pos(x + r * Math.cos(-theta), y + r * Math.sin(-theta), Render.zDepth).endVertex();
 		}
 		// renderer.finishDrawing();
 		tessellator.draw();
@@ -276,12 +293,12 @@ public class Render
 		// for some the circle is only drawn if theta is decreasing rather than
 		// ascending
 		double end = Math.PI * 2.0;
-		double incr = end / circleSteps;
+		double incr = end / Render.circleSteps;
 		double r2 = r + width;
 		for (double theta = -incr; theta < end; theta += incr)
 		{
-			vertexbuffer.pos(x + (r * Math.cos(-theta)), y + (r * Math.sin(-theta)), zDepth).endVertex();
-			vertexbuffer.pos(x + (r2 * Math.cos(-theta)), y + (r2 * Math.sin(-theta)), zDepth).endVertex();
+			vertexbuffer.pos(x + r * Math.cos(-theta), y + r * Math.sin(-theta), Render.zDepth).endVertex();
+			vertexbuffer.pos(x + r2 * Math.cos(-theta), y + r2 * Math.sin(-theta), Render.zDepth).endVertex();
 		}
 		// renderer.finishDrawing();
 		tessellator.draw();
@@ -305,7 +322,7 @@ public class Render
 	{
 		Minecraft mc = Minecraft.getMinecraft();
 		// mc.renderEngine.resetBoundTexture();
-		FontRenderer fr = mc.fontRendererObj;
+		FontRenderer fr = mc.fontRenderer;
 		String s = String.format(formatString, args);
 		fr.drawStringWithShadow(s, x, y, colour);
 	}
@@ -314,10 +331,10 @@ public class Render
 	{
 		Minecraft mc = Minecraft.getMinecraft();
 		// mc.renderEngine.resetBoundTexture();
-		FontRenderer fr = mc.fontRendererObj;
+		FontRenderer fr = mc.fontRenderer;
 		String s = String.format(formatString, args);
 		int w = fr.getStringWidth(s);
-		fr.drawStringWithShadow(s, x - (w / 2), y, colour);
+		fr.drawStringWithShadow(s, x - w / 2, y, colour);
 	}
 
 	public static void setCircularStencil(double x, double y, double r)
@@ -408,13 +425,13 @@ public class Render
 	 * clear stencil buffer, with mask 0xff
 	 * GL11.glClear(GL11.GL_STENCIL_BUFFER_BIT); // draw stencil pattern
 	 * Render.setColour(0xffffffff); Render.drawCircle(x, y, r);
-	 * 
+	 *
 	 * // re-enable drawing to colour and depth buffers GL11.glColorMask(true,
 	 * true, true, true); // probably shouldn't enable? ->
 	 * GL11.glDepthMask(true); // disable writing to stencil buffer
 	 * GL11.glStencilMask(0x00); // draw only when stencil buffer value == 1
 	 * (inside circle) GL11.glStencilFunc(GL11.GL_EQUAL, 1, 0x01); }
-	 * 
+	 *
 	 * public static void disableStencil() {
 	 * GL11.glDisable(GL11.GL_STENCIL_TEST); }
 	 */
