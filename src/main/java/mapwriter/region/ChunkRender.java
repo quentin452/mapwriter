@@ -16,50 +16,6 @@ public class ChunkRender
 	public static final double brightenAmplitude = 0.7;
 	public static final double darkenAmplitude = 1.4;
 
-	// get the height shading of a pixel.
-	// requires the pixel to the west and the pixel to the north to have their
-	// heights stored in the alpha channel to work.
-	// the "height" of a pixel is the y value of the first opaque block in
-	// the block column that created the pixel.
-	// height values of 0 and 255 are ignored as these are used as the clear
-	// values for pixels.
-	public static double getHeightShading(int height, int heightW, int heightN)
-	{
-		int samples = 0;
-		int heightDiff = 0;
-
-		if ((heightW > 0) && (heightW < 255))
-		{
-			heightDiff += height - heightW;
-			samples++;
-		}
-
-		if ((heightN > 0) && (heightN < 255))
-		{
-			heightDiff += height - heightN;
-			samples++;
-		}
-
-		double heightDiffFactor = 0.0;
-		if (samples > 0)
-		{
-			heightDiffFactor = (double) heightDiff / ((double) samples);
-		}
-
-		// emphasize small differences in height, but as the difference in
-		// height increases,
-		// don't increase so much
-		if (Config.moreRealisticMap)
-		{
-			return Math.atan(heightDiffFactor) * 0.3;
-		}
-
-		return (heightDiffFactor >= 0.0) ? Math.pow(
-				heightDiffFactor * (1 / 255.0),
-				brightenExponent) * brightenAmplitude
-				: -Math.pow(-(heightDiffFactor * (1 / 255.0)), darkenExponent) * darkenAmplitude;
-	}
-
 	// calculate the colour of a pixel by alpha blending the colour of each
 	// block
 	// in a column until an opaque block is reached.
@@ -85,8 +41,7 @@ public class ChunkRender
 	// note that the "front to back" alpha blending algorithm is used
 	// rather than the more common "back to front".
 	//
-	public static int getColumnColour(BlockColours bc, IChunk chunk, int x, int y, int z,
-			int heightW, int heightN)
+	public static int getColumnColour(BlockColours bc, IChunk chunk, int x, int y, int z, int heightW, int heightN)
 	{
 		double a = 1.0;
 		double r = 0.0;
@@ -96,7 +51,7 @@ public class ChunkRender
 		{
 			IBlockState blockState = chunk.getBlockState(x, y, z);
 			int c1 = bc.getColour(blockState);
-			int alpha = (c1 >> 24) & 0xff;
+			int alpha = c1 >> 24 & 0xff;
 
 			// this is the color that gets returned for air, so set aplha to 0
 			// so the game continues to the next block in the colum
@@ -113,20 +68,20 @@ public class ChunkRender
 				int c2 = bc.getBiomeColour(blockState, biome);
 
 				// extract colour components as normalized doubles
-				double c1A = (alpha) / 255.0;
-				double c1R = ((c1 >> 16) & 0xff) / 255.0;
-				double c1G = ((c1 >> 8) & 0xff) / 255.0;
-				double c1B = ((c1 >> 0) & 0xff) / 255.0;
+				double c1A = alpha / 255.0;
+				double c1R = (c1 >> 16 & 0xff) / 255.0;
+				double c1G = (c1 >> 8 & 0xff) / 255.0;
+				double c1B = (c1 >> 0 & 0xff) / 255.0;
 
 				// c2A is implicitly 1.0 (opaque)
-				double c2R = ((c2 >> 16) & 0xff) / 255.0;
-				double c2G = ((c2 >> 8) & 0xff) / 255.0;
-				double c2B = ((c2 >> 0) & 0xff) / 255.0;
+				double c2R = (c2 >> 16 & 0xff) / 255.0;
+				double c2G = (c2 >> 8 & 0xff) / 255.0;
+				double c2B = (c2 >> 0 & 0xff) / 255.0;
 
 				// alpha blend and multiply
-				r = r + (a * c1A * c1R * c2R);
-				g = g + (a * c1A * c1G * c2G);
-				b = b + (a * c1A * c1B * c2B);
+				r = r + a * c1A * c1R * c2R;
+				g = g + a * c1A * c1G * c2G;
+				b = b + a * c1A * c1B * c2B;
 				a = a * (1.0 - c1A);
 			}
 			// break when an opaque block is encountered
@@ -156,22 +111,55 @@ public class ChunkRender
 
 		// now we have our final RGB values as doubles, convert to a packed ARGB
 		// pixel.
-		return ((y & 0xff) << 24) | ((((int) (r * 255.0)) & 0xff) << 16) | ((((int) (g * 255.0))
-				& 0xff) << 8) | ((((int) (b * 255.0)) & 0xff));
+		return (y & 0xff) << 24 |	((int) (r * 255.0) & 0xff) << 16 | ((int) (g * 255.0) & 0xff) << 8 |
+				(int) (b * 255.0) & 0xff;
 	}
 
-	static int getPixelHeightN(int[] pixels, int offset, int scanSize)
+	// get the height shading of a pixel.
+	// requires the pixel to the west and the pixel to the north to have their
+	// heights stored in the alpha channel to work.
+	// the "height" of a pixel is the y value of the first opaque block in
+	// the block column that created the pixel.
+	// height values of 0 and 255 are ignored as these are used as the clear
+	// values for pixels.
+	public static double getHeightShading(int height, int heightW, int heightN)
 	{
-		return (offset >= scanSize) ? ((pixels[offset - scanSize] >> 24) & 0xff) : -1;
+		int samples = 0;
+		int heightDiff = 0;
+
+		if (heightW > 0 && heightW < 255)
+		{
+			heightDiff += height - heightW;
+			samples++;
+		}
+
+		if (heightN > 0 && heightN < 255)
+		{
+			heightDiff += height - heightN;
+			samples++;
+		}
+
+		double heightDiffFactor = 0.0;
+		if (samples > 0)
+		{
+			heightDiffFactor = (double) heightDiff / (double) samples;
+		}
+
+		// emphasize small differences in height, but as the difference in
+		// height increases,
+		// don't increase so much
+		if (Config.moreRealisticMap)
+		{
+			return Math.atan(heightDiffFactor) * 0.3;
+		}
+
+		return heightDiffFactor >= 0.0 ? Math.pow(heightDiffFactor * (1 / 255.0), brightenExponent) *
+											brightenAmplitude : -Math.pow(-(heightDiffFactor *
+																			(1 / 255.0)), darkenExponent) *
+																darkenAmplitude;
 	}
 
-	static int getPixelHeightW(int[] pixels, int offset, int scanSize)
-	{
-		return ((offset & (scanSize - 1)) >= 1) ? ((pixels[offset - 1] >> 24) & 0xff) : -1;
-	}
-
-	public static void renderSurface(BlockColours bc, IChunk chunk, int[] pixels, int offset,
-			int scanSize, boolean dimensionHasCeiling)
+	public static void renderSurface(BlockColours bc, IChunk chunk, int[] pixels, int offset, int scanSize, boolean dimensionHasCeiling)
 	{
 		int chunkMaxY = chunk.getMaxY();
 		for (int z = 0; z < MwChunk.SIZE; z++)
@@ -190,7 +178,7 @@ public class ChunkRender
 					{
 						IBlockState blockState = chunk.getBlockState(x, y, z);
 						int color = bc.getColour(blockState);
-						int alpha = (color >> 24) & 0xff;
+						int alpha = color >> 24 & 0xff;
 
 						if (color == -8650628)
 						{
@@ -208,21 +196,13 @@ public class ChunkRender
 					y = chunkMaxY - 1;
 				}
 
-				int pixelOffset = offset + (z * scanSize) + x;
-				pixels[pixelOffset] = getColumnColour(
-						bc,
-						chunk,
-						x,
-						y,
-						z,
-						getPixelHeightW(pixels, pixelOffset, scanSize),
-						getPixelHeightN(pixels, pixelOffset, scanSize));
+				int pixelOffset = offset + z * scanSize + x;
+				pixels[pixelOffset] = getColumnColour(bc, chunk, x, y, z, getPixelHeightW(pixels, pixelOffset, scanSize), getPixelHeightN(pixels, pixelOffset, scanSize));
 			}
 		}
 	}
 
-	public static void renderUnderground(BlockColours bc, IChunk chunk, int[] pixels, int offset,
-			int scanSize, int startY, byte[] mask)
+	public static void renderUnderground(BlockColours bc, IChunk chunk, int[] pixels, int offset, int scanSize, int startY, byte[] mask)
 	{
 		startY = Math.min(Math.max(0, startY), 255);
 		for (int z = 0; z < MwChunk.SIZE; z++)
@@ -232,7 +212,7 @@ public class ChunkRender
 
 				// only process columns where the mask bit is set.
 				// process all columns if mask is null.
-				if ((mask != null) && ((mask[(z * 16) + x]) != FLAG_NON_OPAQUE))
+				if (mask != null && mask[z * 16 + x] != FLAG_NON_OPAQUE)
 				{
 					continue;
 				}
@@ -245,7 +225,7 @@ public class ChunkRender
 				{
 					IBlockState blockState = chunk.getBlockState(x, y, z);
 					int color = bc.getColour(blockState);
-					int alpha = (color >> 24) & 0xff;
+					int alpha = color >> 24 & 0xff;
 
 					if (color == -8650628)
 					{
@@ -262,16 +242,19 @@ public class ChunkRender
 					}
 				}
 
-				int pixelOffset = offset + (z * scanSize) + x;
-				pixels[pixelOffset] = getColumnColour(
-						bc,
-						chunk,
-						x,
-						lastNonTransparentY,
-						z,
-						getPixelHeightW(pixels, pixelOffset, scanSize),
-						getPixelHeightN(pixels, pixelOffset, scanSize));
+				int pixelOffset = offset + z * scanSize + x;
+				pixels[pixelOffset] = getColumnColour(bc, chunk, x, lastNonTransparentY, z, getPixelHeightW(pixels, pixelOffset, scanSize), getPixelHeightN(pixels, pixelOffset, scanSize));
 			}
 		}
+	}
+
+	static int getPixelHeightN(int[] pixels, int offset, int scanSize)
+	{
+		return offset >= scanSize ? pixels[offset - scanSize] >> 24 & 0xff : -1;
+	}
+
+	static int getPixelHeightW(int[] pixels, int offset, int scanSize)
+	{
+		return (offset & scanSize - 1) >= 1 ? pixels[offset - 1] >> 24 & 0xff : -1;
 	}
 }

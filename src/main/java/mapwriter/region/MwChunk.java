@@ -26,43 +26,67 @@ public class MwChunk implements IChunk
 {
 	public static final int SIZE = 16;
 
-	public final int x;
-	public final int z;
-	public final int dimension;
+	private static java.lang.reflect.Method CarpenterMethod = null;
+	private static java.lang.reflect.Method FMPMethodParts = null;
+	private static java.lang.reflect.Method FMPMethodMaterial = null;
 
-	public ExtendedBlockStorage[] dataArray = new ExtendedBlockStorage[16];
-	public final Map<BlockPos, TileEntity> tileentityMap;
-	public final byte[] biomeArray;
-	public final int maxY;
+	private static java.lang.reflect.Field FMPFieldBlock = null;
+	private static java.lang.reflect.Field FMPFieldMeta = null;
 
-	public MwChunk(int x,
-			int z,
-			int dimension,
-			ExtendedBlockStorage[] data,
-			byte[] biomeArray,
-			Map<BlockPos, TileEntity> TileEntityMap)
+	public static void carpenterdata()
 	{
-		this.x = x;
-		this.z = z;
-		this.dimension = dimension;
-		this.biomeArray = biomeArray;
-		this.tileentityMap = TileEntityMap;
-		this.dataArray = data;
-		int maxY = 0;
-		for (int y = 0; y < 16; y++)
+		try
 		{
-			if (data[y] != null)
-			{
-				maxY = (y << 4) + 15;
-			}
+			Class<?> act = Class.forName("com.carpentersblocks.tileentity.TEBase");
+			MwChunk.CarpenterMethod = act.getMethod("getAttribute", byte.class);
 		}
-		this.maxY = maxY;
+		catch (SecurityException e)
+		{
+			// ...
+		}
+		catch (NoSuchMethodException e)
+		{
+			// ...
+		}
+		catch (ClassNotFoundException e)
+		{
+			//
+		}
 	}
 
-	@Override
-	public String toString()
+	public static void FMPdata()
 	{
-		return String.format("(%d, %d) dim%d", this.x, this.z, this.dimension);
+		try
+		{
+			Class<?> act = Class.forName("codechicken.multipart.TileMultipart");
+			MwChunk.FMPMethodParts = act.getMethod("jPartList");
+			act = Class.forName("codechicken.microblock.Microblock");
+			MwChunk.FMPMethodMaterial = act.getMethod("getIMaterial");
+
+			act = Class.forName("codechicken.microblock.BlockMicroMaterial");
+			MwChunk.FMPFieldBlock = act.getDeclaredField("block");
+			MwChunk.FMPFieldBlock.setAccessible(true);
+
+			MwChunk.FMPFieldMeta = act.getDeclaredField("meta");
+			MwChunk.FMPFieldMeta.setAccessible(true);
+
+		}
+		catch (SecurityException e)
+		{
+			// ...
+		}
+		catch (NoSuchMethodException e)
+		{
+			// ...
+		}
+		catch (ClassNotFoundException e)
+		{
+			//
+		}
+		catch (NoSuchFieldException e)
+		{
+			//
+		}
 	}
 
 	// load from anvil file
@@ -137,10 +161,7 @@ public class MwChunk implements IChunk
 					ExtendedBlockStorage extendedblockstorage = new ExtendedBlockStorage(y << 4, flag);
 					byte[] abyte = nbttagcompound.getByteArray("Blocks");
 					NibbleArray nibblearray = new NibbleArray(nbttagcompound.getByteArray("Data"));
-					NibbleArray nibblearray1 =
-							nbttagcompound.hasKey("Add", 7) ?
-									new NibbleArray(nbttagcompound.getByteArray("Add")) :
-									null;
+					NibbleArray nibblearray1 = nbttagcompound.hasKey("Add", 7) ? new NibbleArray(nbttagcompound.getByteArray("Add")) : null;
 					extendedblockstorage.getData().setDataFromNBT(abyte, nibblearray, nibblearray1);
 					extendedblockstorage.setBlocklightArray(new NibbleArray(nbttagcompound.getByteArray("BlockLight")));
 
@@ -198,9 +219,37 @@ public class MwChunk implements IChunk
 		return new MwChunk(x, z, dimension, data, biomeArray, TileEntityMap);
 	}
 
-	public boolean isEmpty()
+	public final int x;
+
+	public final int z;
+
+	public final int dimension;
+
+	public ExtendedBlockStorage[] dataArray = new ExtendedBlockStorage[16];
+
+	public final Map<BlockPos, TileEntity> tileentityMap;
+
+	public final byte[] biomeArray;
+
+	public final int maxY;
+
+	public MwChunk(int x, int z, int dimension, ExtendedBlockStorage[] data, byte[] biomeArray, Map<BlockPos, TileEntity> TileEntityMap)
 	{
-		return this.maxY <= 0;
+		this.x = x;
+		this.z = z;
+		this.dimension = dimension;
+		this.biomeArray = biomeArray;
+		this.tileentityMap = TileEntityMap;
+		this.dataArray = data;
+		int maxY = 0;
+		for (int y = 0; y < 16; y++)
+		{
+			if (data[y] != null)
+			{
+				maxY = (y << 4) + 15;
+			}
+		}
+		this.maxY = maxY;
 	}
 
 	@Override
@@ -212,12 +261,28 @@ public class MwChunk implements IChunk
 
 		if (k == 255)
 		{
-			Biome biome =
-					Minecraft.getMinecraft().world.getBiomeProvider().getBiome(new BlockPos(k, k, k), Biomes.PLAINS);
+			Biome biome = Minecraft.getMinecraft().world.getBiomeProvider().getBiome(new BlockPos(k, k, k), Biomes.PLAINS);
 			k = Biome.getIdForBiome(biome);
 		}
 		;
 		return k;
+	}
+
+	@Override
+	public IBlockState getBlockState(int x, int y, int z)
+	{
+		int yi = y >> 4 & 0xf;
+
+		return this.dataArray != null &&
+				this.dataArray[yi] != null ? this.dataArray[yi].getData().get(x &
+																				15, y &
+																					15, z &
+																						15) : Blocks.AIR.getDefaultState();
+	}
+
+	public Long getCoordIntPair()
+	{
+		return ChunkPos.asLong(this.x, this.z);
 	}
 
 	@Override
@@ -239,151 +304,15 @@ public class MwChunk implements IChunk
 		return this.maxY;
 	}
 
-	private static java.lang.reflect.Method CarpenterMethod = null;
-
-	public static void carpenterdata()
+	public boolean isEmpty()
 	{
-		try
-		{
-			Class<?> act = Class.forName("com.carpentersblocks.tileentity.TEBase");
-			MwChunk.CarpenterMethod = act.getMethod("getAttribute", byte.class);
-		}
-		catch (SecurityException e)
-		{
-			// ...
-		}
-		catch (NoSuchMethodException e)
-		{
-			// ...
-		}
-		catch (ClassNotFoundException e)
-		{
-			//
-		}
-	}
-
-	private static java.lang.reflect.Method FMPMethodParts = null;
-	private static java.lang.reflect.Method FMPMethodMaterial = null;
-
-	private static java.lang.reflect.Field FMPFieldBlock = null;
-	private static java.lang.reflect.Field FMPFieldMeta = null;
-
-	public static void FMPdata()
-	{
-		try
-		{
-			Class<?> act = Class.forName("codechicken.multipart.TileMultipart");
-			MwChunk.FMPMethodParts = act.getMethod("jPartList");
-			act = Class.forName("codechicken.microblock.Microblock");
-			MwChunk.FMPMethodMaterial = act.getMethod("getIMaterial");
-
-			act = Class.forName("codechicken.microblock.BlockMicroMaterial");
-			MwChunk.FMPFieldBlock = act.getDeclaredField("block");
-			MwChunk.FMPFieldBlock.setAccessible(true);
-
-			MwChunk.FMPFieldMeta = act.getDeclaredField("meta");
-			MwChunk.FMPFieldMeta.setAccessible(true);
-
-		}
-		catch (SecurityException e)
-		{
-			// ...
-		}
-		catch (NoSuchMethodException e)
-		{
-			// ...
-		}
-		catch (ClassNotFoundException e)
-		{
-			//
-		}
-		catch (NoSuchFieldException e)
-		{
-			//
-		}
+		return this.maxY <= 0;
 	}
 
 	@Override
-	public IBlockState getBlockState(int x, int y, int z)
+	public String toString()
 	{
-		int yi = y >> 4 & 0xf;
-
-		return this.dataArray != null && this.dataArray[yi] != null ?
-				this.dataArray[yi].getData().get(x & 15, y & 15, z & 15) :
-				Blocks.AIR.getDefaultState();
-	}
-
-	// changed to use the NBTTagCompound that minecraft uses. this makes the
-	// local way of saving anvill data the same as Minecraft world data
-	private NBTTagCompound writeChunkToNBT()
-	{
-		NBTTagCompound level = new NBTTagCompound();
-		NBTTagCompound compound = new NBTTagCompound();
-		level.setTag("Level", compound);
-
-		compound.setInteger("xPos", this.x);
-		compound.setInteger("zPos", this.z);
-		ExtendedBlockStorage[] aextendedblockstorage = this.dataArray;
-		NBTTagList nbttaglist = new NBTTagList();
-		boolean flag = true;
-
-		for (ExtendedBlockStorage extendedblockstorage : aextendedblockstorage)
-		{
-			if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE)
-			{
-				NBTTagCompound nbttagcompound = new NBTTagCompound();
-				nbttagcompound.setByte("Y", (byte) (extendedblockstorage.getYLocation() >> 4 & 255));
-				byte[] abyte = new byte[4096];
-				NibbleArray nibblearray = new NibbleArray();
-				NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(abyte, nibblearray);
-				nbttagcompound.setByteArray("Blocks", abyte);
-				nbttagcompound.setByteArray("Data", nibblearray.getData());
-
-				if (nibblearray1 != null)
-				{
-					nbttagcompound.setByteArray("Add", nibblearray1.getData());
-				}
-
-				nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlocklightArray().getData());
-
-				if (extendedblockstorage.getSkylightArray() != null &&
-						extendedblockstorage.getSkylightArray().getData() != null)
-				{
-					nbttagcompound.setByteArray("SkyLight", extendedblockstorage.getSkylightArray().getData());
-				}
-				else
-				{
-					nbttagcompound.setByteArray(
-							"SkyLight",
-							new byte[extendedblockstorage.getBlocklightArray().getData().length]);
-				}
-
-				nbttaglist.appendTag(nbttagcompound);
-			}
-		}
-
-		compound.setTag("Sections", nbttaglist);
-		compound.setByteArray("Biomes", this.biomeArray);
-
-		NBTTagList nbttaglist2 = new NBTTagList();
-
-		for (TileEntity tileentity : this.tileentityMap.values())
-		{
-			try
-			{
-				NBTTagCompound nbttagcompound3 = tileentity.writeToNBT(new NBTTagCompound());
-				nbttaglist2.appendTag(nbttagcompound3);
-			}
-			catch (Exception e)
-			{
-				// we eat this exception becous we are doing something we
-				// shouldnt do on client side.
-			}
-		}
-
-		compound.setTag("TileEntities", nbttaglist2);
-
-		return level;
+		return String.format("(%d, %d) dim%d", this.x, this.z, this.dimension);
 	}
 
 	public synchronized boolean write(RegionFileCache regionFileCache)
@@ -440,8 +369,74 @@ public class MwChunk implements IChunk
 		return error;
 	}
 
-	public Long getCoordIntPair()
+	// changed to use the NBTTagCompound that minecraft uses. this makes the
+	// local way of saving anvill data the same as Minecraft world data
+	private NBTTagCompound writeChunkToNBT()
 	{
-		return ChunkPos.asLong(this.x, this.z);
+		NBTTagCompound level = new NBTTagCompound();
+		NBTTagCompound compound = new NBTTagCompound();
+		level.setTag("Level", compound);
+
+		compound.setInteger("xPos", this.x);
+		compound.setInteger("zPos", this.z);
+		ExtendedBlockStorage[] aextendedblockstorage = this.dataArray;
+		NBTTagList nbttaglist = new NBTTagList();
+		boolean flag = true;
+
+		for (ExtendedBlockStorage extendedblockstorage : aextendedblockstorage)
+		{
+			if (extendedblockstorage != Chunk.NULL_BLOCK_STORAGE)
+			{
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Y", (byte) (extendedblockstorage.getYLocation() >> 4 & 255));
+				byte[] abyte = new byte[4096];
+				NibbleArray nibblearray = new NibbleArray();
+				NibbleArray nibblearray1 = extendedblockstorage.getData().getDataForNBT(abyte, nibblearray);
+				nbttagcompound.setByteArray("Blocks", abyte);
+				nbttagcompound.setByteArray("Data", nibblearray.getData());
+
+				if (nibblearray1 != null)
+				{
+					nbttagcompound.setByteArray("Add", nibblearray1.getData());
+				}
+
+				nbttagcompound.setByteArray("BlockLight", extendedblockstorage.getBlocklightArray().getData());
+
+				if (extendedblockstorage.getSkylightArray() != null &&
+					extendedblockstorage.getSkylightArray().getData() != null)
+				{
+					nbttagcompound.setByteArray("SkyLight", extendedblockstorage.getSkylightArray().getData());
+				}
+				else
+				{
+					nbttagcompound.setByteArray("SkyLight", new byte[extendedblockstorage.getBlocklightArray().getData().length]);
+				}
+
+				nbttaglist.appendTag(nbttagcompound);
+			}
+		}
+
+		compound.setTag("Sections", nbttaglist);
+		compound.setByteArray("Biomes", this.biomeArray);
+
+		NBTTagList nbttaglist2 = new NBTTagList();
+
+		for (TileEntity tileentity : this.tileentityMap.values())
+		{
+			try
+			{
+				NBTTagCompound nbttagcompound3 = tileentity.writeToNBT(new NBTTagCompound());
+				nbttaglist2.appendTag(nbttagcompound3);
+			}
+			catch (Exception e)
+			{
+				// we eat this exception becous we are doing something we
+				// shouldnt do on client side.
+			}
+		}
+
+		compound.setTag("TileEntities", nbttaglist2);
+
+		return level;
 	}
 }

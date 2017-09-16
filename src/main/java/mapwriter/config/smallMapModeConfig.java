@@ -34,18 +34,10 @@ public class smallMapModeConfig extends largeMapModeConfig
 		this.heightPercentDef = 30;
 		this.widthPercentDef = 30;
 
-		ConfigurationHandler.configuration
-				.get(this.configCategory, "enabled", this.enabledDef)
-				.setRequiresWorldRestart(true);
+		ConfigurationHandler.configuration.get(this.configCategory, "enabled", this.enabledDef).setRequiresWorldRestart(true);
 
-		ConfigurationHandler.configuration
-				.get(this.configCategory, "rotate", this.rotate)
-				.setConfigEntryClass(ModBooleanEntry.class);
+		ConfigurationHandler.configuration.get(this.configCategory, "rotate", this.rotate).setConfigEntryClass(ModBooleanEntry.class);
 
-		ConfigurationHandler.configuration
-				.getCategory(this.mapPosCategory)
-				.setLanguageKey("mw.config.map.ctgy.position")
-				.setConfigEntryClass(MapPosConfigEntry.class)
-				.setShowInGui(true);
+		ConfigurationHandler.configuration.getCategory(this.mapPosCategory).setLanguageKey("mw.config.map.ctgy.position").setConfigEntryClass(MapPosConfigEntry.class).setShowInGui(true);
 	}
 }

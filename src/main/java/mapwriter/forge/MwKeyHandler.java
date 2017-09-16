@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import org.lwjgl.input.Keyboard;
 
 import mapwriter.Mw;
-import mapwriter.util.Reference;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
@@ -24,8 +21,7 @@ public class MwKeyHandler
 	public static KeyBinding keyZoomOut = new KeyBinding("key.mw_zoom_out", Keyboard.KEY_NEXT, "Mapwriter");
 	public static KeyBinding keyUndergroundMode = new KeyBinding("key.mw_underground_mode", Keyboard.KEY_U, "Mapwriter");
 
-	public final KeyBinding[] keys =
-	{
+	public final KeyBinding[] keys = {
 			keyMapGui,
 			keyNewMarker,
 			keyMapMode,
@@ -60,7 +56,7 @@ public class MwKeyHandler
 	{
 		for (KeyBinding key : this.keys)
 		{
-			if ((key != null) && key.isPressed())
+			if (key != null && key.isPressed())
 			{
 				Mw.getInstance().onKeyDown(key);
 			}

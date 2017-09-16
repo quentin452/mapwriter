@@ -11,23 +11,19 @@ public class CircularHashMap<K, V>
 	/*
 	 * A hash map where each node is linked to the previous and next nodes in
 	 * the order of insertion.
-	 * 
+	 *
 	 * The 'head' node is the most recently added node. Its next pointer links
 	 * to the first node added, forming a circle.
-	 * 
+	 *
 	 * The getNextEntry and getPrevEntry methods use an internal pointer to the
 	 * 'current' node, and return either the current nodes 'next' or 'prev' node
 	 * respectively. The current node becomes the node that was returned, such
 	 * that repeated calls traverse all nodes in the map.
-	 * 
+	 *
 	 * Most methods are similar to those in the java.util.Map interface. The
 	 * CircularHashMap class does not implement Map however as some of the
 	 * required methods seemed unnecessary.
 	 */
-
-	private Map<K, Node> nodeMap = new HashMap<K, Node>();
-	private Node headNode = null;
-	private Node currentNode = null;
 
 	public class Node implements Map.Entry<K, V>
 	{
@@ -63,6 +59,67 @@ public class CircularHashMap<K, V>
 			this.value = value;
 			return oldValue;
 		}
+	}
+
+	private Map<K, Node> nodeMap = new HashMap<K, Node>();
+	private Node headNode = null;
+
+	private Node currentNode = null;
+
+	public void clear()
+	{
+		for (Node node : this.nodeMap.values())
+		{
+			node.next = null;
+			node.prev = null;
+		}
+		this.nodeMap.clear();
+		this.headNode = null;
+		this.currentNode = null;
+	}
+
+	public boolean containsKey(Object key)
+	{
+		return this.nodeMap.containsKey(key);
+	}
+
+	public Collection<Map.Entry<K, V>> entrySet()
+	{
+		return new ArrayList<Map.Entry<K, V>>(this.nodeMap.values());
+	}
+
+	public V get(Object key)
+	{
+		Node node = this.nodeMap.get(key);
+		return node != null ? node.value : null;
+	}
+
+	public Map.Entry<K, V> getNextEntry()
+	{
+		if (this.currentNode != null)
+		{
+			this.currentNode = this.currentNode.next;
+		}
+		return this.currentNode;
+	}
+
+	public Map.Entry<K, V> getPrevEntry()
+	{
+		if (this.currentNode != null)
+		{
+			this.currentNode = this.currentNode.prev;
+		}
+		return this.currentNode;
+	}
+
+	public boolean isEmpty()
+	{
+		return this.nodeMap.isEmpty();
+	}
+
+	public Set<K> keySet()
+	{
+		return this.nodeMap.keySet();
 	}
 
 	public V put(K key, V value)
@@ -139,31 +196,28 @@ public class CircularHashMap<K, V>
 		return value;
 	}
 
-	public void clear()
+	//
+	// interface to traverse circular nodes
+	//
+
+	public void rewind()
 	{
-		for (Node node : this.nodeMap.values())
-		{
-			node.next = null;
-			node.prev = null;
-		}
-		this.nodeMap.clear();
-		this.headNode = null;
-		this.currentNode = null;
+		this.currentNode = this.headNode != null ? this.headNode.next : null;
 	}
 
-	public boolean containsKey(Object key)
+	public boolean setPosition(K key)
 	{
-		return this.nodeMap.containsKey(key);
+		Node node = this.nodeMap.get(key);
+		if (node != null)
+		{
+			this.currentNode = node;
+		}
+		return node != null;
 	}
 
 	public int size()
 	{
 		return this.nodeMap.size();
-	}
-
-	public Set<K> keySet()
-	{
-		return this.nodeMap.keySet();
 	}
 
 	public Collection<V> values()
@@ -174,58 +228,5 @@ public class CircularHashMap<K, V>
 			list.add(node.value);
 		}
 		return list;
-	}
-
-	public Collection<Map.Entry<K, V>> entrySet()
-	{
-		return new ArrayList<Map.Entry<K, V>>(this.nodeMap.values());
-	}
-
-	public V get(Object key)
-	{
-		Node node = this.nodeMap.get(key);
-		return (node != null) ? node.value : null;
-	}
-
-	public boolean isEmpty()
-	{
-		return this.nodeMap.isEmpty();
-	}
-
-	//
-	// interface to traverse circular nodes
-	//
-
-	public Map.Entry<K, V> getNextEntry()
-	{
-		if (this.currentNode != null)
-		{
-			this.currentNode = this.currentNode.next;
-		}
-		return this.currentNode;
-	}
-
-	public Map.Entry<K, V> getPrevEntry()
-	{
-		if (this.currentNode != null)
-		{
-			this.currentNode = this.currentNode.prev;
-		}
-		return this.currentNode;
-	}
-
-	public void rewind()
-	{
-		this.currentNode = (this.headNode != null) ? this.headNode.next : null;
-	}
-
-	public boolean setPosition(K key)
-	{
-		Node node = this.nodeMap.get(key);
-		if (node != null)
-		{
-			this.currentNode = node;
-		}
-		return (node != null);
 	}
 }

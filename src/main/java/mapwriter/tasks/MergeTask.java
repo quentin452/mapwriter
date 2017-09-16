@@ -29,6 +29,18 @@ public class MergeTask extends Task
 	}
 
 	@Override
+	public boolean CheckForDuplicate()
+	{
+		return false;
+	}
+
+	@Override
+	public void onComplete()
+	{
+		Utils.printBoth(this.msg);
+	}
+
+	@Override
 	public void run()
 	{
 		int count = MergeToImage.merge(this.regionManager, this.x, this.z, this.w, this.h, this.dimension, this.outputDir, this.basename);
@@ -40,18 +52,6 @@ public class MergeTask extends Task
 		{
 			this.msg = I18n.format("mw.task.mergetask.chatmsg.merge.error", this.outputDir);
 		}
-	}
-
-	@Override
-	public void onComplete()
-	{
-		Utils.printBoth(this.msg);
-	}
-
-	@Override
-	public boolean CheckForDuplicate()
-	{
-		return false;
 	}
 
 }

@@ -7,22 +7,6 @@ import net.minecraft.client.gui.Gui;
 
 public class MwGuiLabel
 {
-	int x = 0, y = 0, w = 1, h = 12;
-	static int spacingX = 4;
-	static int spacingY = 2;
-	private FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRenderer;
-	private Boolean Background;
-	private Boolean AllowFlip;
-	private int parentWidth;
-	private int parentHeight;
-	private String str1;
-	private String str2;
-	private String[] s1;
-	private String[] s2;
-
-	private MwGuiLabel label;
-	private Side side = Side.none;
-
 	private enum Side
 	{
 		left,
@@ -32,14 +16,24 @@ public class MwGuiLabel
 		none
 	}
 
-	public MwGuiLabel(String[] s1,
-			String[] s2,
-			int x,
-			int y,
-			Boolean Background,
-			Boolean AllowFlip,
-			int parentWidth,
-			int parentHeight)
+	static int spacingX = 4;
+	static int spacingY = 2;
+	int x = 0, y = 0, w = 1, h = 12;
+	private FontRenderer fontRendererObj = Minecraft.getMinecraft().fontRenderer;
+	private Boolean Background;
+	private Boolean AllowFlip;
+	private int parentWidth;
+	private int parentHeight;
+	private String str1;
+	private String str2;
+	private String[] s1;
+
+	private String[] s2;
+	private MwGuiLabel label;
+
+	private Side side = Side.none;
+
+	public MwGuiLabel(String[] s1, String[] s2, int x, int y, Boolean Background, Boolean AllowFlip, int parentWidth, int parentHeight)
 	{
 		this.Background = Background;
 		this.AllowFlip = AllowFlip;
@@ -58,12 +52,11 @@ public class MwGuiLabel
 		{
 			if (this.Background)
 			{
-				Gui.drawRect(
-						this.x - MwGuiLabel.spacingX,
-						this.y - MwGuiLabel.spacingY,
-						this.x + this.w + MwGuiLabel.spacingX,
-						this.h + this.y + MwGuiLabel.spacingY,
-						0x80000000);
+				Gui.drawRect(this.x -
+								MwGuiLabel.spacingX, this.y -
+														MwGuiLabel.spacingY, this.x +	this.w +
+																				MwGuiLabel.spacingX, this.h +	this.y +
+																										MwGuiLabel.spacingY, 0x80000000);
 			}
 
 			this.fontRendererObj.drawSplitString(this.str1, this.x, this.y, this.w, 0xffffff);
@@ -75,16 +68,10 @@ public class MwGuiLabel
 		}
 	}
 
-	public void drawToRightOf(MwGuiLabel label)
+	public void drawToAboveOf(MwGuiLabel label)
 	{
 		this.label = label;
-		this.side = Side.right;
-	}
-
-	public void drawToLeftOf(MwGuiLabel label)
-	{
-		this.label = label;
-		this.side = Side.left;
+		this.side = Side.top;
 	}
 
 	public void drawToBelowOf(MwGuiLabel label)
@@ -93,35 +80,36 @@ public class MwGuiLabel
 		this.side = Side.bottom;
 	}
 
-	public void drawToAboveOf(MwGuiLabel label)
+	public void drawToLeftOf(MwGuiLabel label)
 	{
 		this.label = label;
-		this.side = Side.top;
+		this.side = Side.left;
 	}
 
-	private void updateCoords()
+	public void drawToRightOf(MwGuiLabel label)
 	{
-		switch (this.side)
-		{
-		case left:
-			this.setCoords(this.label.x - (this.w + 2 * MwGuiLabel.spacingX + 2), this.label.y);
-			break;
+		this.label = label;
+		this.side = Side.right;
+	}
 
-		case right:
-			this.setCoords(this.label.x + this.label.w + 2 * MwGuiLabel.spacingX + 2, this.label.y);
-			break;
+	public boolean getAllowFlip()
+	{
+		return this.Background;
+	}
 
-		case bottom:
-			this.setCoords(this.label.x, this.label.y + this.label.h + 2 * MwGuiLabel.spacingY + 2);
-			break;
+	public boolean getDrawBackground()
+	{
+		return this.Background;
+	}
 
-		case top:
-			this.setCoords(this.label.x, this.label.y - (this.h + 2 * MwGuiLabel.spacingY + 2));
-			break;
+	public int getparentHeight()
+	{
+		return this.parentHeight;
+	}
 
-		default:
-			break;
-		}
+	public int getparentWidth()
+	{
+		return this.parentWidth;
 	}
 
 	public boolean posWithin(int x, int y)
@@ -132,34 +120,9 @@ public class MwGuiLabel
 				y <= this.y + this.h + MwGuiLabel.spacingY;
 	}
 
-	public void setDrawBackground(boolean enable)
-	{
-		this.Background = enable;
-	}
-
-	public boolean getDrawBackground()
-	{
-		return this.Background;
-	}
-
 	public void setAllowFlip(boolean enable)
 	{
 		this.Background = enable;
-	}
-
-	public boolean getAllowFlip()
-	{
-		return this.Background;
-	}
-
-	public int getparentWidth()
-	{
-		return this.parentWidth;
-	}
-
-	public int getparentHeight()
-	{
-		return this.parentHeight;
 	}
 
 	public void setCoords(int x, int y)
@@ -190,6 +153,11 @@ public class MwGuiLabel
 		}
 	}
 
+	public void setDrawBackground(boolean enable)
+	{
+		this.Background = enable;
+	}
+
 	public void setParentWidthAndHeight(int width, int height)
 	{
 		this.parentWidth = width;
@@ -203,6 +171,31 @@ public class MwGuiLabel
 		this.s1 = s1;
 		this.s2 = s2;
 		this.UpdateStrings();
+	}
+
+	private void updateCoords()
+	{
+		switch (this.side)
+		{
+			case left:
+				this.setCoords(this.label.x - (this.w + 2 * MwGuiLabel.spacingX + 2), this.label.y);
+				break;
+
+			case right:
+				this.setCoords(this.label.x + this.label.w + 2 * MwGuiLabel.spacingX + 2, this.label.y);
+				break;
+
+			case bottom:
+				this.setCoords(this.label.x, this.label.y + this.label.h + 2 * MwGuiLabel.spacingY + 2);
+				break;
+
+			case top:
+				this.setCoords(this.label.x, this.label.y - (this.h + 2 * MwGuiLabel.spacingY + 2));
+				break;
+
+			default:
+				break;
+		}
 	}
 
 	private void UpdateStrings()

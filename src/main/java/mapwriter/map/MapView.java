@@ -53,6 +53,224 @@ public class MapView implements IMapView
 		this.setViewCentre(mw.playerX, mw.playerZ);
 	}
 
+	@Override
+	public int adjustZoomLevel(int n)
+	{
+		return this.setZoomLevel(this.zoomLevel + n);
+	}
+
+	@Override
+	public int getDimension()
+	{
+		return this.dimension;
+	}
+
+	@Override
+	public double getDimensionScaling(int playerDimension)
+	{
+		double scale;
+		if (this.dimension != -1 && playerDimension == -1)
+		{
+			scale = 8.0;
+		}
+		else if (this.dimension == -1 && playerDimension != -1)
+		{
+			scale = 0.125;
+		}
+		else
+		{
+			scale = 1.0;
+		}
+		return scale;
+	}
+
+	@Override
+	public double getHeight()
+	{
+		return this.h;
+	}
+
+	@Override
+	public double getMaxX()
+	{
+		return this.x + this.w / 2;
+	}
+
+	@Override
+	public double getMaxZ()
+	{
+		return this.z + this.h / 2;
+	}
+
+	@Override
+	public double getMinX()
+	{
+		return this.x - this.w / 2;
+	}
+
+	@Override
+	public double getMinZ()
+	{
+		return this.z - this.h / 2;
+	}
+
+	@Override
+	public int getPixelsPerBlock()
+	{
+		return this.mapW / this.baseW;
+	}
+
+	@Override
+	public int getRegionZoomLevel()
+	{
+		return Math.max(0, this.zoomLevel);
+	}
+
+	@Override
+	public boolean getUndergroundMode()
+	{
+		return this.undergroundMode;
+	}
+
+	@Override
+	public double getWidth()
+	{
+		return this.w;
+	}
+
+	@Override
+	public double getX()
+	{
+		return this.x;
+	}
+
+	@Override
+	public double getZ()
+	{
+		return this.z;
+	}
+
+	@Override
+	public int getZoomLevel()
+	{
+		return this.zoomLevel;
+	}
+
+	@Override
+	public boolean isBlockWithinView(double bX, double bZ, boolean circular)
+	{
+		boolean inside;
+		if (!circular)
+		{
+			inside = bX > this.getMinX() || bX < this.getMaxX() || bZ > this.getMinZ() || bZ < this.getMaxZ();
+		}
+		else
+		{
+			double x = bX - this.x;
+			double z = bZ - this.z;
+			double r = this.getHeight() / 2;
+			inside = x * x + z * z < r * r;
+		}
+		return inside;
+	}
+
+	@Override
+	public void nextDimension(List<Integer> dimensionList, int n)
+	{
+		int i = dimensionList.indexOf(this.dimension);
+		i = Math.max(0, i);
+		int size = dimensionList.size();
+		int dimension = dimensionList.get((i + size + n) % size);
+		this.setDimensionAndAdjustZoom(dimension);
+	}
+
+	@Override
+	public void panView(double relX, double relZ)
+	{
+		this.setViewCentre(this.x + relX * this.w, this.z + relZ * this.h);
+	}
+
+	@Override
+	public void setDimension(int dimension)
+	{
+		double scale = 1.0;
+		if (dimension != this.dimension)
+		{
+			if (this.dimension != -1 && dimension == -1)
+			{
+				scale = 0.125;
+			}
+			else if (this.dimension == -1 && dimension != -1)
+			{
+				scale = 8.0;
+			}
+			this.dimension = dimension;
+			this.setViewCentre(this.x * scale, this.z * scale);
+		}
+
+		if (MwAPI.getCurrentDataProvider() != null)
+		{
+			MwAPI.getCurrentDataProvider().onDimensionChanged(this.dimension, this);
+		}
+	}
+
+	@Override
+	public void setDimensionAndAdjustZoom(int dimension)
+	{
+		int zoomLevelChange = 0;
+		if (this.dimension != -1 && dimension == -1)
+		{
+			zoomLevelChange = -3;
+		}
+		else if (this.dimension == -1 && dimension != -1)
+		{
+			zoomLevelChange = 3;
+		}
+		this.setZoomLevel(this.getZoomLevel() + zoomLevelChange);
+		this.setDimension(dimension);
+	}
+
+	@Override
+	public void setMapWH(IMapMode mapMode)
+	{
+		this.setMapWH(mapMode.getWPixels(), mapMode.getHPixels());
+	}
+
+	@Override
+	public void setMapWH(int w, int h)
+	{
+		if (this.mapW != w || this.mapH != h)
+		{
+			this.mapW = w;
+			this.mapH = h;
+			this.updateBaseWH();
+		}
+	}
+
+	@Override
+	public void setTextureSize(int n)
+	{
+		if (this.textureSize != n)
+		{
+			this.textureSize = n;
+			this.updateBaseWH();
+		}
+	}
+
+	@Override
+	public void setUndergroundMode(boolean enabled)
+	{
+		if (enabled)
+		{
+			if (this.zoomLevel >= 0)
+			{
+				this.setZoomLevel(-1);
+			}
+		}
+		this.undergroundMode = enabled;
+	}
+
+	@Override
 	public void setViewCentre(double vX, double vZ)
 	{
 		this.x = vX;
@@ -65,31 +283,14 @@ public class MapView implements IMapView
 
 	}
 
-	public double getX()
+	@Override
+	public void setViewCentreScaled(double vX, double vZ, int playerDimension)
 	{
-		return this.x;
+		double scale = this.getDimensionScaling(playerDimension);
+		this.setViewCentre(vX * scale, vZ * scale);
 	}
 
-	public double getZ()
-	{
-		return this.z;
-	}
-
-	public double getWidth()
-	{
-		return this.w;
-	}
-
-	public double getHeight()
-	{
-		return this.h;
-	}
-
-	public void panView(double relX, double relZ)
-	{
-		this.setViewCentre(this.x + (relX * this.w), this.z + (relZ * this.h));
-	}
-
+	@Override
 	public int setZoomLevel(int zoomLevel)
 	{
 		// MwUtil.log("MapView.setZoomLevel(%d)", zoomLevel);
@@ -116,169 +317,16 @@ public class MapView implements IMapView
 		return this.zoomLevel;
 	}
 
-	private void updateZoom()
-	{
-		if (this.zoomLevel >= 0)
-		{
-			this.w = this.baseW << this.zoomLevel;
-			this.h = this.baseH << this.zoomLevel;
-		}
-		else
-		{
-			this.w = this.baseW >> (-this.zoomLevel);
-			this.h = this.baseH >> (-this.zoomLevel);
-		}
-
-		if (MwAPI.getCurrentDataProvider() != null)
-		{
-			MwAPI.getCurrentDataProvider().onZoomChanged(this.getZoomLevel(), this);
-		}
-	}
-
-	public int adjustZoomLevel(int n)
-	{
-		return this.setZoomLevel(this.zoomLevel + n);
-	}
-
-	public int getZoomLevel()
-	{
-		return this.zoomLevel;
-	}
-
-	public int getRegionZoomLevel()
-	{
-		return Math.max(0, this.zoomLevel);
-	}
-
 	// bX and bZ are the coordinates of the block the zoom is centred on.
 	// The relative position of the block in the view will remain the same
 	// as before the zoom.
+	@Override
 	public void zoomToPoint(int newZoomLevel, double bX, double bZ)
 	{
 		int prevZoomLevel = this.zoomLevel;
 		newZoomLevel = this.setZoomLevel(newZoomLevel);
 		double zF = Math.pow(2, newZoomLevel - prevZoomLevel);
-		this.setViewCentre(bX - ((bX - this.x) * zF), bZ - ((bZ - this.z) * zF));
-	}
-
-	public void setDimension(int dimension)
-	{
-		double scale = 1.0;
-		if (dimension != this.dimension)
-		{
-			if ((this.dimension != -1) && (dimension == -1))
-			{
-				scale = 0.125;
-			}
-			else if ((this.dimension == -1) && (dimension != -1))
-			{
-				scale = 8.0;
-			}
-			this.dimension = dimension;
-			this.setViewCentre(this.x * scale, this.z * scale);
-		}
-
-		if (MwAPI.getCurrentDataProvider() != null)
-		{
-			MwAPI.getCurrentDataProvider().onDimensionChanged(this.dimension, this);
-		}
-	}
-
-	public void setDimensionAndAdjustZoom(int dimension)
-	{
-		int zoomLevelChange = 0;
-		if ((this.dimension != -1) && (dimension == -1))
-		{
-			zoomLevelChange = -3;
-		}
-		else if ((this.dimension == -1) && (dimension != -1))
-		{
-			zoomLevelChange = 3;
-		}
-		this.setZoomLevel(this.getZoomLevel() + zoomLevelChange);
-		this.setDimension(dimension);
-	}
-
-	public void nextDimension(List<Integer> dimensionList, int n)
-	{
-		int i = dimensionList.indexOf(this.dimension);
-		i = Math.max(0, i);
-		int size = dimensionList.size();
-		int dimension = dimensionList.get((i + size + n) % size);
-		this.setDimensionAndAdjustZoom(dimension);
-	}
-
-	public int getDimension()
-	{
-		return this.dimension;
-	}
-
-	public void setMapWH(int w, int h)
-	{
-		if ((this.mapW != w) || (this.mapH != h))
-		{
-			this.mapW = w;
-			this.mapH = h;
-			this.updateBaseWH();
-		}
-	}
-
-	public void setMapWH(IMapMode mapMode)
-	{
-		this.setMapWH(mapMode.getWPixels(), mapMode.getHPixels());
-	}
-
-	public double getMinX()
-	{
-		return this.x - (this.w / 2);
-	}
-
-	public double getMaxX()
-	{
-		return this.x + (this.w / 2);
-	}
-
-	public double getMinZ()
-	{
-		return this.z - (this.h / 2);
-	}
-
-	public double getMaxZ()
-	{
-		return this.z + (this.h / 2);
-	}
-
-	public double getDimensionScaling(int playerDimension)
-	{
-		double scale;
-		if ((this.dimension != -1) && (playerDimension == -1))
-		{
-			scale = 8.0;
-		}
-		else if ((this.dimension == -1) && (playerDimension != -1))
-		{
-			scale = 0.125;
-		}
-		else
-		{
-			scale = 1.0;
-		}
-		return scale;
-	}
-
-	public void setViewCentreScaled(double vX, double vZ, int playerDimension)
-	{
-		double scale = this.getDimensionScaling(playerDimension);
-		this.setViewCentre(vX * scale, vZ * scale);
-	}
-
-	public void setTextureSize(int n)
-	{
-		if (this.textureSize != n)
-		{
-			this.textureSize = n;
-			this.updateBaseWH();
-		}
+		this.setViewCentre(bX - (bX - this.x) * zF, bZ - (bZ - this.z) * zF);
 	}
 
 	private void updateBaseWH()
@@ -289,7 +337,7 @@ public class MapView implements IMapView
 
 		// if we cannot display the map at 1x1 pixel per block, then
 		// try 2x2 pixels per block, then 4x4 and so on
-		while ((w > halfTextureSize) || (h > halfTextureSize))
+		while (w > halfTextureSize || h > halfTextureSize)
 		{
 			w /= 2;
 			h /= 2;
@@ -305,43 +353,22 @@ public class MapView implements IMapView
 		this.updateZoom();
 	}
 
-	public int getPixelsPerBlock()
+	private void updateZoom()
 	{
-		return this.mapW / this.baseW;
-	}
-
-	public boolean isBlockWithinView(double bX, double bZ, boolean circular)
-	{
-		boolean inside;
-		if (!circular)
+		if (this.zoomLevel >= 0)
 		{
-			inside = (bX > this.getMinX()) || (bX < this.getMaxX()) || (bZ > this.getMinZ())
-					|| (bZ < this.getMaxZ());
+			this.w = this.baseW << this.zoomLevel;
+			this.h = this.baseH << this.zoomLevel;
 		}
 		else
 		{
-			double x = (bX - this.x);
-			double z = (bZ - this.z);
-			double r = this.getHeight() / 2;
-			inside = ((x * x) + (z * z)) < (r * r);
+			this.w = this.baseW >> -this.zoomLevel;
+			this.h = this.baseH >> -this.zoomLevel;
 		}
-		return inside;
-	}
 
-	public boolean getUndergroundMode()
-	{
-		return this.undergroundMode;
-	}
-
-	public void setUndergroundMode(boolean enabled)
-	{
-		if (enabled)
+		if (MwAPI.getCurrentDataProvider() != null)
 		{
-			if (this.zoomLevel >= 0)
-			{
-				this.setZoomLevel(-1);
-			}
+			MwAPI.getCurrentDataProvider().onZoomChanged(this.getZoomLevel(), this);
 		}
-		this.undergroundMode = enabled;
 	}
 }

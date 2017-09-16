@@ -25,18 +25,38 @@ import mapwriter.util.Logging;
 public class RegionFile
 {
 
-	private final File file;
-	private int lengthInSectors = 0;
-	private RandomAccessFile fin = null;
+	// basically an in memory byte array that writes its contents
+	// to a file when it is closed.
+	private class RegionFileChunkBuffer extends ByteArrayOutputStream
+	{
+		private final int x;
+		private final int z;
+		private final RegionFile regionFile;
 
-	private Section[] chunkSectionsArray = new Section[4096];
-	private int[] timestampArray = new int[4096];
-	private List<Boolean> filledSectorArray = null;
+		public RegionFileChunkBuffer(RegionFile regionFile, int x, int z)
+		{
+			super(8096);
+			this.regionFile = regionFile;
+			this.x = x;
+			this.z = z;
+		}
+
+		@Override
+		public void close()
+		{
+			this.regionFile.writeCompressedChunk(this.x, this.z, this.buf, this.count);
+		}
+	}
 
 	private class Section
 	{
 		final int startSector;
 		final int length;
+
+		Section(int sectorAndSize)
+		{
+			this(sectorAndSize >> 8 & 0xffffff, sectorAndSize & 0xff);
+		}
 
 		Section(int startSector, int length)
 		{
@@ -44,26 +64,39 @@ public class RegionFile
 			this.length = length;
 		}
 
-		Section(int sectorAndSize)
-		{
-			this((sectorAndSize >> 8) & 0xffffff, sectorAndSize & 0xff);
-		}
-
 		int getSectorAndSize()
 		{
-			return (this.startSector << 8) | (this.length & 0xff);
+			return this.startSector << 8 | this.length & 0xff;
 		}
 	}
+
+	private final File file;
+
+	private int lengthInSectors = 0;
+	private RandomAccessFile fin = null;
+	private Section[] chunkSectionsArray = new Section[4096];
+
+	private int[] timestampArray = new int[4096];
+
+	private List<Boolean> filledSectorArray = null;
 
 	public RegionFile(File file)
 	{
 		this.file = file;
 	}
 
-	@Override
-	public String toString()
+	public void close()
 	{
-		return String.format("%s", this.file);
+		if (this.fin != null)
+		{
+			try
+			{
+				this.fin.close();
+			}
+			catch (IOException e)
+			{
+			}
+		}
 	}
 
 	public boolean exists()
@@ -71,157 +104,56 @@ public class RegionFile
 		return this.file.isFile();
 	}
 
-	public boolean isOpen()
+	public DataInputStream getChunkDataInputStream(int x, int z)
 	{
-		return (this.fin != null);
-	}
-
-	// set the corresponding bits in filledSectorArray to 'filled'
-	// for 'count' sectors, starting at 'firstSector'.
-	private void setFilledSectorArray(Section section, boolean filled)
-	{
-		int endSector = section.startSector + section.length;
-		int sectorsToAppend = (endSector + 1) - this.filledSectorArray.size();
-		for (int i = 0; i < sectorsToAppend; i++)
+		DataInputStream dis = null;
+		if (this.fin != null)
 		{
-			this.filledSectorArray.add(Boolean.valueOf(false));
-		}
-		for (int i = section.startSector; i < endSector; i++)
-		{
-			if (filled && this.filledSectorArray.get(i))
+			Section section = this.getChunkSection(x, z);
+			if (section != null && section.length > 0)
 			{
-				Logging.logError("sector %d already filled, possible chunk overlap", i);
-			}
-			this.filledSectorArray.set(i, Boolean.valueOf(filled));
-		}
-	}
-
-	private boolean checkSectionOverlaps(Section section)
-	{
-		// get end sector, limiting to length of the filled sector array as all
-		// sectors past the
-		// end of the file are assumed free.
-		int endSector = Math.min(section.startSector + section.length, this.filledSectorArray.size());
-		boolean overlaps = false;
-		for (int i = section.startSector; i < endSector; i++)
-		{
-			if (this.filledSectorArray.get(i))
-			{
-				overlaps = true;
-			}
-		}
-		return overlaps;
-	}
-
-	private Section getFreeSection(int requiredLength)
-	{
-		int start = 0;
-		int length = 0;
-		int closestStart = 0;
-		int closestLength = Integer.MAX_VALUE;
-		// start at 2 to skip headers
-		int i;
-		for (i = 2; i < this.filledSectorArray.size(); i++)
-		{
-			if (this.filledSectorArray.get(i))
-			{
-				// sector filled
-				// if the length of the empty block we found is greater than or
-				// equal to the required length, and is closer to the required
-				// length than the previous found length, then set this as the
-				// new closest length.
-				// the idea is to use an empty block of exactly the required
-				// length, rather than one that is larger.
-				if ((length >= requiredLength) && (length < closestLength))
+				int offset = section.startSector * 4096;
+				try
 				{
-					closestLength = length;
-					closestStart = start;
-					// if we find an empty block of exactly the correct length
-					// then exit the loop.
-					if (closestLength == requiredLength)
+					// read length of following data (includes version byte) and
+					// compressed data version byte
+					this.fin.seek(offset);
+					int length = this.fin.readInt();
+					byte version = this.fin.readByte();
+					// version 1 = gzip compressed, version 2 = zlib/inflater
+					// compressed
+					if (length > 1 && length + 4 < section.length * 4096 && version == 2)
 					{
-						break;
+						// read the compressed data
+						byte[] compressedChunkData = new byte[length - 1];
+						this.fin.read(compressedChunkData);
+						// create a buffered inflater stream on the compressed
+						// data
+						dis = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(compressedChunkData))));
+					}
+					else
+					{
+						Logging.logError("data length (%d) or version (%d) invalid for chunk (%d, %d)", length, version, x, z);
 					}
 				}
-				length = 0;
-			}
-			else
-			{
-				// sector empty
-				if (length == 0)
+				catch (Exception e)
 				{
-					start = i;
+					Logging.logError("exception while reading chunk (%d, %d): %s", x, z, e);
+					dis = null;
 				}
-				length++;
 			}
 		}
-
-		if (closestStart <= 0)
-		{
-			// append to end of file
-			closestStart = i;
-		}
-
-		return new Section(closestStart, requiredLength);
+		return dis;
 	}
 
-	public void printInfo()
+	public DataOutputStream getChunkDataOutputStream(int x, int z)
 	{
-		int freeCount = 0;
-		int filledCount = 0;
-		// start at 2 to skip headers
-		for (int i = 2; i < this.filledSectorArray.size(); i++)
-		{
-			if (this.filledSectorArray.get(i))
-			{
-				filledCount++;
-			}
-			else
-			{
-				freeCount++;
-			}
-		}
-		Logging.logInfo("Region File %s: filled sectors = %d, free sectors = %d", this, filledCount, freeCount);
-
-		String s = "";
-		int i;
-		for (i = 0; i < this.filledSectorArray.size(); i++)
-		{
-			if ((i & 31) == 0)
-			{
-				s = String.format("%04x:", i);
-			}
-			s += this.filledSectorArray.get(i) ? '1' : '0';
-			if ((i & 31) == 31)
-			{
-				Logging.logInfo("%s", s);
-			}
-		}
-		if ((i & 31) != 31)
-		{
-			Logging.logInfo("%s", s);
-		}
+		return new DataOutputStream(new DeflaterOutputStream(new RegionFileChunkBuffer(this, x, z)));
 	}
 
-	private Section getChunkSection(int x, int z)
+	public boolean isOpen()
 	{
-		return this.chunkSectionsArray[((z & 31) << 5) | (x & 31)];
-	}
-
-	private void updateChunkSection(int x, int z, Section newSection) throws IOException
-	{
-		int chunkIndex = ((z & 31) << 5) | (x & 31);
-		this.fin.seek(chunkIndex * 4);
-		if ((newSection != null) && (newSection.length > 0))
-		{
-			this.fin.writeInt(newSection.getSectorAndSize());
-		}
-		else
-		{
-			this.fin.writeInt(0);
-		}
-
-		this.chunkSectionsArray[chunkIndex] = newSection;
+		return this.fin != null;
 	}
 
 	public boolean open()
@@ -305,88 +237,158 @@ public class RegionFile
 		return this.fin == null;
 	}
 
-	public void close()
+	public void printInfo()
 	{
-		if (this.fin != null)
+		int freeCount = 0;
+		int filledCount = 0;
+		// start at 2 to skip headers
+		for (int i = 2; i < this.filledSectorArray.size(); i++)
 		{
-			try
+			if (this.filledSectorArray.get(i))
 			{
-				this.fin.close();
+				filledCount++;
 			}
-			catch (IOException e)
+			else
 			{
+				freeCount++;
 			}
+		}
+		Logging.logInfo("Region File %s: filled sectors = %d, free sectors = %d", this, filledCount, freeCount);
+
+		String s = "";
+		int i;
+		for (i = 0; i < this.filledSectorArray.size(); i++)
+		{
+			if ((i & 31) == 0)
+			{
+				s = String.format("%04x:", i);
+			}
+			s += this.filledSectorArray.get(i) ? '1' : '0';
+			if ((i & 31) == 31)
+			{
+				Logging.logInfo("%s", s);
+			}
+		}
+		if ((i & 31) != 31)
+		{
+			Logging.logInfo("%s", s);
 		}
 	}
 
-	public DataInputStream getChunkDataInputStream(int x, int z)
+	@Override
+	public String toString()
 	{
-		DataInputStream dis = null;
-		if (this.fin != null)
+		return String.format("%s", this.file);
+	}
+
+	private boolean checkSectionOverlaps(Section section)
+	{
+		// get end sector, limiting to length of the filled sector array as all
+		// sectors past the
+		// end of the file are assumed free.
+		int endSector = Math.min(section.startSector + section.length, this.filledSectorArray.size());
+		boolean overlaps = false;
+		for (int i = section.startSector; i < endSector; i++)
 		{
-			Section section = this.getChunkSection(x, z);
-			if ((section != null) && (section.length > 0))
+			if (this.filledSectorArray.get(i))
 			{
-				int offset = section.startSector * 4096;
-				try
+				overlaps = true;
+			}
+		}
+		return overlaps;
+	}
+
+	private Section getChunkSection(int x, int z)
+	{
+		return this.chunkSectionsArray[(z & 31) << 5 | x & 31];
+	}
+
+	private Section getFreeSection(int requiredLength)
+	{
+		int start = 0;
+		int length = 0;
+		int closestStart = 0;
+		int closestLength = Integer.MAX_VALUE;
+		// start at 2 to skip headers
+		int i;
+		for (i = 2; i < this.filledSectorArray.size(); i++)
+		{
+			if (this.filledSectorArray.get(i))
+			{
+				// sector filled
+				// if the length of the empty block we found is greater than or
+				// equal to the required length, and is closer to the required
+				// length than the previous found length, then set this as the
+				// new closest length.
+				// the idea is to use an empty block of exactly the required
+				// length, rather than one that is larger.
+				if (length >= requiredLength && length < closestLength)
 				{
-					// read length of following data (includes version byte) and
-					// compressed data version byte
-					this.fin.seek(offset);
-					int length = this.fin.readInt();
-					byte version = this.fin.readByte();
-					// version 1 = gzip compressed, version 2 = zlib/inflater
-					// compressed
-					if ((length > 1) && ((length + 4) < (section.length * 4096)) && (version == 2))
+					closestLength = length;
+					closestStart = start;
+					// if we find an empty block of exactly the correct length
+					// then exit the loop.
+					if (closestLength == requiredLength)
 					{
-						// read the compressed data
-						byte[] compressedChunkData = new byte[length - 1];
-						this.fin.read(compressedChunkData);
-						// create a buffered inflater stream on the compressed
-						// data
-						dis = new DataInputStream(new BufferedInputStream(new InflaterInputStream(new ByteArrayInputStream(compressedChunkData))));
-					}
-					else
-					{
-						Logging.logError("data length (%d) or version (%d) invalid for chunk (%d, %d)", length, version, x, z);
+						break;
 					}
 				}
-				catch (Exception e)
+				length = 0;
+			}
+			else
+			{
+				// sector empty
+				if (length == 0)
 				{
-					Logging.logError("exception while reading chunk (%d, %d): %s", x, z, e);
-					dis = null;
+					start = i;
 				}
+				length++;
 			}
 		}
-		return dis;
-	}
 
-	// basically an in memory byte array that writes its contents
-	// to a file when it is closed.
-	private class RegionFileChunkBuffer extends ByteArrayOutputStream
-	{
-		private final int x;
-		private final int z;
-		private final RegionFile regionFile;
-
-		public RegionFileChunkBuffer(RegionFile regionFile, int x, int z)
+		if (closestStart <= 0)
 		{
-			super(8096);
-			this.regionFile = regionFile;
-			this.x = x;
-			this.z = z;
+			// append to end of file
+			closestStart = i;
 		}
 
-		@Override
-		public void close()
+		return new Section(closestStart, requiredLength);
+	}
+
+	// set the corresponding bits in filledSectorArray to 'filled'
+	// for 'count' sectors, starting at 'firstSector'.
+	private void setFilledSectorArray(Section section, boolean filled)
+	{
+		int endSector = section.startSector + section.length;
+		int sectorsToAppend = endSector + 1 - this.filledSectorArray.size();
+		for (int i = 0; i < sectorsToAppend; i++)
 		{
-			this.regionFile.writeCompressedChunk(this.x, this.z, this.buf, this.count);
+			this.filledSectorArray.add(Boolean.valueOf(false));
+		}
+		for (int i = section.startSector; i < endSector; i++)
+		{
+			if (filled && this.filledSectorArray.get(i))
+			{
+				Logging.logError("sector %d already filled, possible chunk overlap", i);
+			}
+			this.filledSectorArray.set(i, Boolean.valueOf(filled));
 		}
 	}
 
-	public DataOutputStream getChunkDataOutputStream(int x, int z)
+	private void updateChunkSection(int x, int z, Section newSection) throws IOException
 	{
-		return new DataOutputStream(new DeflaterOutputStream(new RegionFileChunkBuffer(this, x, z)));
+		int chunkIndex = (z & 31) << 5 | x & 31;
+		this.fin.seek(chunkIndex * 4);
+		if (newSection != null && newSection.length > 0)
+		{
+			this.fin.writeInt(newSection.getSectorAndSize());
+		}
+		else
+		{
+			this.fin.writeInt(0);
+		}
+
+		this.chunkSectionsArray[chunkIndex] = newSection;
 	}
 
 	/*
@@ -399,7 +401,7 @@ public class RegionFile
 
 	private void writeChunkDataToSection(Section section, byte[] compressedChunkData, int length) throws IOException
 	{
-		this.fin.seek((section.startSector) * 4096L);
+		this.fin.seek(section.startSector * 4096L);
 		// write version and length
 		this.fin.writeInt(length + 1);
 		this.fin.writeByte(2);
@@ -407,7 +409,7 @@ public class RegionFile
 		this.fin.write(compressedChunkData, 0, length);
 
 		int endSector = section.startSector + section.length;
-		if ((endSector + 1) > this.lengthInSectors)
+		if (endSector + 1 > this.lengthInSectors)
 		{
 			this.lengthInSectors = endSector + 1;
 		}
@@ -438,10 +440,11 @@ public class RegionFile
 		int requiredSectors = (length + 5 + 4095) / 4096;
 		Section newSection;
 
-		if ((currentSection != null) && (requiredSectors <= currentSection.length))
+		if (currentSection != null && requiredSectors <= currentSection.length)
 		{
 			// if the chunk still fits in it's current location don't move
-			// RegionManager.logInfo("chunk (%d, %d) fits in current location %d",
+			// RegionManager.logInfo("chunk (%d, %d) fits in current location
+			// %d",
 			// x, z, currentSection.startSector);
 			newSection = new Section(currentSection.startSector, requiredSectors);
 		}
@@ -457,7 +460,8 @@ public class RegionFile
 		boolean error = true;
 		try
 		{
-			// RegionManager.logInfo("writing %d bytes to sector %d for chunk (%d,  %d)",
+			// RegionManager.logInfo("writing %d bytes to sector %d for chunk
+			// (%d, %d)",
 			// length, newSection.startSector, x, z);
 			this.writeChunkDataToSection(newSection, compressedChunkData, length);
 			// update the header

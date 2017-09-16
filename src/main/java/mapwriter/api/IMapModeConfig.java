@@ -2,37 +2,37 @@ package mapwriter.api;
 
 public interface IMapModeConfig
 {
+	public int getAlphaPercent();
+
+	public String getBiomeMode();
+
+	public boolean getBorderMode();
+
+	public boolean getCircular();
+
 	public String getConfigCategory();
 
-	public String getMapPosCategory();
+	public String getCoordsMode();
 
 	public String[] getCoordsModeStringArray();
 
 	public boolean getEnabled();
 
-	public boolean getRotate();
+	public double getHeightPercent();
 
-	public boolean getCircular();
-
-	public String getCoordsMode();
-
-	public boolean getBorderMode();
-
-	public int getPlayerArrowSize();
+	public String getMapPosCategory();
 
 	public int getMarkerSize();
 
+	public int getPlayerArrowSize();
+
+	public boolean getRotate();
+
 	public int getTrailMarkerSize();
 
-	public int getAlphaPercent();
-
-	public String getBiomeMode();
+	public double getWidthPercent();
 
 	public double getXPos();
 
 	public double getYPos();
-
-	public double getHeightPercent();
-
-	public double getWidthPercent();
 }

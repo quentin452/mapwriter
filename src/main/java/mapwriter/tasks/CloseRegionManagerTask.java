@@ -13,9 +13,9 @@ public class CloseRegionManagerTask extends Task
 	}
 
 	@Override
-	public void run()
+	public boolean CheckForDuplicate()
 	{
-		this.regionManager.close();
+		return false;
 	}
 
 	@Override
@@ -24,8 +24,8 @@ public class CloseRegionManagerTask extends Task
 	}
 
 	@Override
-	public boolean CheckForDuplicate()
+	public void run()
 	{
-		return false;
+		this.regionManager.close();
 	}
 }

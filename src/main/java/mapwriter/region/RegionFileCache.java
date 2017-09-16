@@ -52,6 +52,19 @@ public class RegionFileCache
 		this.regionFileCache.clear();
 	}
 
+	public RegionFile getRegionFile(int x, int z, int dimension)
+	{
+		File regionFilePath = this.getRegionFilePath(x, z, dimension);
+		String key = regionFilePath.toString();
+		RegionFile regionFile = this.regionFileCache.get(key);
+		if (regionFile == null)
+		{
+			regionFile = new RegionFile(regionFilePath);
+			this.regionFileCache.put(key, regionFile);
+		}
+		return regionFile;
+	}
+
 	public File getRegionFilePath(int x, int z, int dimension)
 	{
 		File dir = this.worldDir;
@@ -70,18 +83,5 @@ public class RegionFileCache
 	{
 		File regionFilePath = this.getRegionFilePath(x, z, dimension);
 		return regionFilePath.isFile();
-	}
-
-	public RegionFile getRegionFile(int x, int z, int dimension)
-	{
-		File regionFilePath = this.getRegionFilePath(x, z, dimension);
-		String key = regionFilePath.toString();
-		RegionFile regionFile = this.regionFileCache.get(key);
-		if (regionFile == null)
-		{
-			regionFile = new RegionFile(regionFilePath);
-			this.regionFileCache.put(key, regionFile);
-		}
-		return regionFile;
 	}
 }

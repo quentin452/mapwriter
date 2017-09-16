@@ -13,20 +13,6 @@ public class WorldConfig
 {
 	private static WorldConfig instance = null;
 
-	public Configuration worldConfiguration = null;
-
-	// list of available dimensions
-	public List<Integer> dimensionList = new ArrayList<Integer>();
-
-	private WorldConfig()
-	{
-		// load world specific config file
-		File worldConfigFile = new File(Mw.getInstance().worldDir, Reference.worldDirConfigName);
-		this.worldConfiguration = new Configuration(worldConfigFile);
-
-		this.InitDimensionList();
-	}
-
 	public static WorldConfig getInstance()
 	{
 		if (instance == null)
@@ -43,18 +29,18 @@ public class WorldConfig
 		return instance;
 	}
 
-	public void saveWorldConfig()
-	{
-		this.worldConfiguration.save();
-	}
+	public Configuration worldConfiguration = null;
 
-	// Dimension List
-	public void InitDimensionList()
+	// list of available dimensions
+	public List<Integer> dimensionList = new ArrayList<Integer>();
+
+	private WorldConfig()
 	{
-		this.dimensionList.clear();
-		this.worldConfiguration.get(Reference.catWorld, "dimensionList", Utils.integerListToIntArray(this.dimensionList));
-		this.addDimension(0);
-		this.cleanDimensionList();
+		// load world specific config file
+		File worldConfigFile = new File(Mw.getInstance().worldDir, Reference.worldDirConfigName);
+		this.worldConfiguration = new Configuration(worldConfigFile);
+
+		this.InitDimensionList();
 	}
 
 	public void addDimension(int dimension)
@@ -74,6 +60,20 @@ public class WorldConfig
 		{
 			this.addDimension(dimension);
 		}
+	}
+
+	// Dimension List
+	public void InitDimensionList()
+	{
+		this.dimensionList.clear();
+		this.worldConfiguration.get(Reference.catWorld, "dimensionList", Utils.integerListToIntArray(this.dimensionList));
+		this.addDimension(0);
+		this.cleanDimensionList();
+	}
+
+	public void saveWorldConfig()
+	{
+		this.worldConfiguration.save();
 	}
 
 }

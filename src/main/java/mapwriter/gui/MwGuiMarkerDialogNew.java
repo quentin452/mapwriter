@@ -16,6 +16,9 @@ import net.minecraftforge.fml.relauncher.Side;
 @net.minecraftforge.fml.relauncher.SideOnly(Side.CLIENT)
 public class MwGuiMarkerDialogNew extends GuiScreen
 {
+	static final int dialogWidthPercent = 40;
+	static final int elementVSpacing = 20;
+	static final int numberOfElements = 8;
 	private final GuiScreen parentScreen;
 	String title = "";
 	String titleNew = "mw.gui.mwguimarkerdialognew.title.new";
@@ -33,9 +36,6 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	ScrollableNumericTextBox scrollableNumericTextBoxZ = null;
 	ScrollableColorSelector ScrollableColorSelectorColor = null;
 	boolean backToGameOnSubmit = false;
-	static final int dialogWidthPercent = 40;
-	static final int elementVSpacing = 20;
-	static final int numberOfElements = 8;
 	private final MarkerManager markerManager;
 	private Marker editingMarker;
 	private String markerName = "";
@@ -45,28 +45,6 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	private int markerZ = 0;
 	private int dimension = 0;
 	private int colour = 0;
-
-	public MwGuiMarkerDialogNew(GuiScreen parentScreen,
-			MarkerManager markerManager,
-			String markerName,
-			String markerGroup,
-			int x,
-			int y,
-			int z,
-			int dimension)
-	{
-		this.markerManager = markerManager;
-		this.markerName = markerName;
-		this.markerGroup = markerGroup;
-		this.markerX = x;
-		this.markerY = y;
-		this.markerZ = z;
-		this.dimension = dimension;
-		this.colour = Utils.getCurrentColour();
-		this.editingMarker = null;
-		this.parentScreen = parentScreen;
-		this.title = this.titleNew;
-	}
 
 	public MwGuiMarkerDialogNew(GuiScreen parentScreen, MarkerManager markerManager, Marker editingMarker)
 	{
@@ -81,6 +59,127 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.colour = editingMarker.colour;
 		this.parentScreen = parentScreen;
 		this.title = this.titleEdit;
+	}
+
+	public MwGuiMarkerDialogNew(GuiScreen parentScreen, MarkerManager markerManager, String markerName, String markerGroup, int x, int y, int z, int dimension)
+	{
+		this.markerManager = markerManager;
+		this.markerName = markerName;
+		this.markerGroup = markerGroup;
+		this.markerX = x;
+		this.markerY = y;
+		this.markerZ = z;
+		this.dimension = dimension;
+		this.colour = Utils.getCurrentColour();
+		this.editingMarker = null;
+		this.parentScreen = parentScreen;
+		this.title = this.titleNew;
+	}
+
+	@Override
+	public void drawScreen(int mouseX, int mouseY, float f)
+	{
+		if (this.parentScreen != null)
+		{
+			this.parentScreen.drawScreen(mouseX, mouseY, f);
+		}
+		else
+		{
+			this.drawDefaultBackground();
+		}
+
+		int w = this.width * MwGuiMarkerDialogNew.dialogWidthPercent / 100;
+		drawRect((this.width - w) /
+					2, (this.height -
+						MwGuiMarkerDialogNew.elementVSpacing * (MwGuiMarkerDialogNew.numberOfElements + 2)) / 2 -
+						4, (this.width - w) / 2 +
+							w, (this.height -
+								MwGuiMarkerDialogNew.elementVSpacing * (MwGuiMarkerDialogNew.numberOfElements + 2)) /
+								2 +
+								MwGuiMarkerDialogNew.elementVSpacing *
+									(MwGuiMarkerDialogNew.numberOfElements + 1), 0x80000000);
+		this.drawCenteredString(this.fontRenderer, I18n.format(this.title), this.width /
+																			2, (this.height -
+																				MwGuiMarkerDialogNew.elementVSpacing *
+																								(MwGuiMarkerDialogNew.numberOfElements +
+																									1)) /
+																				2 -
+																				MwGuiMarkerDialogNew.elementVSpacing /
+																					4, 0xffffff);
+		this.scrollableTextBoxName.draw();
+		this.scrollableTextBoxGroup.draw();
+		this.scrollableNumericTextBoxX.draw();
+		this.scrollableNumericTextBoxY.draw();
+		this.scrollableNumericTextBoxZ.draw();
+		this.ScrollableColorSelectorColor.draw();
+		super.drawScreen(mouseX, mouseY, f);
+	}
+
+	// override GuiScreen's handleMouseInput to process
+	// the scroll wheel.
+	@Override
+	public void handleMouseInput() throws IOException
+	{
+		if (MwAPI.getCurrentDataProvider() != null)
+		{
+			return;
+		}
+		int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
+		int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+		int direction = Mouse.getEventDWheel();
+		if (direction != 0)
+		{
+			this.mouseDWheelScrolled(x, y, direction);
+		}
+		super.handleMouseInput();
+	}
+
+	@Override
+	public void initGui()
+	{
+		int labelsWidth = this.fontRenderer.getStringWidth("Group");
+		int width = this.width * MwGuiMarkerDialogNew.dialogWidthPercent / 100 - labelsWidth - 20;
+		int x = (this.width - width + labelsWidth) / 2;
+		int y = (this.height - MwGuiMarkerDialogNew.elementVSpacing * MwGuiMarkerDialogNew.numberOfElements) / 2;
+
+		this.scrollableTextBoxName = new ScrollableTextBox(x, y, width, I18n.format(this.editMarkerName), this.fontRenderer);
+		this.scrollableTextBoxName.setFocused(true);
+		this.scrollableTextBoxName.setText(this.markerName);
+
+		this.scrollableTextBoxGroup = new ScrollableTextBox(x, y +
+																MwGuiMarkerDialogNew.elementVSpacing, width, I18n.format(this.editMarkerGroup), this.markerManager.groupList, this.fontRenderer);
+		this.scrollableTextBoxGroup.setText(this.markerGroup);
+		this.scrollableTextBoxGroup.setDrawArrows(true);
+
+		this.scrollableNumericTextBoxX = new ScrollableNumericTextBox(x, y + MwGuiMarkerDialogNew.elementVSpacing *
+																				2, width, I18n.format(this.editMarkerX), this.fontRenderer);
+		this.scrollableNumericTextBoxX.setText("" + this.markerX);
+		this.scrollableNumericTextBoxX.setDrawArrows(true);
+
+		this.scrollableNumericTextBoxY = new ScrollableNumericTextBox(x, y + MwGuiMarkerDialogNew.elementVSpacing *
+																				3, width, I18n.format(this.editMarkerY), this.fontRenderer);
+		this.scrollableNumericTextBoxY.setText("" + this.markerY);
+		this.scrollableNumericTextBoxY.setDrawArrows(true);
+
+		this.scrollableNumericTextBoxZ = new ScrollableNumericTextBox(x, y + MwGuiMarkerDialogNew.elementVSpacing *
+																				4, width, I18n.format(this.editMarkerZ), this.fontRenderer);
+		this.scrollableNumericTextBoxZ.setText("" + this.markerZ);
+		this.scrollableNumericTextBoxZ.setDrawArrows(true);
+
+		this.ScrollableColorSelectorColor = new ScrollableColorSelector(x, y + MwGuiMarkerDialogNew.elementVSpacing *
+																				5, width, I18n.format(this.editMarkerColor), this.fontRenderer);
+		this.ScrollableColorSelectorColor.setColor(this.colour);
+		this.ScrollableColorSelectorColor.setDrawArrows(true);
+	}
+
+	public void mouseDWheelScrolled(int x, int y, int direction)
+	{
+		this.scrollableTextBoxName.mouseDWheelScrolled(x, y, direction);
+		this.scrollableTextBoxGroup.mouseDWheelScrolled(x, y, direction);
+		this.scrollableNumericTextBoxX.mouseDWheelScrolled(x, y, direction);
+		this.scrollableNumericTextBoxY.mouseDWheelScrolled(x, y, direction);
+		this.scrollableNumericTextBoxZ.mouseDWheelScrolled(x, y, direction);
+		this.ScrollableColorSelectorColor.mouseDWheelScrolled(x, y, direction);
 	}
 
 	public boolean submit()
@@ -148,14 +247,7 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 				this.markerManager.delMarker(this.editingMarker);
 				this.editingMarker = null;
 			}
-			this.markerManager.addMarker(
-					this.markerName,
-					this.markerGroup,
-					this.markerX,
-					this.markerY,
-					this.markerZ,
-					this.dimension,
-					this.colour);
+			this.markerManager.addMarker(this.markerName, this.markerGroup, this.markerX, this.markerY, this.markerZ, this.dimension, this.colour);
 			this.markerManager.setVisibleGroupName(this.markerGroup);
 			this.markerManager.update();
 		}
@@ -163,134 +255,94 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 	}
 
 	@Override
-	public void initGui()
+	protected void keyTyped(char c, int key)
 	{
-		int labelsWidth = this.fontRenderer.getStringWidth("Group");
-		int width = this.width * MwGuiMarkerDialogNew.dialogWidthPercent / 100 - labelsWidth - 20;
-		int x = (this.width - width + labelsWidth) / 2;
-		int y = (this.height - MwGuiMarkerDialogNew.elementVSpacing * MwGuiMarkerDialogNew.numberOfElements) / 2;
-
-		this.scrollableTextBoxName =
-				new ScrollableTextBox(x, y, width, I18n.format(this.editMarkerName), this.fontRenderer);
-		this.scrollableTextBoxName.setFocused(true);
-		this.scrollableTextBoxName.setText(this.markerName);
-
-		this.scrollableTextBoxGroup =
-				new ScrollableTextBox(
-						x,
-						y + MwGuiMarkerDialogNew.elementVSpacing,
-						width,
-						I18n.format(this.editMarkerGroup),
-						this.markerManager.groupList,
-						this.fontRenderer);
-		this.scrollableTextBoxGroup.setText(this.markerGroup);
-		this.scrollableTextBoxGroup.setDrawArrows(true);
-
-		this.scrollableNumericTextBoxX =
-				new ScrollableNumericTextBox(
-						x,
-						y + MwGuiMarkerDialogNew.elementVSpacing * 2,
-						width,
-						I18n.format(this.editMarkerX),
-						this.fontRenderer);
-		this.scrollableNumericTextBoxX.setText("" + this.markerX);
-		this.scrollableNumericTextBoxX.setDrawArrows(true);
-
-		this.scrollableNumericTextBoxY =
-				new ScrollableNumericTextBox(
-						x,
-						y + MwGuiMarkerDialogNew.elementVSpacing * 3,
-						width,
-						I18n.format(this.editMarkerY),
-						this.fontRenderer);
-		this.scrollableNumericTextBoxY.setText("" + this.markerY);
-		this.scrollableNumericTextBoxY.setDrawArrows(true);
-
-		this.scrollableNumericTextBoxZ =
-				new ScrollableNumericTextBox(
-						x,
-						y + MwGuiMarkerDialogNew.elementVSpacing * 4,
-						width,
-						I18n.format(this.editMarkerZ),
-						this.fontRenderer);
-		this.scrollableNumericTextBoxZ.setText("" + this.markerZ);
-		this.scrollableNumericTextBoxZ.setDrawArrows(true);
-
-		this.ScrollableColorSelectorColor =
-				new ScrollableColorSelector(
-						x,
-						y + MwGuiMarkerDialogNew.elementVSpacing * 5,
-						width,
-						I18n.format(this.editMarkerColor),
-						this.fontRenderer);
-		this.ScrollableColorSelectorColor.setColor(this.colour);
-		this.ScrollableColorSelectorColor.setDrawArrows(true);
-	}
-
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float f)
-	{
-		if (this.parentScreen != null)
+		switch (key)
 		{
-			this.parentScreen.drawScreen(mouseX, mouseY, f);
-		}
-		else
-		{
-			this.drawDefaultBackground();
-		}
+			case Keyboard.KEY_ESCAPE:
+				this.mc.displayGuiScreen(this.parentScreen);
+				break;
+			case Keyboard.KEY_RETURN:
+				// when enter pressed, submit current input
+				if (this.submit())
+				{
+					if (!this.backToGameOnSubmit)
+					{
+						this.mc.displayGuiScreen(this.parentScreen);
+					}
+					else
+					{
+						this.mc.displayGuiScreen(null);
+					}
+				}
+				break;
+			case Keyboard.KEY_TAB:
+				ScrollableField thisField = null;
+				ScrollableField prevField = null;
+				ScrollableField nextField = null;
 
-		int w = this.width * MwGuiMarkerDialogNew.dialogWidthPercent / 100;
-		drawRect(
-				(this.width - w) / 2,
-				(this.height - MwGuiMarkerDialogNew.elementVSpacing * (MwGuiMarkerDialogNew.numberOfElements + 2)) / 2 -
-						4,
-				(this.width - w) / 2 + w,
-				(this.height - MwGuiMarkerDialogNew.elementVSpacing * (MwGuiMarkerDialogNew.numberOfElements + 2)) / 2 +
-						MwGuiMarkerDialogNew.elementVSpacing * (MwGuiMarkerDialogNew.numberOfElements + 1),
-				0x80000000);
-		this.drawCenteredString(
-				this.fontRenderer,
-				I18n.format(this.title),
-				this.width / 2,
-				(this.height - MwGuiMarkerDialogNew.elementVSpacing * (MwGuiMarkerDialogNew.numberOfElements + 1)) / 2 -
-						MwGuiMarkerDialogNew.elementVSpacing / 4,
-				0xffffff);
-		this.scrollableTextBoxName.draw();
-		this.scrollableTextBoxGroup.draw();
-		this.scrollableNumericTextBoxX.draw();
-		this.scrollableNumericTextBoxY.draw();
-		this.scrollableNumericTextBoxZ.draw();
-		this.ScrollableColorSelectorColor.draw();
-		super.drawScreen(mouseX, mouseY, f);
-	}
+				if (this.scrollableTextBoxName.isFocused())
+				{
+					thisField = this.scrollableTextBoxName;
+					prevField = this.ScrollableColorSelectorColor;
+					nextField = this.scrollableTextBoxGroup;
+				}
+				else if (this.scrollableTextBoxGroup.isFocused())
+				{
+					thisField = this.scrollableTextBoxGroup;
+					prevField = this.scrollableTextBoxName;
+					nextField = this.scrollableNumericTextBoxX;
+				}
+				else if (this.scrollableNumericTextBoxX.isFocused())
+				{
+					thisField = this.scrollableNumericTextBoxX;
+					prevField = this.scrollableTextBoxGroup;
+					nextField = this.scrollableNumericTextBoxY;
+				}
+				else if (this.scrollableNumericTextBoxY.isFocused())
+				{
+					thisField = this.scrollableNumericTextBoxY;
+					prevField = this.scrollableNumericTextBoxX;
+					nextField = this.scrollableNumericTextBoxZ;
+				}
+				else if (this.scrollableNumericTextBoxZ.isFocused())
+				{
+					thisField = this.scrollableNumericTextBoxZ;
+					prevField = this.scrollableNumericTextBoxY;
+					nextField = this.ScrollableColorSelectorColor;
+				}
+				else if (this.ScrollableColorSelectorColor.isFocused())
+				{
+					thisField = this.ScrollableColorSelectorColor.thisField();
+					nextField = this.ScrollableColorSelectorColor.nextField(this.scrollableTextBoxName);
+					prevField = this.ScrollableColorSelectorColor.prevField(this.scrollableNumericTextBoxZ);
+				}
 
-	// override GuiScreen's handleMouseInput to process
-	// the scroll wheel.
-	@Override
-	public void handleMouseInput() throws IOException
-	{
-		if (MwAPI.getCurrentDataProvider() != null)
-		{
-			return;
-		}
-		int x = Mouse.getEventX() * this.width / this.mc.displayWidth;
-		int y = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
-		int direction = Mouse.getEventDWheel();
-		if (direction != 0)
-		{
-			this.mouseDWheelScrolled(x, y, direction);
-		}
-		super.handleMouseInput();
-	}
+				thisField.setFocused(false);
 
-	public void mouseDWheelScrolled(int x, int y, int direction)
-	{
-		this.scrollableTextBoxName.mouseDWheelScrolled(x, y, direction);
-		this.scrollableTextBoxGroup.mouseDWheelScrolled(x, y, direction);
-		this.scrollableNumericTextBoxX.mouseDWheelScrolled(x, y, direction);
-		this.scrollableNumericTextBoxY.mouseDWheelScrolled(x, y, direction);
-		this.scrollableNumericTextBoxZ.mouseDWheelScrolled(x, y, direction);
-		this.ScrollableColorSelectorColor.mouseDWheelScrolled(x, y, direction);
+				if (thisField instanceof ScrollableTextBox)
+				{
+					((ScrollableTextBox) thisField).setCursorPositionEnd();
+				}
+				if (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54))
+				{
+					prevField.setFocused(true);
+				}
+				else
+				{
+					nextField.setFocused(true);
+				}
+
+				break;
+			default:
+				this.scrollableTextBoxName.KeyTyped(c, key);
+				this.scrollableTextBoxGroup.KeyTyped(c, key);
+				this.scrollableNumericTextBoxX.KeyTyped(c, key);
+				this.scrollableNumericTextBoxY.KeyTyped(c, key);
+				this.scrollableNumericTextBoxZ.KeyTyped(c, key);
+				this.ScrollableColorSelectorColor.KeyTyped(c, key);
+				break;
+		}
 	}
 
 	@Override
@@ -304,96 +356,5 @@ public class MwGuiMarkerDialogNew extends GuiScreen
 		this.scrollableNumericTextBoxY.mouseClicked(x, y, button);
 		this.scrollableNumericTextBoxZ.mouseClicked(x, y, button);
 		this.ScrollableColorSelectorColor.mouseClicked(x, y, button);
-	}
-
-	@Override
-	protected void keyTyped(char c, int key)
-	{
-		switch (key)
-		{
-		case Keyboard.KEY_ESCAPE:
-			this.mc.displayGuiScreen(this.parentScreen);
-			break;
-		case Keyboard.KEY_RETURN:
-			// when enter pressed, submit current input
-			if (this.submit())
-			{
-				if (!this.backToGameOnSubmit)
-				{
-					this.mc.displayGuiScreen(this.parentScreen);
-				}
-				else
-				{
-					this.mc.displayGuiScreen(null);
-				}
-			}
-			break;
-		case Keyboard.KEY_TAB:
-			ScrollableField thisField = null;
-			ScrollableField prevField = null;
-			ScrollableField nextField = null;
-
-			if (this.scrollableTextBoxName.isFocused())
-			{
-				thisField = this.scrollableTextBoxName;
-				prevField = this.ScrollableColorSelectorColor;
-				nextField = this.scrollableTextBoxGroup;
-			}
-			else if (this.scrollableTextBoxGroup.isFocused())
-			{
-				thisField = this.scrollableTextBoxGroup;
-				prevField = this.scrollableTextBoxName;
-				nextField = this.scrollableNumericTextBoxX;
-			}
-			else if (this.scrollableNumericTextBoxX.isFocused())
-			{
-				thisField = this.scrollableNumericTextBoxX;
-				prevField = this.scrollableTextBoxGroup;
-				nextField = this.scrollableNumericTextBoxY;
-			}
-			else if (this.scrollableNumericTextBoxY.isFocused())
-			{
-				thisField = this.scrollableNumericTextBoxY;
-				prevField = this.scrollableNumericTextBoxX;
-				nextField = this.scrollableNumericTextBoxZ;
-			}
-			else if (this.scrollableNumericTextBoxZ.isFocused())
-			{
-				thisField = this.scrollableNumericTextBoxZ;
-				prevField = this.scrollableNumericTextBoxY;
-				nextField = this.ScrollableColorSelectorColor;
-			}
-			else if (this.ScrollableColorSelectorColor.isFocused())
-			{
-				thisField = this.ScrollableColorSelectorColor.thisField();
-				nextField = this.ScrollableColorSelectorColor.nextField(this.scrollableTextBoxName);
-				prevField = this.ScrollableColorSelectorColor.prevField(this.scrollableNumericTextBoxZ);
-			}
-
-			thisField.setFocused(false);
-
-			if (thisField instanceof ScrollableTextBox)
-			{
-				((ScrollableTextBox) thisField).setCursorPositionEnd();
-			}
-			if (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54))
-			{
-				prevField.setFocused(true);
-			}
-			else
-			{
-				nextField.setFocused(true);
-			}
-
-			break;
-		default:
-			this.scrollableTextBoxName.KeyTyped(c, key);
-			this.scrollableTextBoxGroup.KeyTyped(c, key);
-			this.scrollableNumericTextBoxX.KeyTyped(c, key);
-			this.scrollableNumericTextBoxY.KeyTyped(c, key);
-			this.scrollableNumericTextBoxZ.KeyTyped(c, key);
-			this.ScrollableColorSelectorColor.KeyTyped(c, key);
-			break;
-		}
 	}
 }

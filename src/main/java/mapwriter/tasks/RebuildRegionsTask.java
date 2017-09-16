@@ -26,10 +26,9 @@ public class RebuildRegionsTask extends Task
 	}
 
 	@Override
-	public void run()
+	public boolean CheckForDuplicate()
 	{
-		this.regionManager.blockColours = this.blockColours;
-		this.regionManager.rebuildRegions(this.x, this.z, this.w, this.h, this.dimension);
+		return false;
 	}
 
 	@Override
@@ -39,9 +38,10 @@ public class RebuildRegionsTask extends Task
 	}
 
 	@Override
-	public boolean CheckForDuplicate()
+	public void run()
 	{
-		return false;
+		this.regionManager.blockColours = this.blockColours;
+		this.regionManager.rebuildRegions(this.x, this.z, this.w, this.h, this.dimension);
 	}
 
 }

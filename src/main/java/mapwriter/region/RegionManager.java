@@ -41,15 +41,27 @@ public class RegionManager
 		}
 	}
 
-	private final LruCache regionMap;
+	public static Logger logger;
 
+	private static int incrStatsCounter(Map<String, Integer> h, String key)
+	{
+		int n = 1;
+		if (h.containsKey(key))
+		{
+			n = h.get(key) + 1;
+		}
+		h.put(key, n);
+		return n;
+	}
+
+	private final LruCache regionMap;
 	public final File worldDir;
 	public final File imageDir;
 	public BlockColours blockColours;
-	public static Logger logger;
-	public final RegionFileCache regionFileCache;
 
+	public final RegionFileCache regionFileCache;
 	public int maxZoom;
+
 	public int minZoom;
 
 	public RegionManager(File worldDir, File imageDir, BlockColours blockColours, int minZoom, int maxZoom)
@@ -76,15 +88,17 @@ public class RegionManager
 		this.regionFileCache.close();
 	}
 
-	private static int incrStatsCounter(Map<String, Integer> h, String key)
+	// must not return null
+	public Region getRegion(int x, int z, int zoomLevel, int dimension)
 	{
-		int n = 1;
-		if (h.containsKey(key))
+		Region region = this.regionMap.get(Region.getKey(x, z, zoomLevel, dimension));
+		if (region == null)
 		{
-			n = h.get(key) + 1;
+			// add region
+			region = new Region(this, x, z, zoomLevel, dimension);
+			this.regionMap.put(region.key, region);
 		}
-		h.put(key, n);
-		return n;
+		return region;
 	}
 
 	public void printLoadedRegionStats()
@@ -105,25 +119,6 @@ public class RegionManager
 		}
 	}
 
-	// must not return null
-	public Region getRegion(int x, int z, int zoomLevel, int dimension)
-	{
-		Region region = this.regionMap.get(Region.getKey(x, z, zoomLevel, dimension));
-		if (region == null)
-		{
-			// add region
-			region = new Region(this, x, z, zoomLevel, dimension);
-			this.regionMap.put(region.key, region);
-		}
-		return region;
-	}
-
-	public void updateChunk(MwChunk chunk)
-	{
-		Region region = this.getRegion(chunk.x << 4, chunk.z << 4, 0, chunk.dimension);
-		region.updateChunk(chunk);
-	}
-
 	public void rebuildRegions(int xStart, int zStart, int w, int h, int dimension)
 	{
 		// read all zoom level 0 regions
@@ -131,14 +126,14 @@ public class RegionManager
 
 		xStart &= Region.MASK;
 		zStart &= Region.MASK;
-		w = (w + Region.SIZE) & Region.MASK;
-		h = (h + Region.SIZE) & Region.MASK;
+		w = w + Region.SIZE & Region.MASK;
+		h = h + Region.SIZE & Region.MASK;
 
 		Logging.logInfo("rebuilding regions from (%d, %d) to (%d, %d)", xStart, zStart, xStart + w, zStart + h);
 
-		for (int rX = xStart; rX < (xStart + w); rX += Region.SIZE)
+		for (int rX = xStart; rX < xStart + w; rX += Region.SIZE)
 		{
-			for (int rZ = zStart; rZ < (zStart + h); rZ += Region.SIZE)
+			for (int rZ = zStart; rZ < zStart + h; rZ += Region.SIZE)
 			{
 				Region region = this.getRegion(rX, rZ, 0, dimension);
 				if (this.regionFileCache.regionFileExists(rX, rZ, dimension))
@@ -149,7 +144,9 @@ public class RegionManager
 						for (int cx = 0; cx < 32; cx++)
 						{
 							// load chunk from anvil file
-							MwChunk chunk = MwChunk.read((region.x >> 4) + cx, (region.z >> 4) + cz, region.dimension, this.regionFileCache);
+							MwChunk chunk = MwChunk.read((region.x >> 4) +
+															cx, (region.z >> 4) +
+																cz, region.dimension, this.regionFileCache);
 							region.updateChunk(chunk);
 						}
 					}
@@ -157,5 +154,11 @@ public class RegionManager
 				region.updateZoomLevels();
 			}
 		}
+	}
+
+	public void updateChunk(MwChunk chunk)
+	{
+		Region region = this.getRegion(chunk.x << 4, chunk.z << 4, 0, chunk.dimension);
+		region.updateChunk(chunk);
 	}
 }

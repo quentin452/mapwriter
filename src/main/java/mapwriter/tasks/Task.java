@@ -9,14 +9,6 @@ public abstract class Task implements Runnable
 	// the task stores its own future
 	private Future<?> future = null;
 
-	// called by processTaskQueue after the thread completes
-	public abstract void onComplete();
-
-	// the method that runs in a separate thread
-	// must not access future in run()
-	@Override
-	public abstract void run();
-
 	// returns false if the task has to be added to a new future
 	public abstract boolean CheckForDuplicate();
 
@@ -26,15 +18,13 @@ public abstract class Task implements Runnable
 		return this.future;
 	}
 
-	public final void setFuture(Future<?> future)
-	{
-		this.future = future;
-	}
-
 	public final boolean isDone()
 	{
-		return (this.future != null) ? this.future.isDone() : false;
+		return this.future != null ? this.future.isDone() : false;
 	}
+
+	// called by processTaskQueue after the thread completes
+	public abstract void onComplete();
 
 	public final void printException()
 	{
@@ -54,5 +44,15 @@ public abstract class Task implements Runnable
 				e.printStackTrace();
 			}
 		}
+	}
+
+	// the method that runs in a separate thread
+	// must not access future in run()
+	@Override
+	public abstract void run();
+
+	public final void setFuture(Future<?> future)
+	{
+		this.future = future;
 	}
 }

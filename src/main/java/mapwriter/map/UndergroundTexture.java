@@ -21,19 +21,6 @@ import net.minecraft.world.chunk.Chunk;
 public class UndergroundTexture extends Texture
 {
 
-	private Mw mw;
-	private int px = 0;
-	private int py = 0;
-	private int pz = 0;
-	private int dimension = 0;
-	private int updateX;
-	private int updateZ;
-	private byte[][] updateFlags = new byte[9][256];
-	private Point[] loadedChunkArray;
-	private int textureSize;
-	private int textureChunks;
-	private int[] pixels;
-
 	class RenderChunk implements IChunk
 	{
 		Chunk chunk;
@@ -41,18 +28,6 @@ public class UndergroundTexture extends Texture
 		public RenderChunk(Chunk chunk)
 		{
 			this.chunk = chunk;
-		}
-
-		@Override
-		public int getMaxY()
-		{
-			return this.chunk.getTopFilledSegment() + 15;
-		}
-
-		@Override
-		public IBlockState getBlockState(int x, int y, int z)
-		{
-			return this.chunk.getBlockState(x, y, z);
 		}
 
 		@Override
@@ -64,10 +39,7 @@ public class UndergroundTexture extends Texture
 
 			if (k == 255)
 			{
-				Biome biome =
-						Minecraft.getMinecraft().world.getBiomeProvider().getBiome(
-								new BlockPos(k, k, k),
-								Biomes.PLAINS);
+				Biome biome = Minecraft.getMinecraft().world.getBiomeProvider().getBiome(new BlockPos(k, k, k), Biomes.PLAINS);
 				k = Biome.getIdForBiome(biome);
 			}
 			;
@@ -75,11 +47,37 @@ public class UndergroundTexture extends Texture
 		}
 
 		@Override
+		public IBlockState getBlockState(int x, int y, int z)
+		{
+			return this.chunk.getBlockState(x, y, z);
+		}
+
+		@Override
 		public int getLightValue(int x, int y, int z)
 		{
 			return this.chunk.getLightSubtracted(new BlockPos(x, y, z), 0);
 		}
+
+		@Override
+		public int getMaxY()
+		{
+			return this.chunk.getTopFilledSegment() + 15;
+		}
 	}
+
+	private Mw mw;
+	private int px = 0;
+	private int py = 0;
+	private int pz = 0;
+	private int dimension = 0;
+	private int updateX;
+	private int updateZ;
+	private byte[][] updateFlags = new byte[9][256];
+	private Point[] loadedChunkArray;
+	private int textureSize;
+	private int textureChunks;
+
+	private int[] pixels;
 
 	public UndergroundTexture(Mw mw, int textureSize, boolean linearScaling)
 	{
@@ -101,60 +99,21 @@ public class UndergroundTexture extends Texture
 
 	public void clearChunkPixels(int cx, int cz)
 	{
-		int tx = (cx << 4) & (this.textureSize - 1);
-		int tz = (cz << 4) & (this.textureSize - 1);
+		int tx = cx << 4 & this.textureSize - 1;
+		int tz = cz << 4 & this.textureSize - 1;
 		for (int j = 0; j < 16; j++)
 		{
-			int offset = ((tz + j) * this.textureSize) + tx;
+			int offset = (tz + j) * this.textureSize + tx;
 			Arrays.fill(this.pixels, offset, offset + 16, 0xff000000);
 		}
 		this.updateTextureArea(tx, tz, 16, 16);
 	}
 
-	void renderToTexture(int y)
-	{
-		this.setPixelBufPosition(0);
-		for (int i = 0; i < this.pixels.length; i++)
-		{
-			int colour = this.pixels[i];
-			int height = (colour >> 24) & 0xff;
-			int alpha = (y >= height) ? 255 - ((y - height) * 8) : 0;
-			if (alpha < 0)
-			{
-				alpha = 0;
-			}
-			this.pixelBufPut(((alpha << 24) & 0xff000000) | (colour & 0xffffff));
-		}
-		this.updateTexture();
-	}
-
 	public int getLoadedChunkOffset(int cx, int cz)
 	{
-		int cxOffset = cx & (this.textureChunks - 1);
-		int czOffset = cz & (this.textureChunks - 1);
-		return (czOffset * this.textureChunks) + cxOffset;
-	}
-
-	public void requestView(MapView view)
-	{
-		int cxMin = ((int) view.getMinX()) >> 4;
-		int czMin = ((int) view.getMinZ()) >> 4;
-		int cxMax = ((int) view.getMaxX()) >> 4;
-		int czMax = ((int) view.getMaxZ()) >> 4;
-		for (int cz = czMin; cz <= czMax; cz++)
-		{
-			for (int cx = cxMin; cx <= cxMax; cx++)
-			{
-				Point requestedChunk = new Point(cx, cz);
-				int offset = this.getLoadedChunkOffset(cx, cz);
-				Point currentChunk = this.loadedChunkArray[offset];
-				if ((currentChunk == null) || !currentChunk.equals(requestedChunk))
-				{
-					this.clearChunkPixels(cx, cz);
-					this.loadedChunkArray[offset] = requestedChunk;
-				}
-			}
-		}
+		int cxOffset = cx & this.textureChunks - 1;
+		int czOffset = cz & this.textureChunks - 1;
+		return czOffset * this.textureChunks + cxOffset;
 	}
 
 	public boolean isChunkInTexture(int cx, int cz)
@@ -162,7 +121,29 @@ public class UndergroundTexture extends Texture
 		Point requestedChunk = new Point(cx, cz);
 		int offset = this.getLoadedChunkOffset(cx, cz);
 		Point chunk = this.loadedChunkArray[offset];
-		return (chunk != null) && chunk.equals(requestedChunk);
+		return chunk != null && chunk.equals(requestedChunk);
+	}
+
+	public void requestView(MapView view)
+	{
+		int cxMin = (int) view.getMinX() >> 4;
+		int czMin = (int) view.getMinZ() >> 4;
+		int cxMax = (int) view.getMaxX() >> 4;
+		int czMax = (int) view.getMaxZ() >> 4;
+		for (int cz = czMin; cz <= czMax; cz++)
+		{
+			for (int cx = cxMin; cx <= cxMax; cx++)
+			{
+				Point requestedChunk = new Point(cx, cz);
+				int offset = this.getLoadedChunkOffset(cx, cz);
+				Point currentChunk = this.loadedChunkArray[offset];
+				if (currentChunk == null || !currentChunk.equals(requestedChunk))
+				{
+					this.clearChunkPixels(cx, cz);
+					this.loadedChunkArray[offset] = requestedChunk;
+				}
+			}
+		}
 	}
 
 	public void update()
@@ -194,18 +175,11 @@ public class UndergroundTexture extends Texture
 				if (this.isChunkInTexture(cx, cz))
 				{
 					Chunk chunk = world.getChunkFromChunkCoords(cx, cz);
-					int tx = (cx << 4) & (this.textureSize - 1);
-					int tz = (cz << 4) & (this.textureSize - 1);
-					int pixelOffset = (tz * this.textureSize) + tx;
+					int tx = cx << 4 & this.textureSize - 1;
+					int tz = cz << 4 & this.textureSize - 1;
+					int pixelOffset = tz * this.textureSize + tx;
 					byte[] mask = this.updateFlags[flagOffset];
-					ChunkRender.renderUnderground(
-							this.mw.blockColours,
-							new RenderChunk(chunk),
-							this.pixels,
-							pixelOffset,
-							this.textureSize,
-							this.py,
-							mask);
+					ChunkRender.renderUnderground(this.mw.blockColours, new RenderChunk(chunk), this.pixels, pixelOffset, this.textureSize, this.py, mask);
 				}
 				flagOffset += 1;
 			}
@@ -230,11 +204,11 @@ public class UndergroundTexture extends Texture
 		int xDist = this.px - x;
 		int zDist = this.pz - z;
 
-		if (((xDist * xDist) + (zDist * zDist)) <= 256)
+		if (xDist * xDist + zDist * zDist <= 256)
 		{
 			if (this.isChunkInTexture(x >> 4, z >> 4))
 			{
-				int chunkOffset = ((zi >> 4) * 3) + (xi >> 4);
+				int chunkOffset = (zi >> 4) * 3 + (xi >> 4);
 				int columnXi = xi & 0xf;
 				int columnZi = zi & 0xf;
 				int columnOffset = (columnZi << 4) + columnXi;
@@ -246,7 +220,7 @@ public class UndergroundTexture extends Texture
 					WorldClient world = this.mw.mc.world;
 					IBlockState state = world.getBlockState(new BlockPos(x, y, z));
 					Block block = state.getBlock();
-					if ((block == null) || !block.isOpaqueCube(state))
+					if (block == null || !block.isOpaqueCube(state))
 					{
 						// if block is not opaque
 						this.updateFlags[chunkOffset][columnOffset] = ChunkRender.FLAG_NON_OPAQUE;
@@ -263,6 +237,22 @@ public class UndergroundTexture extends Texture
 				}
 			}
 		}
+	}
+
+	void renderToTexture(int y)
+	{
+		this.setPixelBufPosition(0);
+		for (int colour : this.pixels)
+		{
+			int height = colour >> 24 & 0xff;
+			int alpha = y >= height ? 255 - (y - height) * 8 : 0;
+			if (alpha < 0)
+			{
+				alpha = 0;
+			}
+			this.pixelBufPut(alpha << 24 & 0xff000000 | colour & 0xffffff);
+		}
+		this.updateTexture();
 	}
 
 }

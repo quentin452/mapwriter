@@ -8,14 +8,13 @@ import net.minecraftforge.common.config.Configuration;
 
 public class MapModeConfig implements IMapModeConfig
 {
-	public final String configCategory;
-	public final String mapPosCategory;
-	public static final String[] coordsModeStringArray =
-	{
+	public static final String[] coordsModeStringArray = {
 			"mw.config.map.coordsMode.disabled",
 			"mw.config.map.coordsMode.small",
 			"mw.config.map.coordsMode.large"
 	};
+	public final String configCategory;
+	public final String mapPosCategory;
 
 	public boolean enabledDef = true;
 	public boolean enabled = this.enabledDef;
@@ -49,164 +48,7 @@ public class MapModeConfig implements IMapModeConfig
 	public MapModeConfig(String configCategory)
 	{
 		this.configCategory = configCategory;
-		this.mapPosCategory = configCategory + Configuration.CATEGORY_SPLITTER
-				+ Reference.catMapPos;
-	}
-
-	public void loadConfig()
-	{
-		// get options from config file
-		this.playerArrowSize = ConfigurationHandler.configuration.getInt(
-				"playerArrowSize",
-				this.configCategory,
-				this.playerArrowSizeDef,
-				1,
-				20,
-				"",
-				"mw.config.map.playerArrowSize");
-		this.markerSize = ConfigurationHandler.configuration.getInt(
-				"markerSize",
-				this.configCategory,
-				this.markerSizeDef,
-				1,
-				20,
-				"",
-				"mw.config.map.markerSize");
-		this.alphaPercent = ConfigurationHandler.configuration.getInt(
-				"alphaPercent",
-				this.configCategory,
-				this.alphaPercentDef,
-				0,
-				100,
-				"",
-				"mw.config.map.alphaPercent");
-
-		this.trailMarkerSize = Math.max(1, this.markerSize - 1);
-
-		this.xPos = ConfigurationHandler.configuration
-				.get(
-						this.mapPosCategory,
-						"xPos",
-						this.xPosDef,
-						" [range: " + 0.0 + " ~ " + 100.0 + ", default: " + this.xPosDef + "]",
-						0.0,
-						100.0)
-				.setLanguageKey("mw.config.map.xPos")
-				.setConfigEntryClass(ModNumberSliderEntry.class)
-				.getDouble();
-
-		this.yPos = ConfigurationHandler.configuration
-				.get(
-						this.mapPosCategory,
-						"yPos",
-						this.yPosDef,
-						" [range: " + 0.0 + " ~ " + 100.0 + ", default: " + this.yPosDef + "]",
-						0.0,
-						100.0)
-				.setLanguageKey("mw.config.map.yPos")
-				.setConfigEntryClass(ModNumberSliderEntry.class)
-				.getDouble();
-
-		this.heightPercent = ConfigurationHandler.configuration
-				.get(
-						this.mapPosCategory,
-						"heightPercent",
-						this.heightPercentDef,
-						" [range: " + 0.0 + " ~ " + 100.0 + ", default: " + this.heightPercentDef
-								+ "]",
-						0.0,
-						100.0)
-				.setLanguageKey("mw.config.map.heightPercent")
-				.setConfigEntryClass(ModNumberSliderEntry.class)
-				.getDouble();
-
-		this.widthPercent = ConfigurationHandler.configuration
-				.get(
-						this.mapPosCategory,
-						"widthPercent",
-						this.widthPercentDef,
-						" [range: " + 0.0 + " ~ " + 100.0 + ", default: " + this.widthPercentDef
-								+ "]",
-						0.0,
-						100.0)
-				.setLanguageKey("mw.config.map.widthPercent")
-				.setConfigEntryClass(ModNumberSliderEntry.class)
-				.getDouble();
-	}
-
-	public void setDefaults()
-	{
-		ConfigurationHandler.configuration
-				.getCategory(this.mapPosCategory)
-				.setLanguageKey("mw.config.map.ctgy.position")
-				.setConfigEntryClass(MapPosConfigEntry.class)
-				.setShowInGui(false);
-	}
-
-	@Override
-	public String getConfigCategory()
-	{
-		return this.configCategory;
-	}
-
-	@Override
-	public String getMapPosCategory()
-	{
-		return this.mapPosCategory;
-	}
-
-	@Override
-	public String[] getCoordsModeStringArray()
-	{
-		return this.coordsModeStringArray;
-	}
-
-	@Override
-	public boolean getEnabled()
-	{
-		return this.enabled;
-	}
-
-	@Override
-	public boolean getRotate()
-	{
-		return this.rotate;
-	}
-
-	@Override
-	public boolean getCircular()
-	{
-		return this.circular;
-	}
-
-	@Override
-	public String getCoordsMode()
-	{
-		return this.coordsMode;
-	}
-
-	@Override
-	public boolean getBorderMode()
-	{
-		return this.borderMode;
-	}
-
-	@Override
-	public int getPlayerArrowSize()
-	{
-		return this.playerArrowSize;
-	}
-
-	@Override
-	public int getMarkerSize()
-	{
-		return this.markerSize;
-	}
-
-	@Override
-	public int getTrailMarkerSize()
-	{
-		return this.trailMarkerSize;
+		this.mapPosCategory = configCategory + Configuration.CATEGORY_SPLITTER + Reference.catMapPos;
 	}
 
 	@Override
@@ -222,6 +64,84 @@ public class MapModeConfig implements IMapModeConfig
 	}
 
 	@Override
+	public boolean getBorderMode()
+	{
+		return this.borderMode;
+	}
+
+	@Override
+	public boolean getCircular()
+	{
+		return this.circular;
+	}
+
+	@Override
+	public String getConfigCategory()
+	{
+		return this.configCategory;
+	}
+
+	@Override
+	public String getCoordsMode()
+	{
+		return this.coordsMode;
+	}
+
+	@Override
+	public String[] getCoordsModeStringArray()
+	{
+		return MapModeConfig.coordsModeStringArray;
+	}
+
+	@Override
+	public boolean getEnabled()
+	{
+		return this.enabled;
+	}
+
+	@Override
+	public double getHeightPercent()
+	{
+		return this.heightPercent;
+	}
+
+	@Override
+	public String getMapPosCategory()
+	{
+		return this.mapPosCategory;
+	}
+
+	@Override
+	public int getMarkerSize()
+	{
+		return this.markerSize;
+	}
+
+	@Override
+	public int getPlayerArrowSize()
+	{
+		return this.playerArrowSize;
+	}
+
+	@Override
+	public boolean getRotate()
+	{
+		return this.rotate;
+	}
+
+	@Override
+	public int getTrailMarkerSize()
+	{
+		return this.trailMarkerSize;
+	}
+
+	@Override
+	public double getWidthPercent()
+	{
+		return this.widthPercent;
+	}
+
+	@Override
 	public double getXPos()
 	{
 		return this.xPos;
@@ -233,15 +153,48 @@ public class MapModeConfig implements IMapModeConfig
 		return this.yPos;
 	}
 
-	@Override
-	public double getHeightPercent()
+	public void loadConfig()
 	{
-		return this.heightPercent;
+		// get options from config file
+		this.playerArrowSize = ConfigurationHandler.configuration.getInt("playerArrowSize", this.configCategory, this.playerArrowSizeDef, 1, 20, "", "mw.config.map.playerArrowSize");
+		this.markerSize = ConfigurationHandler.configuration.getInt("markerSize", this.configCategory, this.markerSizeDef, 1, 20, "", "mw.config.map.markerSize");
+		this.alphaPercent = ConfigurationHandler.configuration.getInt("alphaPercent", this.configCategory, this.alphaPercentDef, 0, 100, "", "mw.config.map.alphaPercent");
+
+		this.trailMarkerSize = Math.max(1, this.markerSize - 1);
+
+		this.xPos = ConfigurationHandler.configuration.get(this.mapPosCategory, "xPos", this.xPosDef, " [range: " +
+																										0.0 + " ~ " +
+																										100.0 +
+																										", default: " +
+																										this.xPosDef +
+																										"]", 0.0, 100.0).setLanguageKey("mw.config.map.xPos").setConfigEntryClass(ModNumberSliderEntry.class).getDouble();
+
+		this.yPos = ConfigurationHandler.configuration.get(this.mapPosCategory, "yPos", this.yPosDef, " [range: " +
+																										0.0 + " ~ " +
+																										100.0 +
+																										", default: " +
+																										this.yPosDef +
+																										"]", 0.0, 100.0).setLanguageKey("mw.config.map.yPos").setConfigEntryClass(ModNumberSliderEntry.class).getDouble();
+
+		this.heightPercent = ConfigurationHandler.configuration.get(this.mapPosCategory, "heightPercent", this.heightPercentDef, " [range: " +
+																																	0.0 +
+																																	" ~ " +
+																																	100.0 +
+																																	", default: " +
+																																	this.heightPercentDef +
+																																	"]", 0.0, 100.0).setLanguageKey("mw.config.map.heightPercent").setConfigEntryClass(ModNumberSliderEntry.class).getDouble();
+
+		this.widthPercent = ConfigurationHandler.configuration.get(this.mapPosCategory, "widthPercent", this.widthPercentDef, " [range: " +
+																																0.0 +
+																																" ~ " +
+																																100.0 +
+																																", default: " +
+																																this.widthPercentDef +
+																																"]", 0.0, 100.0).setLanguageKey("mw.config.map.widthPercent").setConfigEntryClass(ModNumberSliderEntry.class).getDouble();
 	}
 
-	@Override
-	public double getWidthPercent()
+	public void setDefaults()
 	{
-		return this.widthPercent;
+		ConfigurationHandler.configuration.getCategory(this.mapPosCategory).setLanguageKey("mw.config.map.ctgy.position").setConfigEntryClass(MapPosConfigEntry.class).setShowInGui(false);
 	}
 }

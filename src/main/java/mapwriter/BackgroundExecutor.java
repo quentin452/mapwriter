@@ -46,6 +46,7 @@ import mapwriter.util.Logging;
  * 	  Task2.onComplete()
  * 	  Task3.onComplete()
  */
+// @formatter:on
 
 public class BackgroundExecutor
 {
@@ -73,8 +74,8 @@ public class BackgroundExecutor
 				this.taskQueue.add(task);
 			}
 
-			//bit for diagnostics on task left to optimize code
-			if ((this.tasksRemaining() > 500) && this.doDiag)
+			// bit for diagnostics on task left to optimize code
+			if (this.tasksRemaining() > 500 && this.doDiag)
 			{
 				this.doDiag = false;
 				Logging.logError("Taskque went over 500 starting diagnostic");
@@ -91,6 +92,48 @@ public class BackgroundExecutor
 			Logging.log("MwExecutor.addTask: error: cannot add task to closed executor");
 		}
 		return this.closed;
+	}
+
+	public boolean close()
+	{
+		boolean error = true;
+		try
+		{
+			this.taskLeftPerType();
+			// stop accepting new tasks
+			this.executor.shutdown();
+			// process remaining tasks
+			this.processRemainingTasks(50, 5);
+			// should already be terminated, but just in case...
+			error = !this.executor.awaitTermination(10L, TimeUnit.SECONDS);
+			error = false;
+		}
+		catch (InterruptedException e)
+		{
+			Logging.log("error: IO task was interrupted during shutdown");
+			e.printStackTrace();
+		}
+		this.closed = true;
+		return error;
+	}
+
+	public boolean processRemainingTasks(int attempts, int delay)
+	{
+		while (this.taskQueue.size() > 0 && attempts > 0)
+		{
+			if (this.processTaskQueue())
+			{
+				try
+				{
+					Thread.sleep(delay);
+				}
+				catch (Exception e)
+				{
+				}
+				attempts--;
+			}
+		}
+		return attempts <= 0;
 	}
 
 	// Pop a Task entry from the task queue and check if the task's thread has
@@ -119,51 +162,9 @@ public class BackgroundExecutor
 		return !processed;
 	}
 
-	public boolean processRemainingTasks(int attempts, int delay)
-	{
-		while ((this.taskQueue.size() > 0) && (attempts > 0))
-		{
-			if (this.processTaskQueue())
-			{
-				try
-				{
-					Thread.sleep(delay);
-				}
-				catch (Exception e)
-				{
-				}
-				attempts--;
-			}
-		}
-		return (attempts <= 0);
-	}
-
 	public int tasksRemaining()
 	{
 		return this.taskQueue.size();
-	}
-
-	public boolean close()
-	{
-		boolean error = true;
-		try
-		{
-			this.taskLeftPerType();
-			// stop accepting new tasks
-			this.executor.shutdown();
-			// process remaining tasks
-			this.processRemainingTasks(50, 5);
-			// should already be terminated, but just in case...
-			error = !this.executor.awaitTermination(10L, TimeUnit.SECONDS);
-			error = false;
-		}
-		catch (InterruptedException e)
-		{
-			Logging.log("error: IO task was interrupted during shutdown");
-			e.printStackTrace();
-		}
-		this.closed = true;
-		return error;
 	}
 
 	private void taskLeftPerType()
@@ -175,7 +176,7 @@ public class BackgroundExecutor
 			String className = t.getClass().toString();
 			if (tasksLeft.containsKey(className))
 			{
-				tasksLeft.put(className, ((Integer)tasksLeft.get(className)) + 1);
+				tasksLeft.put(className, (Integer) tasksLeft.get(className) + 1);
 			}
 			else
 			{
@@ -183,7 +184,8 @@ public class BackgroundExecutor
 			}
 		}
 
-		for (Map.Entry<String, Object> entry : tasksLeft.entrySet()) {
+		for (Map.Entry<String, Object> entry : tasksLeft.entrySet())
+		{
 			String key = entry.getKey();
 			Object value = entry.getValue();
 

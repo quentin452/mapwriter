@@ -12,29 +12,6 @@ public class MwAPI
 	private static IMwDataProvider currentProvider = null;
 	private static ArrayList<String> providerKeys = new ArrayList<String>();
 
-	public static void registerDataProvider(String name, IMwDataProvider handler)
-	{
-		dataProviders.put(name, handler);
-		providerKeys.add(name);
-	}
-
-	public static Collection<IMwDataProvider> getDataProviders()
-	{
-		return dataProviders.values();
-	}
-
-	// Returns the data provider based on its name //
-	public static IMwDataProvider getDataProvider(String name)
-	{
-		return dataProviders.get(name);
-	}
-
-	// Returns the name based on the data provider //
-	public static String getProviderName(IMwDataProvider provider)
-	{
-		return dataProviders.inverse().get(provider);
-	}
-
 	public static IMwDataProvider getCurrentDataProvider()
 	{
 		return currentProvider;
@@ -52,10 +29,27 @@ public class MwAPI
 		}
 	}
 
-	public static IMwDataProvider setCurrentDataProvider(String name)
+	// Returns the data provider based on its name //
+	public static IMwDataProvider getDataProvider(String name)
 	{
-		currentProvider = dataProviders.get(name);
-		return currentProvider;
+		return dataProviders.get(name);
+	}
+
+	public static Collection<IMwDataProvider> getDataProviders()
+	{
+		return dataProviders.values();
+	}
+
+	// Returns the name based on the data provider //
+	public static String getProviderName(IMwDataProvider provider)
+	{
+		return dataProviders.inverse().get(provider);
+	}
+
+	public static void registerDataProvider(String name, IMwDataProvider handler)
+	{
+		dataProviders.put(name, handler);
+		providerKeys.add(name);
 	}
 
 	public static IMwDataProvider setCurrentDataProvider(IMwDataProvider provider)
@@ -64,12 +58,18 @@ public class MwAPI
 		return currentProvider;
 	}
 
+	public static IMwDataProvider setCurrentDataProvider(String name)
+	{
+		currentProvider = dataProviders.get(name);
+		return currentProvider;
+	}
+
 	public static IMwDataProvider setNextProvider()
 	{
 		if (currentProvider != null)
 		{
 			int index = providerKeys.indexOf(getCurrentProviderName());
-			if ((index + 1) >= providerKeys.size())
+			if (index + 1 >= providerKeys.size())
 			{
 				currentProvider = null;
 			}
@@ -94,7 +94,7 @@ public class MwAPI
 		if (currentProvider != null)
 		{
 			int index = providerKeys.indexOf(getCurrentProviderName());
-			if ((index - 1) < 0)
+			if (index - 1 < 0)
 			{
 				currentProvider = null;
 			}

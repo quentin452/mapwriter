@@ -103,39 +103,6 @@ public class EventHandler
 		}
 	}
 
-	@SubscribeEvent
-	public void renderMap(RenderGameOverlayEvent.Post event)
-	{
-		if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)
-		{
-			Mw.getInstance().onTick();
-		}
-	}
-
-	@SubscribeEvent
-	public void onTextureStitchEventPost(TextureStitchEvent.Post event)
-	{
-		if (Config.reloadColours)
-		{
-			Logging.logInfo(
-					"Skipping the first generation of blockcolours, models are not loaded yet",
-					(Object[]) null);
-		}
-		else
-		{
-			this.mw.reloadBlockColours();
-		}
-	}
-
-	@SubscribeEvent
-	public void renderWorldLastEvent(RenderWorldLastEvent event)
-	{
-		if (Mw.getInstance().ready)
-		{
-			Mw.getInstance().markerManager.drawMarkersWorld(event.getPartialTicks());
-		}
-	}
-
 	// a bit odd way to reload the blockcolours. if the models are not loaded
 	// yet then the uv values and icons will be wrong.
 	// this only happens if fml.skipFirstTextureLoad is enabled.
@@ -192,6 +159,37 @@ public class EventHandler
 			{
 
 			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onTextureStitchEventPost(TextureStitchEvent.Post event)
+	{
+		if (Config.reloadColours)
+		{
+			Logging.logInfo("Skipping the first generation of blockcolours, models are not loaded yet", (Object[]) null);
+		}
+		else
+		{
+			this.mw.reloadBlockColours();
+		}
+	}
+
+	@SubscribeEvent
+	public void renderMap(RenderGameOverlayEvent.Post event)
+	{
+		if (event.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)
+		{
+			Mw.getInstance().onTick();
+		}
+	}
+
+	@SubscribeEvent
+	public void renderWorldLastEvent(RenderWorldLastEvent event)
+	{
+		if (Mw.getInstance().ready)
+		{
+			Mw.getInstance().markerManager.drawMarkersWorld(event.getPartialTicks());
 		}
 	}
 }

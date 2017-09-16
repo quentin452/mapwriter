@@ -61,6 +61,15 @@ public class MiniMap
 		this.currentMap = null;
 	}
 
+	// draw the map overlay, player arrow, and markers
+	public void drawCurrentMap()
+	{
+		if (this.currentMap != null)
+		{
+			this.currentMap.draw();
+		}
+	}
+
 	// toggle between small map, underground map and no map
 	public MapRenderer nextOverlayMode(int increment)
 	{
@@ -74,14 +83,5 @@ public class MiniMap
 		this.currentMap = newMap;
 		// }
 		return this.currentMap;
-	}
-
-	// draw the map overlay, player arrow, and markers
-	public void drawCurrentMap()
-	{
-		if (this.currentMap != null)
-		{
-			this.currentMap.draw();
-		}
 	}
 }

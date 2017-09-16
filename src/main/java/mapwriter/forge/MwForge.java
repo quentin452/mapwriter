@@ -17,9 +17,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION,
-		guiFactory = Reference.MOD_GUIFACTORY_CLASS, clientSideOnly = true, updateJSON = Reference.ForgeVersionURL,
-		acceptedMinecraftVersions = "@ACCEPTED_MC_VERSION@")
+@Mod(modid = Reference.MOD_ID, name = Reference.MOD_NAME, version = Reference.VERSION, guiFactory = Reference.MOD_GUIFACTORY_CLASS, clientSideOnly = true, updateJSON = Reference.ForgeVersionURL, acceptedMinecraftVersions = "@ACCEPTED_MC_VERSION@")
 public class MwForge
 {
 
@@ -32,22 +30,9 @@ public class MwForge
 	public static Logger logger = LogManager.getLogger(Reference.MOD_ID);
 
 	@EventHandler
-	public void preInit(FMLPreInitializationEvent event)
-	{
-		MinecraftForge.EVENT_BUS.register(this);
-		proxy.preInit(event.getSuggestedConfigurationFile());
-	}
-
-	@EventHandler
 	public void load(FMLInitializationEvent event)
 	{
 		proxy.load();
-	}
-
-	@EventHandler
-	public void postInit(FMLPostInitializationEvent event)
-	{
-		proxy.postInit();
 	}
 
 	@SubscribeEvent
@@ -59,10 +44,23 @@ public class MwForge
 			// null.
 			// a bit hacky, but simpler than checking if the connection has
 			// closed.
-			if ((Mw.getInstance().ready) && (Minecraft.getMinecraft().player == null))
+			if (Mw.getInstance().ready && Minecraft.getMinecraft().player == null)
 			{
 				Mw.getInstance().close();
 			}
 		}
+	}
+
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event)
+	{
+		proxy.postInit();
+	}
+
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event)
+	{
+		MinecraftForge.EVENT_BUS.register(this);
+		proxy.preInit(event.getSuggestedConfigurationFile());
 	}
 }

@@ -23,15 +23,27 @@ public class OverlayGrid implements IMwDataProvider
 		}
 
 		@Override
-		public Point getCoordinates()
+		public int getBorderColor()
 		{
-			return this.coord;
+			return 0xff000000;
+		}
+
+		@Override
+		public float getBorderWidth()
+		{
+			return 0.5f;
 		}
 
 		@Override
 		public int getColor()
 		{
 			return 0x00ffffff;
+		}
+
+		@Override
+		public Point getCoordinates()
+		{
+			return this.coord;
 		}
 
 		@Override
@@ -46,23 +58,10 @@ public class OverlayGrid implements IMwDataProvider
 			return true;
 		}
 
-		@Override
-		public float getBorderWidth()
-		{
-			return 0.5f;
-		}
-
-		@Override
-		public int getBorderColor()
-		{
-			return 0xff000000;
-		}
-
 	}
 
 	@Override
-	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ, double minX,
-			double minZ, double maxX, double maxZ)
+	public ArrayList<IMwChunkOverlay> getChunksOverlay(int dim, double centerX, double centerZ, double minX, double minZ, double maxX, double maxZ)
 	{
 		int minChunkX = (MathHelper.ceil(minX) >> 4) - 1;
 		int minChunkZ = (MathHelper.ceil(minZ) >> 4) - 1;
@@ -89,19 +88,26 @@ public class OverlayGrid implements IMwDataProvider
 	}
 
 	@Override
+	public ILabelInfo getLabelInfo(int mouseX, int mouseY)
+	{
+		return null;
+	}
+
+	@Override
 	public String getStatusString(int dim, int bX, int bY, int bZ)
 	{
 		return "";
 	}
 
 	@Override
-	public void onMiddleClick(int dim, int bX, int bZ, IMapView mapview)
+	public void onDimensionChanged(int dimension, IMapView mapview)
 	{
 	}
 
 	@Override
-	public void onDimensionChanged(int dimension, IMapView mapview)
+	public void onDraw(IMapView mapview, IMapMode mapmode)
 	{
+
 	}
 
 	@Override
@@ -111,9 +117,15 @@ public class OverlayGrid implements IMwDataProvider
 	}
 
 	@Override
-	public void onZoomChanged(int level, IMapView mapview)
+	public void onMiddleClick(int dim, int bX, int bZ, IMapView mapview)
+	{
+	}
+
+	@Override
+	public boolean onMouseInput(IMapView mapview, IMapMode mapmode)
 	{
 
+		return false;
 	}
 
 	@Override
@@ -129,21 +141,8 @@ public class OverlayGrid implements IMwDataProvider
 	}
 
 	@Override
-	public void onDraw(IMapView mapview, IMapMode mapmode)
+	public void onZoomChanged(int level, IMapView mapview)
 	{
 
-	}
-
-	@Override
-	public boolean onMouseInput(IMapView mapview, IMapMode mapmode)
-	{
-
-		return false;
-	}
-
-	@Override
-	public ILabelInfo getLabelInfo(int mouseX, int mouseY)
-	{
-		return null;
 	}
 }

@@ -31,19 +31,6 @@ public class Marker
 		this.groupName = Utils.mungeStringForConfig(groupName);
 	}
 
-	public String getString()
-	{
-		return String.format(
-				"%s %s (%d, %d, %d) %d %06x",
-				this.name,
-				this.groupName,
-				this.x,
-				this.y,
-				this.z,
-				this.dimension,
-				this.colour & 0xffffff);
-	}
-
 	public void colourNext()
 	{
 		this.colour = Utils.getNextColour();
@@ -66,7 +53,7 @@ public class Marker
 		Render.setColour(borderColour);
 		Render.drawRect(p.x - halfMSize, p.y - halfMSize, mSize, mSize);
 		Render.setColour(this.colour);
-		Render.drawRect((p.x - halfMSize) + 0.5, (p.y - halfMSize) + 0.5, mSize - 1.0, mSize - 1.0);
+		Render.drawRect(p.x - halfMSize + 0.5, p.y - halfMSize + 0.5, mSize - 1.0, mSize - 1.0);
 	}
 
 	// arraylist.contains was producing unexpected results in some situations
@@ -81,14 +68,19 @@ public class Marker
 		if (o instanceof Marker)
 		{
 			Marker m = (Marker) o;
-			return (this.name == m.name) &&
-					(this.groupName == m.groupName) &&
-					(this.x == m.x) &&
-					(this.y == m.y) &&
-					(this.z == m.z) &&
-					(this.dimension == m.dimension);
+			return this.name == m.name &&
+					this.groupName == m.groupName &&
+					this.x == m.x &&
+					this.y == m.y &&
+					this.z == m.z &&
+					this.dimension == m.dimension;
 		}
 		return false;
+	}
+
+	public float getBlue()
+	{
+		return (colour & 0xff) / 255.0f;
 	}
 
 	public double getDistanceToMarker(Entity entityIn)
@@ -96,21 +88,22 @@ public class Marker
 		double d0 = this.x - entityIn.posX;
 		double d1 = this.y - entityIn.posY;
 		double d2 = this.z - entityIn.posZ;
-		return MathHelper.sqrt((d0 * d0) + (d1 * d1) + (d2 * d2));
-	}
-
-	public float getRed()
-	{
-		return (((colour >> 16) & 0xff) / 255.0f);
+		return MathHelper.sqrt(d0 * d0 + d1 * d1 + d2 * d2);
 	}
 
 	public float getGreen()
 	{
-		return (((colour >> 8) & 0xff) / 255.0f);
+		return (colour >> 8 & 0xff) / 255.0f;
 	}
 
-	public float getBlue()
+	public float getRed()
 	{
-		return (((colour) & 0xff) / 255.0f);
+		return (colour >> 16 & 0xff) / 255.0f;
+	}
+
+	public String getString()
+	{
+		return String.format("%s %s (%d, %d, %d) %d %06x", this.name, this.groupName, this.x, this.y, this.z, this.dimension, this.colour &
+																																0xffffff);
 	}
 }

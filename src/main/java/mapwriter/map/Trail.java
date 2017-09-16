@@ -15,24 +15,15 @@ public class Trail
 	class TrailMarker
 	{
 
-		double x, y, z, heading;
-		int alphaPercent;
-
 		static final int borderColour = 0xff000000;
 		static final int colour = 0xff00ffff;
+
+		double x, y, z, heading;
+		int alphaPercent;
 
 		public TrailMarker(double x, double y, double z, double heading)
 		{
 			this.set(x, y, z, heading);
-		}
-
-		public void set(double x, double y, double z, double heading)
-		{
-			this.x = x;
-			this.y = y;
-			this.z = z;
-			this.heading = heading;
-			this.alphaPercent = 100;
 		}
 
 		public void draw(MapMode mapMode, MapView mapView)
@@ -48,6 +39,15 @@ public class Trail
 				Render.drawArrow(p.x, p.y, this.heading, mapMode.getConfig().trailMarkerSize - 1.0);
 			}
 		}
+
+		public void set(double x, double y, double z, double heading)
+		{
+			this.x = x;
+			this.y = y;
+			this.z = z;
+			this.heading = heading;
+			this.alphaPercent = 100;
+		}
 	}
 
 	private Mw mw;
@@ -62,52 +62,12 @@ public class Trail
 	{
 		this.mw = mw;
 		this.name = name;
-		this.enabled = ConfigurationHandler.configuration.getBoolean(
-				this.name + "TrailEnabled",
-				Reference.catOptions,
-				false,
-				"");
-		this.maxLength = ConfigurationHandler.configuration.getInt(
-				this.name + "TrailMaxLength",
-				Reference.catOptions,
-				this.maxLength,
-				1,
-				200,
-				"");
-		this.intervalMillis = ConfigurationHandler.configuration.getInt(
-				this.name + "TrailMarkerIntervalMillis",
-				Reference.catOptions,
-				(int) this.intervalMillis,
-				100,
-				360000,
-				"");
-	}
-
-	public void close()
-	{
-		// this.mw.config.setBoolean(Mw.catOptions, this.name + "TrailEnabled",
-		// this.enabled);
-		// this.mw.config.setInt(Mw.catOptions, this.name + "TrailMaxLength",
-		// this.maxLength);
-		// this.mw.config.setInt(Mw.catOptions, this.name +
-		// "TrailMarkerIntervalMillis", (int) this.intervalMillis);
-		this.trailMarkerList.clear();
-	}
-
-	// for other types of trails will need to extend Trail and override this
-	// method
-	public void onTick()
-	{
-		long time = System.currentTimeMillis();
-		if ((time - this.lastMarkerTime) > this.intervalMillis)
-		{
-			this.lastMarkerTime = time;
-			this.addMarker(
-					this.mw.playerX,
-					this.mw.playerY,
-					this.mw.playerZ,
-					this.mw.playerHeading);
-		}
+		this.enabled = ConfigurationHandler.configuration.getBoolean(this.name +
+																		"TrailEnabled", Reference.catOptions, false, "");
+		this.maxLength = ConfigurationHandler.configuration.getInt(this.name +
+																	"TrailMaxLength", Reference.catOptions, this.maxLength, 1, 200, "");
+		this.intervalMillis = ConfigurationHandler.configuration.getInt(this.name +
+																		"TrailMarkerIntervalMillis", Reference.catOptions, (int) this.intervalMillis, 100, 360000, "");
 	}
 
 	public void addMarker(double x, double y, double z, double heading)
@@ -122,9 +82,20 @@ public class Trail
 		int i = this.maxLength - this.trailMarkerList.size();
 		for (TrailMarker marker : this.trailMarkerList)
 		{
-			marker.alphaPercent = (i * 100) / this.maxLength;
+			marker.alphaPercent = i * 100 / this.maxLength;
 			i++;
 		}
+	}
+
+	public void close()
+	{
+		// this.mw.config.setBoolean(Mw.catOptions, this.name + "TrailEnabled",
+		// this.enabled);
+		// this.mw.config.setInt(Mw.catOptions, this.name + "TrailMaxLength",
+		// this.maxLength);
+		// this.mw.config.setInt(Mw.catOptions, this.name +
+		// "TrailMarkerIntervalMillis", (int) this.intervalMillis);
+		this.trailMarkerList.clear();
 	}
 
 	public void draw(MapMode mapMode, MapView mapView)
@@ -132,6 +103,18 @@ public class Trail
 		for (TrailMarker marker : this.trailMarkerList)
 		{
 			marker.draw(mapMode, mapView);
+		}
+	}
+
+	// for other types of trails will need to extend Trail and override this
+	// method
+	public void onTick()
+	{
+		long time = System.currentTimeMillis();
+		if (time - this.lastMarkerTime > this.intervalMillis)
+		{
+			this.lastMarkerTime = time;
+			this.addMarker(this.mw.playerX, this.mw.playerY, this.mw.playerZ, this.mw.playerHeading);
 		}
 	}
 

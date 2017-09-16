@@ -22,10 +22,9 @@ public class MapUpdateViewTask extends Task
 	}
 
 	@Override
-	public void run()
+	public boolean CheckForDuplicate()
 	{
-		// load regions for view
-		this.mapTexture.loadRegions(this.regionManager, this.req);
+		return false;
 	}
 
 	@Override
@@ -36,8 +35,9 @@ public class MapUpdateViewTask extends Task
 	}
 
 	@Override
-	public boolean CheckForDuplicate()
+	public void run()
 	{
-		return false;
+		// load regions for view
+		this.mapTexture.loadRegions(this.regionManager, this.req);
 	}
 }

@@ -22,64 +22,9 @@ import net.minecraftforge.fml.client.config.IConfigElement;
 
 public class ModGuiConfig extends GuiConfig
 {
-	public ModGuiConfig(GuiScreen guiScreen)
-	{
-		super(
-				guiScreen,
-				getConfigElements(),
-				Reference.MOD_ID,
-				Reference.catOptions,
-				false,
-				false,
-				GuiConfig.getAbridgedConfigPath(ConfigurationHandler.configuration.toString()));
-	}
-
-	/** Compiles a list of config elements */
-	private static List<IConfigElement> getConfigElements()
-	{
-		// Add categories to config GUI
-		List<IConfigElement> list = new ArrayList<IConfigElement>();
-		list.add(
-				new DummyCategoryElement(
-						Reference.catOptions,
-						"mw.configgui.ctgy.general",
-						new ConfigElement(
-								ConfigurationHandler.configuration.getCategory(
-										Reference.catOptions)).getChildElements()));
-
-		list.add(
-				new DummyCategoryElement(
-						Reference.catFullMapConfig,
-						"mw.configgui.ctgy.fullScreenMap",
-						new ConfigElement(
-								ConfigurationHandler.configuration.getCategory(
-										Reference.catFullMapConfig)).getChildElements(),
-						MapModeConfigEntry.class));
-
-		list.add(
-				new DummyCategoryElement(
-						Reference.catLargeMapConfig,
-						"mw.configgui.ctgy.largeMap",
-						new ConfigElement(
-								ConfigurationHandler.configuration.getCategory(
-										Reference.catLargeMapConfig)).getChildElements(),
-						MapModeConfigEntry.class));
-
-		list.add(
-				new DummyCategoryElement(
-						Reference.catSmallMapConfig,
-						"mw.configgui.ctgy.smallMap",
-						new ConfigElement(
-								ConfigurationHandler.configuration.getCategory(
-										Reference.catSmallMapConfig)).getChildElements(),
-						MapModeConfigEntry.class));
-		return list;
-	}
-
 	public static class MapModeConfigEntry extends CategoryEntry
 	{
-		public MapModeConfigEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList,
-				IConfigElement configElement)
+		public MapModeConfigEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement configElement)
 		{
 			super(owningScreen, owningEntryList, configElement);
 		}
@@ -94,15 +39,9 @@ public class ModGuiConfig extends GuiConfig
 			// GuiConfig object's entryList will also be refreshed to
 			// reflect
 			// the changes.
-			return new GuiConfig(
-					this.owningScreen,
-					this.getConfigElement().getChildElements(),
-					this.owningScreen.modID,
-					QualifiedName,
-					this.configElement.requiresWorldRestart()
-							|| this.owningScreen.allRequireWorldRestart,
-					this.configElement.requiresMcRestart() || this.owningScreen.allRequireMcRestart,
-					this.owningScreen.title);
+			return new GuiConfig(this.owningScreen, this.getConfigElement().getChildElements(), this.owningScreen.modID, QualifiedName, this.configElement.requiresWorldRestart() ||
+																																		this.owningScreen.allRequireWorldRestart, this.configElement.requiresMcRestart() ||
+																																													this.owningScreen.allRequireMcRestart, this.owningScreen.title);
 		}
 	}
 
@@ -111,8 +50,7 @@ public class ModGuiConfig extends GuiConfig
 		protected final boolean beforeValue;
 		protected boolean currentValue;
 
-		public ModBooleanEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList,
-				IConfigElement configElement)
+		public ModBooleanEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement configElement)
 		{
 			super(owningScreen, owningEntryList, configElement);
 			this.beforeValue = Boolean.valueOf(configElement.get().toString());
@@ -122,36 +60,31 @@ public class ModGuiConfig extends GuiConfig
 		}
 
 		@Override
-		public void updateValueButtonText()
+		public boolean enabled()
 		{
-			this.btnValue.displayString = I18n.format(String.valueOf(this.currentValue));
-			this.btnValue.packedFGColour = this.currentValue ? GuiUtils.getColorCode('2', true)
-					: GuiUtils.getColorCode('4', true);
-		}
-
-		@Override
-		public void valueButtonPressed(int slotIndex)
-		{
-			if (this.enabled())
+			for (IConfigEntry entry : this.owningEntryList.listEntries)
 			{
-				this.currentValue = !this.currentValue;
+				if (entry.getName().equals("circular") && entry instanceof BooleanEntry)
+				{
+					return Boolean.valueOf(entry.getCurrentValue().toString());
+				}
 			}
+
+			return true;
 		}
 
 		@Override
-		public boolean isDefault()
+		public Boolean getCurrentValue()
 		{
-			return this.currentValue == Boolean.valueOf(this.configElement.getDefault().toString());
+			return this.currentValue;
 		}
 
 		@Override
-		public void setToDefault()
+		public Boolean[] getCurrentValues()
 		{
-			if (this.enabled())
-			{
-				this.currentValue = Boolean.valueOf(this.configElement.getDefault().toString());
-				this.updateValueButtonText();
-			}
+			return new Boolean[] {
+					this.getCurrentValue()
+			};
 		}
 
 		@Override
@@ -161,13 +94,9 @@ public class ModGuiConfig extends GuiConfig
 		}
 
 		@Override
-		public void undoChanges()
+		public boolean isDefault()
 		{
-			if (this.enabled())
-			{
-				this.currentValue = this.beforeValue;
-				this.updateValueButtonText();
-			}
+			return this.currentValue == Boolean.valueOf(this.configElement.getDefault().toString());
 		}
 
 		@Override
@@ -182,32 +111,39 @@ public class ModGuiConfig extends GuiConfig
 		}
 
 		@Override
-		public Boolean getCurrentValue()
+		public void setToDefault()
 		{
-			return this.currentValue;
-		}
-
-		@Override
-		public Boolean[] getCurrentValues()
-		{
-			return new Boolean[]
+			if (this.enabled())
 			{
-					this.getCurrentValue()
-			};
-		}
-
-		@Override
-		public boolean enabled()
-		{
-			for (IConfigEntry entry : this.owningEntryList.listEntries)
-			{
-				if (entry.getName().equals("circular") && (entry instanceof BooleanEntry))
-				{
-					return Boolean.valueOf(entry.getCurrentValue().toString());
-				}
+				this.currentValue = Boolean.valueOf(this.configElement.getDefault().toString());
+				this.updateValueButtonText();
 			}
+		}
 
-			return true;
+		@Override
+		public void undoChanges()
+		{
+			if (this.enabled())
+			{
+				this.currentValue = this.beforeValue;
+				this.updateValueButtonText();
+			}
+		}
+
+		@Override
+		public void updateValueButtonText()
+		{
+			this.btnValue.displayString = I18n.format(String.valueOf(this.currentValue));
+			this.btnValue.packedFGColour = this.currentValue ? GuiUtils.getColorCode('2', true) : GuiUtils.getColorCode('4', true);
+		}
+
+		@Override
+		public void valueButtonPressed(int slotIndex)
+		{
+			if (this.enabled())
+			{
+				this.currentValue = !this.currentValue;
+			}
 		}
 	}
 
@@ -215,12 +151,24 @@ public class ModGuiConfig extends GuiConfig
 	{
 		private boolean enabled = true;
 
-		public ModNumberSliderEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList,
-				IConfigElement configElement)
+		public ModNumberSliderEntry(GuiConfig owningScreen, GuiConfigEntries owningEntryList, IConfigElement configElement)
 		{
 			super(owningScreen, owningEntryList, configElement);
 			((GuiSlider) this.btnValue).precision = 2;
 			this.updateValueButtonText();
+		}
+
+		@Override
+		public boolean enabled()
+		{
+			return owningScreen.isWorldRunning ? !owningScreen.allRequireWorldRestart &&
+													!configElement.requiresWorldRestart() &&
+													this.enabled : this.enabled;
+		}
+
+		public void setEnabled(boolean enabled)
+		{
+			this.enabled = enabled;
 		}
 
 		public void setValue(double val)
@@ -228,17 +176,25 @@ public class ModGuiConfig extends GuiConfig
 			((GuiSlider) this.btnValue).setValue(val);
 			((GuiSlider) this.btnValue).updateSlider();
 		}
+	}
 
-		@Override
-		public boolean enabled()
-		{
-			return owningScreen.isWorldRunning ? !owningScreen.allRequireWorldRestart
-					&& !configElement.requiresWorldRestart() && this.enabled : this.enabled;
-		}
+	/** Compiles a list of config elements */
+	private static List<IConfigElement> getConfigElements()
+	{
+		// Add categories to config GUI
+		List<IConfigElement> list = new ArrayList<IConfigElement>();
+		list.add(new DummyCategoryElement(Reference.catOptions, "mw.configgui.ctgy.general", new ConfigElement(ConfigurationHandler.configuration.getCategory(Reference.catOptions)).getChildElements()));
 
-		public void setEnabled(boolean enabled)
-		{
-			this.enabled = enabled;
-		}
+		list.add(new DummyCategoryElement(Reference.catFullMapConfig, "mw.configgui.ctgy.fullScreenMap", new ConfigElement(ConfigurationHandler.configuration.getCategory(Reference.catFullMapConfig)).getChildElements(), MapModeConfigEntry.class));
+
+		list.add(new DummyCategoryElement(Reference.catLargeMapConfig, "mw.configgui.ctgy.largeMap", new ConfigElement(ConfigurationHandler.configuration.getCategory(Reference.catLargeMapConfig)).getChildElements(), MapModeConfigEntry.class));
+
+		list.add(new DummyCategoryElement(Reference.catSmallMapConfig, "mw.configgui.ctgy.smallMap", new ConfigElement(ConfigurationHandler.configuration.getCategory(Reference.catSmallMapConfig)).getChildElements(), MapModeConfigEntry.class));
+		return list;
+	}
+
+	public ModGuiConfig(GuiScreen guiScreen)
+	{
+		super(guiScreen, getConfigElements(), Reference.MOD_ID, Reference.catOptions, false, false, GuiConfig.getAbridgedConfigPath(ConfigurationHandler.configuration.toString()));
 	}
 }

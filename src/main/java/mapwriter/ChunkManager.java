@@ -18,24 +18,8 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 
 public class ChunkManager
 {
-	public Mw mw;
-	private boolean closed = false;
-	private CircularHashMap<Chunk, Integer> chunkMap = new CircularHashMap<Chunk, Integer>();
-
 	private static final int VISIBLE_FLAG = 0x01;
 	private static final int VIEWED_FLAG = 0x02;
-
-	public ChunkManager(Mw mw)
-	{
-		this.mw = mw;
-	}
-
-	public synchronized void close()
-	{
-		this.closed = true;
-		this.saveChunks();
-		this.chunkMap.clear();
-	}
 
 	// create MwChunk from Minecraft chunk.
 	// only MwChunk's should be used in the background thread.
@@ -46,29 +30,54 @@ public class ChunkManager
 		Map<BlockPos, TileEntity> TileEntityMap = Maps.newHashMap();
 		TileEntityMap = Utils.checkedMapByCopy(chunk.getTileEntityMap(), BlockPos.class, TileEntity.class, false);
 		byte[] biomeArray = Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length);
-		ExtendedBlockStorage[] dataArray =
-				Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
+		ExtendedBlockStorage[] dataArray = Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
 
-		return new MwChunk(
-				chunk.xPosition,
-				chunk.zPosition,
-				chunk.getWorld().provider.getDimensionType().getId(),
-				dataArray,
-				biomeArray,
-				TileEntityMap);
+		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimensionType().getId(), dataArray, biomeArray, TileEntityMap);
+	}
+
+	public Mw mw;
+	private boolean closed = false;
+
+	private CircularHashMap<Chunk, Integer> chunkMap = new CircularHashMap<Chunk, Integer>();
+
+	public ChunkManager(Mw mw)
+	{
+		this.mw = mw;
 	}
 
 	public synchronized void addChunk(Chunk chunk)
 	{
-		if (!this.closed && (chunk != null))
+		if (!this.closed && chunk != null)
 		{
 			this.chunkMap.put(chunk, 0);
 		}
 	}
 
+	public synchronized void close()
+	{
+		this.closed = true;
+		this.saveChunks();
+		this.chunkMap.clear();
+	}
+
+	public void onTick()
+	{
+		if (!this.closed)
+		{
+			if ((this.mw.tickCounter & 0xf) == 0)
+			{
+				this.updateUndergroundChunks();
+			}
+			else
+			{
+				this.updateSurfaceChunks();
+			}
+		}
+	}
+
 	public synchronized void removeChunk(Chunk chunk)
 	{
-		if (!this.closed && (chunk != null))
+		if (!this.closed && chunk != null)
 		{
 			if (!this.chunkMap.containsKey(chunk))
 			{
@@ -95,24 +104,6 @@ public class ChunkManager
 		}
 	}
 
-	public void updateUndergroundChunks()
-	{
-		int chunkArrayX = (this.mw.playerXInt >> 4) - 1;
-		int chunkArrayZ = (this.mw.playerZInt >> 4) - 1;
-		MwChunk[] chunkArray = new MwChunk[9];
-		for (int z = 0; z < 3; z++)
-		{
-			for (int x = 0; x < 3; x++)
-			{
-				Chunk chunk = this.mw.mc.world.getChunkFromChunkCoords(chunkArrayX + x, chunkArrayZ + z);
-				if (!chunk.isEmpty())
-				{
-					chunkArray[(z * 3) + x] = copyToMwChunk(chunk);
-				}
-			}
-		}
-	}
-
 	public void updateSurfaceChunks()
 	{
 		int chunksToUpdate = Math.min(this.chunkMap.size(), Config.chunksPerTick);
@@ -129,7 +120,7 @@ public class ChunkManager
 				int flags = entry.getValue();
 				if (Utils.distToChunkSq(this.mw.playerXInt, this.mw.playerZInt, chunk) <= Config.maxChunkSaveDistSq)
 				{
-					flags |= (VISIBLE_FLAG | VIEWED_FLAG);
+					flags |= VISIBLE_FLAG | VIEWED_FLAG;
 				}
 				else
 				{
@@ -153,25 +144,28 @@ public class ChunkManager
 		// chunkArray));
 	}
 
-	public void onTick()
+	public void updateUndergroundChunks()
 	{
-		if (!this.closed)
+		int chunkArrayX = (this.mw.playerXInt >> 4) - 1;
+		int chunkArrayZ = (this.mw.playerZInt >> 4) - 1;
+		MwChunk[] chunkArray = new MwChunk[9];
+		for (int z = 0; z < 3; z++)
 		{
-			if ((this.mw.tickCounter & 0xf) == 0)
+			for (int x = 0; x < 3; x++)
 			{
-				this.updateUndergroundChunks();
-			}
-			else
-			{
-				this.updateSurfaceChunks();
+				Chunk chunk = this.mw.mc.world.getChunkFromChunkCoords(chunkArrayX + x, chunkArrayZ + z);
+				if (!chunk.isEmpty())
+				{
+					chunkArray[z * 3 + x] = copyToMwChunk(chunk);
+				}
 			}
 		}
 	}
 
 	private void addSaveChunkTask(Chunk chunk)
 	{
-		if ((Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledMP) ||
-				(!Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledSP))
+		if (Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledMP ||
+			!Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledSP)
 		{
 			if (!chunk.isEmpty())
 			{

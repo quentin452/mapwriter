@@ -18,7 +18,8 @@ public class MwGuiDimensionDialog extends MwGuiTextDialog
 
 	public MwGuiDimensionDialog(GuiScreen parentScreen, Mw mw, MapView mapView, int dimension)
 	{
-		super(parentScreen, I18n.format("mw.gui.mwguidimensiondialog.title") + ":", Integer.toString(dimension), I18n.format("mw.gui.mwguidimensiondialog.error"));
+		super(parentScreen, I18n.format("mw.gui.mwguidimensiondialog.title") +
+							":", Integer.toString(dimension), I18n.format("mw.gui.mwguidimensiondialog.error"));
 		this.mw = mw;
 		this.mapView = mapView;
 		this.dimension = dimension;

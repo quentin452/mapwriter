@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.EnumBlockRenderType;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ColorizerFoliage;
 import net.minecraft.world.ColorizerGrass;
@@ -26,52 +25,6 @@ import net.minecraft.world.biome.Biome;
 
 public class BlockColourGen
 {
-	private static int getIconMapColour(TextureAtlasSprite icon, Texture terrainTexture)
-	{
-		// flipped icons have the U and V coords reversed (minU > maxU, minV >
-		// maxV).
-		// thanks go to taelnia for fixing this.
-		int iconX = Math.round((terrainTexture.w) * Math.min(icon.getMinU(), icon.getMaxU()));
-		int iconY = Math.round((terrainTexture.h) * Math.min(icon.getMinV(), icon.getMaxV()));
-		int iconWidth = Math.round((terrainTexture.w) * Math.abs(icon.getMaxU() - icon.getMinU()));
-		int iconHeight = Math.round((terrainTexture.h) * Math.abs(icon.getMaxV() - icon.getMinV()));
-
-		int[] pixels = new int[iconWidth * iconHeight];
-
-		// MwUtil.log("(%d, %d) %dx%d", iconX, iconY, iconWidth, iconHeight);
-
-		terrainTexture.getRGB(iconX, iconY, iconWidth, iconHeight, pixels, 0, iconWidth, icon);
-
-		// need to use custom averaging routine rather than scaling down to one
-		// pixel to
-		// stop transparent pixel colours being included in the average.
-		return Render.getAverageColourOfArray(pixels);
-	}
-
-	private static void genBiomeColours(BlockColours bc)
-	{
-		// generate array of foliage, grass, and water colour multipliers
-		// for each biome.
-
-		for (Biome biome : Biome.REGISTRY)
-		{
-			if (biome != null)
-			{
-				double temp = MathHelper.clamp(biome.getTemperature(), 0.0F, 1.0F);
-				double rain = MathHelper.clamp(biome.getRainfall(), 0.0F, 1.0F);
-				int grasscolor = ColorizerGrass.getGrassColor(temp, rain);
-				int foliagecolor = ColorizerFoliage.getFoliageColor(temp, rain);
-				int watercolor = biome.getWaterColorMultiplier();
-
-				bc.setBiomeData(
-						biome.getBiomeName(),
-						watercolor & 0xffffff,
-						grasscolor & 0xffffff,
-						foliagecolor & 0xffffff);
-			}
-		}
-	}
-
 	public static void genBlockColours(BlockColours bc)
 	{
 
@@ -84,8 +37,7 @@ public class BlockColourGen
 		// get the bound texture id
 		// int terrainTextureId = Render.getBoundTextureId();
 
-		int terrainTextureId =
-				Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).getGlTextureId();
+		int terrainTextureId = Minecraft.getMinecraft().renderEngine.getTexture(TextureMap.LOCATION_BLOCKS_TEXTURE).getGlTextureId();
 
 		// create texture object from the currently bound GL texture
 		if (terrainTextureId == 0)
@@ -119,9 +71,7 @@ public class BlockColourGen
 					TextureAtlasSprite icon = null;
 					try
 					{
-						icon =
-								Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(
-										block.getStateFromMeta(dv));
+						icon = Minecraft.getMinecraft().getBlockRendererDispatcher().getBlockModelShapes().getTexture(block.getStateFromMeta(dv));
 					}
 					catch (Exception e)
 					{
@@ -139,7 +89,7 @@ public class BlockColourGen
 						double v1 = icon.getMinV();
 						double v2 = icon.getMaxV();
 
-						if ((u1 == u1Last) && (u2 == u2Last) && (v1 == v1Last) && (v2 == v2Last))
+						if (u1 == u1Last && u2 == u2Last && v1 == v1Last && v2 == v2Last)
 						{
 							blockColour = blockColourLast;
 							s_count++;
@@ -151,9 +101,7 @@ public class BlockColourGen
 							// this method to get the real texture
 							// this makes the carpenterblocks render as brown
 							// blocks on the map
-							if (((ResourceLocation) Block.REGISTRY.getNameForObject(block))
-									.getResourceDomain()
-									.contains("CarpentersBlocks"))
+							if (Block.REGISTRY.getNameForObject(block).getResourceDomain().contains("CarpentersBlocks"))
 							{
 								// icon = block.getIcon(1, 16);
 								// blockColour = getIconMapColour(icon,
@@ -176,5 +124,48 @@ public class BlockColourGen
 		Logging.log("processed %d block textures, %d skipped, %d exceptions", b_count, s_count, e_count);
 
 		genBiomeColours(bc);
+	}
+
+	private static void genBiomeColours(BlockColours bc)
+	{
+		// generate array of foliage, grass, and water colour multipliers
+		// for each biome.
+
+		for (Biome biome : Biome.REGISTRY)
+		{
+			if (biome != null)
+			{
+				double temp = MathHelper.clamp(biome.getTemperature(), 0.0F, 1.0F);
+				double rain = MathHelper.clamp(biome.getRainfall(), 0.0F, 1.0F);
+				int grasscolor = ColorizerGrass.getGrassColor(temp, rain);
+				int foliagecolor = ColorizerFoliage.getFoliageColor(temp, rain);
+				int watercolor = biome.getWaterColorMultiplier();
+
+				bc.setBiomeData(biome.getBiomeName(), watercolor & 0xffffff, grasscolor & 0xffffff, foliagecolor &
+																									0xffffff);
+			}
+		}
+	}
+
+	private static int getIconMapColour(TextureAtlasSprite icon, Texture terrainTexture)
+	{
+		// flipped icons have the U and V coords reversed (minU > maxU, minV >
+		// maxV).
+		// thanks go to taelnia for fixing this.
+		int iconX = Math.round(terrainTexture.w * Math.min(icon.getMinU(), icon.getMaxU()));
+		int iconY = Math.round(terrainTexture.h * Math.min(icon.getMinV(), icon.getMaxV()));
+		int iconWidth = Math.round(terrainTexture.w * Math.abs(icon.getMaxU() - icon.getMinU()));
+		int iconHeight = Math.round(terrainTexture.h * Math.abs(icon.getMaxV() - icon.getMinV()));
+
+		int[] pixels = new int[iconWidth * iconHeight];
+
+		// MwUtil.log("(%d, %d) %dx%d", iconX, iconY, iconWidth, iconHeight);
+
+		terrainTexture.getRGB(iconX, iconY, iconWidth, iconHeight, pixels, 0, iconWidth, icon);
+
+		// need to use custom averaging routine rather than scaling down to one
+		// pixel to
+		// stop transparent pixel colours being included in the average.
+		return Render.getAverageColourOfArray(pixels);
 	}
 }

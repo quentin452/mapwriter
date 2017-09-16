@@ -8,30 +8,15 @@ import mapwriter.region.RegionManager;
 
 public class SaveChunkTask extends Task
 {
+	private static HashMap<Long, SaveChunkTask> chunksUpdating = new HashMap<Long, SaveChunkTask>();
 	private MwChunk chunk;
 	private RegionManager regionManager;
 	private AtomicBoolean Running = new AtomicBoolean();
-	private static HashMap<Long, SaveChunkTask> chunksUpdating = new HashMap<Long, SaveChunkTask>();
 
 	public SaveChunkTask(MwChunk chunk, RegionManager regionManager)
 	{
 		this.chunk = chunk;
 		this.regionManager = regionManager;
-	}
-
-	@Override
-	public void run()
-	{
-		this.Running.set(true);
-		this.chunk.write(this.regionManager.regionFileCache);
-	}
-
-	@Override
-	public void onComplete()
-	{
-		Long coords = this.chunk.getCoordIntPair();
-		SaveChunkTask.chunksUpdating.remove(coords);
-		this.Running.set(false);
 	}
 
 	@Override
@@ -46,7 +31,7 @@ public class SaveChunkTask extends Task
 		}
 		else
 		{
-			SaveChunkTask task2 = (SaveChunkTask) SaveChunkTask.chunksUpdating.get(coords);
+			SaveChunkTask task2 = SaveChunkTask.chunksUpdating.get(coords);
 			if (task2.Running.get() == false)
 			{
 				task2.UpdateChunkData(this.chunk, this.regionManager);
@@ -58,6 +43,21 @@ public class SaveChunkTask extends Task
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public void onComplete()
+	{
+		Long coords = this.chunk.getCoordIntPair();
+		SaveChunkTask.chunksUpdating.remove(coords);
+		this.Running.set(false);
+	}
+
+	@Override
+	public void run()
+	{
+		this.Running.set(true);
+		this.chunk.write(this.regionManager.regionFileCache);
 	}
 
 	public void UpdateChunkData(MwChunk chunk, RegionManager regionManager)

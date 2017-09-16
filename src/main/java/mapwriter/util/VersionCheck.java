@@ -16,12 +16,25 @@ public class VersionCheck implements Runnable
 	private static String latestVersion = "";
 	private static String updateURL = "";
 
+	public static String getLatestVersion()
+	{
+		return latestVersion;
+	}
+
+	public static String getUpdateURL()
+	{
+		return updateURL;
+	}
+
+	public static boolean isLatestVersion()
+	{
+		return isLatestVersion;
+	}
+
 	/**
 	 * @author jabelar
-	 * @link
-	 *       http://jabelarminecraft.blogspot.nl/p/minecraft-forge-1721710-
-	 *       making
-	 *       -mod.html
+	 * @link http://jabelarminecraft.blogspot.nl/p/minecraft-forge-1721710-
+	 *       making -mod.html
 	 */
 
 	@Override
@@ -70,20 +83,5 @@ public class VersionCheck implements Runnable
 		{
 		}
 
-	}
-
-	public static boolean isLatestVersion()
-	{
-		return isLatestVersion;
-	}
-
-	public static String getLatestVersion()
-	{
-		return latestVersion;
-	}
-
-	public static String getUpdateURL()
-	{
-		return updateURL;
 	}
 }

@@ -18,18 +18,6 @@ public class ClientProxy extends CommonProxy
 {
 
 	@Override
-	public void preInit(File configFile)
-	{
-		ConfigurationHandler.init(configFile);
-		MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
-		EventHandler eventHandler = new EventHandler(Mw.getInstance());
-		MinecraftForge.EVENT_BUS.register(eventHandler);
-
-		MwKeyHandler keyEventHandler = new MwKeyHandler();
-		MinecraftForge.EVENT_BUS.register(keyEventHandler);
-	}
-
-	@Override
 	public void load()
 	{
 	}
@@ -39,11 +27,7 @@ public class ClientProxy extends CommonProxy
 	{
 		if (Loader.isModLoaded("VersionChecker"))
 		{
-			FMLInterModComms.sendRuntimeMessage(
-					Reference.MOD_ID,
-					"VersionChecker",
-					"addVersionCheck",
-					Reference.VersionURL);
+			FMLInterModComms.sendRuntimeMessage(Reference.MOD_ID, "VersionChecker", "addVersionCheck", Reference.VersionURL);
 		}
 		else
 		{
@@ -62,5 +46,17 @@ public class ClientProxy extends CommonProxy
 		}
 		MwAPI.registerDataProvider("Slime", new OverlaySlime());
 		MwAPI.registerDataProvider("Grid", new OverlayGrid());
+	}
+
+	@Override
+	public void preInit(File configFile)
+	{
+		ConfigurationHandler.init(configFile);
+		MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
+		EventHandler eventHandler = new EventHandler(Mw.getInstance());
+		MinecraftForge.EVENT_BUS.register(eventHandler);
+
+		MwKeyHandler keyEventHandler = new MwKeyHandler();
+		MinecraftForge.EVENT_BUS.register(keyEventHandler);
 	}
 }
