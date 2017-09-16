@@ -126,10 +126,6 @@ public class BlockColours
 
 	private int getGrassColourMultiplier(String biomeName)
 	{
-		if (!biomeName.equals("Plains"))
-		{
-			int test = 0;
-		}
 		BiomeData data = this.biomeMap.get(biomeName);
 		return (data != null) ? data.grassMultiplier : 0xffffff;
 	}
@@ -333,8 +329,8 @@ public class BlockColours
 			// block meta values.
 			try
 			{
-				int renderColour = block.getMapColor(
-						block.getStateFromMeta(Integer.parseInt(meta) & 0xf)).colorValue;
+				@SuppressWarnings("deprecation")
+				int renderColour = block.getMapColor(block.getStateFromMeta(Integer.parseInt(meta) & 0xf),null,null).colorValue;
 				if (renderColour != 0xffffff)
 				{
 					blockColour = Render.multiplyColours(blockColour, 0xff000000 | renderColour);

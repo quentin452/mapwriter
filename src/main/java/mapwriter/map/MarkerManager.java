@@ -14,9 +14,9 @@ import mapwriter.util.Reference;
 import mapwriter.util.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
@@ -383,7 +383,7 @@ public class MarkerManager
 	public void drawBeam(Marker m, float partialTicks)
 	{
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder vertexbuffer = tessellator.getBuffer();
 
 		float f2 = Minecraft.getMinecraft().world.getTotalWorldTime() + partialTicks;
 		double d3 = f2 * 0.025D * -1.5D;
@@ -518,7 +518,7 @@ public class MarkerManager
 		GL11.glEnable(ARBDepthClamp.GL_DEPTH_CLAMP);
 
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder vertexbuffer = tessellator.getBuffer();
 
 		GlStateManager.disableTexture2D();
 

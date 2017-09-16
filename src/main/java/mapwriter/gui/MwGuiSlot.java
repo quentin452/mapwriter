@@ -6,9 +6,9 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
@@ -278,7 +278,7 @@ public abstract class MwGuiSlot
 			GlStateManager.disableLighting();
 			GlStateManager.disableFog();
 			Tessellator tessellator = Tessellator.getInstance();
-			VertexBuffer vertexbuffer = tessellator.getBuffer();
+			BufferBuilder vertexbuffer = tessellator.getBuffer();
 			this.drawContainerBackground(tessellator);
 			int i1 = this.left + ((this.width / 2) - (this.getListWidth() / 2));
 			int j1 = this.top - (int) this.amountScrolled;
@@ -490,7 +490,7 @@ public abstract class MwGuiSlot
 	{
 		int i1 = this.getSize();
 		Tessellator tessellator = Tessellator.getInstance();
-		VertexBuffer vertexbuffer = tessellator.getBuffer();
+		BufferBuilder vertexbuffer = tessellator.getBuffer();
 
 		int yTotal = y + this.headerPadding;
 
