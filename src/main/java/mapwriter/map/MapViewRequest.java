@@ -19,8 +19,12 @@ public class MapViewRequest
 
 	public boolean equals(MapViewRequest req)
 	{
-		return req != null &&	req.zoomLevel == this.zoomLevel && req.dimension == this.dimension &&
-				req.xMin == this.xMin && req.xMax == this.xMax && req.zMin == this.zMin && req.zMax == this.zMax;
+		return req != null &&	req.zoomLevel == this.zoomLevel &&
+				req.dimension == this.dimension &&
+				req.xMin == this.xMin &&
+				req.xMax == this.xMax &&
+				req.zMin == this.zMin &&
+				req.zMax == this.zMax;
 	}
 
 	public boolean mostlyEquals(MapViewRequest req)

@@ -88,12 +88,14 @@ public abstract class ScrollableField extends Gui
 	 */
 	public int posWithinArrows(int x, int y)
 	{
-		if (x >= this.leftArrowX &&	y >= this.arrowsY && x <= ScrollableField.arrowsWidth + this.leftArrowX &&
+		if (x >= this.leftArrowX &&	y >= this.arrowsY &&
+			x <= ScrollableField.arrowsWidth + this.leftArrowX &&
 			y <= this.arrowsHeight + this.arrowsY)
 		{
 			return -1;
 		}
-		else if (x >= this.rightArrowX &&	y >= this.arrowsY && x <= ScrollableField.arrowsWidth + this.rightArrowX &&
+		else if (x >= this.rightArrowX &&	y >= this.arrowsY &&
+					x <= ScrollableField.arrowsWidth + this.rightArrowX &&
 					y <= this.arrowsHeight + this.arrowsY)
 		{
 			return 1;

@@ -254,7 +254,8 @@ public class MapMode implements IMapMode
 	public void updateMargin()
 	{
 		if (this.widthPercent != this.config.widthPercent ||	this.heightPercent != this.config.heightPercent ||
-			this.xPos != this.config.xPos || this.yPos != this.config.yPos)
+			this.xPos != this.config.xPos ||
+			this.yPos != this.config.yPos)
 		{
 			this.widthPercent = this.config.widthPercent;
 			this.heightPercent = this.config.heightPercent;

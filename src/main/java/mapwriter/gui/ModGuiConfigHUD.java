@@ -141,29 +141,39 @@ public class ModGuiConfigHUD extends GuiConfig
 		this.buttonList.add(new GuiButtonExt(3000, this.width / 2 -
 													buttonWidthHalf1, buttonHeigth1, topLeftWidth, 20, I18n.format("mw.config.map.ctgy.position.topleft")));
 
-		this.buttonList.add(new GuiButtonExt(3001, this.width / 2 -	buttonWidthHalf1 + topLeftWidth +
+		this.buttonList.add(new GuiButtonExt(3001, this.width / 2 -	buttonWidthHalf1 +
+													topLeftWidth +
 													5, buttonHeigth1, CenterTopWidth, 20, I18n.format("mw.config.map.ctgy.position.centertop")));
 
-		this.buttonList.add(new GuiButtonExt(3002, this.width / 2 -	buttonWidthHalf1 + topLeftWidth + 5 +
+		this.buttonList.add(new GuiButtonExt(3002, this.width / 2 -	buttonWidthHalf1 +
+													topLeftWidth +
+													5 +
 													CenterTopWidth +
 													5, buttonHeigth1, topRightWidth, 20, I18n.format("mw.config.map.ctgy.position.topright")));
 
 		this.buttonList.add(new GuiButtonExt(3010, this.width / 2 -
 													buttonWidthHalf2, buttonHeigth2, CenterLeft, 20, I18n.format("mw.config.map.ctgy.position.centerleft")));
 
-		this.buttonList.add(new GuiButtonExt(3011, this.width / 2 -	buttonWidthHalf2 + CenterLeft +
+		this.buttonList.add(new GuiButtonExt(3011, this.width / 2 -	buttonWidthHalf2 +
+													CenterLeft +
 													5, buttonHeigth2, CenterWidth, 20, I18n.format("mw.config.map.ctgy.position.center")));
 
-		this.buttonList.add(new GuiButtonExt(3012, this.width / 2 -	buttonWidthHalf2 + CenterLeft + 5 + CenterWidth +
+		this.buttonList.add(new GuiButtonExt(3012, this.width / 2 -	buttonWidthHalf2 +
+													CenterLeft +
+													5 +
+													CenterWidth +
 													5, buttonHeigth2, CenterRight, 20, I18n.format("mw.config.map.ctgy.position.centerright")));
 
 		this.buttonList.add(new GuiButtonExt(3020, this.width / 2 -
 													buttonWidthHalf3, buttonHeigth3, bottomLeftWidth, 20, I18n.format("mw.config.map.ctgy.position.botleft")));
 
-		this.buttonList.add(new GuiButtonExt(3021, this.width / 2 -	buttonWidthHalf3 + bottomLeftWidth +
+		this.buttonList.add(new GuiButtonExt(3021, this.width / 2 -	buttonWidthHalf3 +
+													bottomLeftWidth +
 													5, buttonHeigth3, CenterBottomWidth, 20, I18n.format("mw.config.map.ctgy.position.centerbottom")));
 
-		this.buttonList.add(new GuiButtonExt(3022, this.width / 2 -	buttonWidthHalf3 + bottomLeftWidth + 5 +
+		this.buttonList.add(new GuiButtonExt(3022, this.width / 2 -	buttonWidthHalf3 +
+													bottomLeftWidth +
+													5 +
 													CenterBottomWidth +
 													5, buttonHeigth3, bottomRightWidth, 20, I18n.format("mw.config.map.ctgy.position.botright")));
 

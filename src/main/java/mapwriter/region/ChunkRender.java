@@ -111,7 +111,8 @@ public class ChunkRender
 
 		// now we have our final RGB values as doubles, convert to a packed ARGB
 		// pixel.
-		return (y & 0xff) << 24 |	((int) (r * 255.0) & 0xff) << 16 | ((int) (g * 255.0) & 0xff) << 8 |
+		return (y & 0xff) << 24 |	((int) (r * 255.0) & 0xff) << 16 |
+				((int) (g * 255.0) & 0xff) << 8 |
 				(int) (b * 255.0) & 0xff;
 	}
 

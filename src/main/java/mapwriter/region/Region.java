@@ -117,7 +117,9 @@ public class Region
 
 	public boolean isAreaWithin(int x, int z, int w, int h, int dimension)
 	{
-		return x >= this.x &&	z >= this.z && x + w <= this.x + this.size && z + h <= this.z + this.size &&
+		return x >= this.x &&	z >= this.z &&
+				x + w <= this.x + this.size &&
+				z + h <= this.z + this.size &&
 				dimension == this.dimension;
 	}
 

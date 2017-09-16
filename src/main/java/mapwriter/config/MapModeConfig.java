@@ -163,14 +163,16 @@ public class MapModeConfig implements IMapModeConfig
 		this.trailMarkerSize = Math.max(1, this.markerSize - 1);
 
 		this.xPos = ConfigurationHandler.configuration.get(this.mapPosCategory, "xPos", this.xPosDef, " [range: " +
-																										0.0 + " ~ " +
+																										0.0 +
+																										" ~ " +
 																										100.0 +
 																										", default: " +
 																										this.xPosDef +
 																										"]", 0.0, 100.0).setLanguageKey("mw.config.map.xPos").setConfigEntryClass(ModNumberSliderEntry.class).getDouble();
 
 		this.yPos = ConfigurationHandler.configuration.get(this.mapPosCategory, "yPos", this.yPosDef, " [range: " +
-																										0.0 + " ~ " +
+																										0.0 +
+																										" ~ " +
 																										100.0 +
 																										", default: " +
 																										this.yPosDef +
