@@ -251,7 +251,7 @@ public class Utils
 				worldName = "Realms";
 			}
 		}
-		else
+		else if (Minecraft.getMinecraft().getCurrentServerData() != null)
 		{
 			worldName = Minecraft.getMinecraft().getCurrentServerData().serverIP;
 			if (!Config.portNumberInWorldNameEnabled)
@@ -269,6 +269,10 @@ public class Utils
 					worldName = worldName.replace(":", "_");
 				}
 			}
+		}
+		else
+		{
+			worldName = "default";
 		}
 
 		// strip invalid characters from the server name so that it
