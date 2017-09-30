@@ -135,14 +135,14 @@ public class BlockColourGen
 		{
 			if (biome != null)
 			{
-				double temp = MathHelper.clamp(biome.getTemperature(), 0.0F, 1.0F);
+				double temp = MathHelper.clamp(biome.getDefaultTemperature(), 0.0F, 1.0F);
 				double rain = MathHelper.clamp(biome.getRainfall(), 0.0F, 1.0F);
 				int grasscolor = ColorizerGrass.getGrassColor(temp, rain);
 				int foliagecolor = ColorizerFoliage.getFoliageColor(temp, rain);
 				int watercolor = biome.getWaterColorMultiplier();
 
 				bc.setBiomeData(biome.getBiomeName(), watercolor & 0xffffff, grasscolor & 0xffffff, foliagecolor &
-																									0xffffff);
+						0xffffff);
 			}
 		}
 	}

@@ -30,9 +30,16 @@ public class ChunkManager
 		Map<BlockPos, TileEntity> TileEntityMap = Maps.newHashMap();
 		TileEntityMap = Utils.checkedMapByCopy(chunk.getTileEntityMap(), BlockPos.class, TileEntity.class, false);
 		byte[] biomeArray = Arrays.copyOf(chunk.getBiomeArray(), chunk.getBiomeArray().length);
-		ExtendedBlockStorage[] dataArray = Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
+		ExtendedBlockStorage[] dataArray =
+				Arrays.copyOf(chunk.getBlockStorageArray(), chunk.getBlockStorageArray().length);
 
-		return new MwChunk(chunk.xPosition, chunk.zPosition, chunk.getWorld().provider.getDimensionType().getId(), dataArray, biomeArray, TileEntityMap);
+		return new MwChunk(
+				chunk.x,
+				chunk.z,
+				chunk.getWorld().provider.getDimensionType().getId(),
+				dataArray,
+				biomeArray,
+				TileEntityMap);
 	}
 
 	public Mw mw;
@@ -84,7 +91,7 @@ public class ChunkManager
 				return; // FIXME: Is this failsafe enough for unloading?
 			}
 			int flags = this.chunkMap.get(chunk);
-			if ((flags & VIEWED_FLAG) != 0)
+			if ((flags & ChunkManager.VIEWED_FLAG) != 0)
 			{
 				this.addSaveChunkTask(chunk);
 			}
@@ -97,7 +104,7 @@ public class ChunkManager
 		for (Map.Entry<Chunk, Integer> entry : this.chunkMap.entrySet())
 		{
 			int flags = entry.getValue();
-			if ((flags & VIEWED_FLAG) != 0)
+			if ((flags & ChunkManager.VIEWED_FLAG) != 0)
 			{
 				this.addSaveChunkTask(entry.getKey());
 			}
@@ -120,15 +127,15 @@ public class ChunkManager
 				int flags = entry.getValue();
 				if (Utils.distToChunkSq(this.mw.playerXInt, this.mw.playerZInt, chunk) <= Config.maxChunkSaveDistSq)
 				{
-					flags |= VISIBLE_FLAG | VIEWED_FLAG;
+					flags |= ChunkManager.VISIBLE_FLAG | ChunkManager.VIEWED_FLAG;
 				}
 				else
 				{
-					flags &= ~VISIBLE_FLAG;
+					flags &= ~ChunkManager.VISIBLE_FLAG;
 				}
 				entry.setValue(flags);
 
-				if ((flags & VISIBLE_FLAG) != 0)
+				if ((flags & ChunkManager.VISIBLE_FLAG) != 0)
 				{
 					chunkArray[i] = copyToMwChunk(chunk);
 					this.mw.executor.addTask(new UpdateSurfaceChunksTask(this.mw, chunkArray[i]));
@@ -165,7 +172,7 @@ public class ChunkManager
 	private void addSaveChunkTask(Chunk chunk)
 	{
 		if (Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledMP ||
-			!Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledSP)
+				!Minecraft.getMinecraft().isSingleplayer() && Config.regionFileOutputEnabledSP)
 		{
 			if (!chunk.isEmpty())
 			{

@@ -39,18 +39,18 @@ public class Mw
 
 	public static Mw getInstance()
 	{
-		if (instance == null)
+		if (Mw.instance == null)
 		{
 			synchronized (WorldConfig.class)
 			{
-				if (instance == null)
+				if (Mw.instance == null)
 				{
-					instance = new Mw();
+					Mw.instance = new Mw();
 				}
 			}
 		}
 
-		return instance;
+		return Mw.instance;
 	}
 
 	public Minecraft mc = null;
@@ -224,7 +224,13 @@ public class Mw
 		this.undergroundMapTexture = new UndergroundTexture(this, this.textureSize, Config.linearTextureScaling);
 		// this.reloadBlockColours();
 		// region manager depends on config, mapTexture, and block colours
-		this.regionManager = new RegionManager(this.worldDir, this.imageDir, this.blockColours, Config.zoomInLevels, Config.zoomOutLevels);
+		this.regionManager =
+				new RegionManager(
+						this.worldDir,
+						this.imageDir,
+						this.blockColours,
+						Config.zoomInLevels,
+						Config.zoomOutLevels);
 		// overlay manager depends on mapTexture
 		this.miniMap = new MiniMap(this);
 		this.miniMap.view.setDimension(this.mc.player.dimension);
@@ -274,7 +280,7 @@ public class Mw
 			}
 			else
 			{
-				Logging.logInfo("missed chunk (%d, %d)", chunk.xPosition, chunk.zPosition);
+				Logging.logInfo("missed chunk (%d, %d)", chunk.x, chunk.z);
 			}
 		}
 	}
@@ -318,11 +324,29 @@ public class Mw
 				}
 				if (Config.newMarkerDialog)
 				{
-					this.mc.displayGuiScreen(new MwGuiMarkerDialogNew(null, this.markerManager, "", group, this.playerXInt, this.playerYInt, this.playerZInt, this.playerDimension));
+					this.mc.displayGuiScreen(
+							new MwGuiMarkerDialogNew(
+									null,
+									this.markerManager,
+									"",
+									group,
+									this.playerXInt,
+									this.playerYInt,
+									this.playerZInt,
+									this.playerDimension));
 				}
 				else
 				{
-					this.mc.displayGuiScreen(new MwGuiMarkerDialog(null, this.markerManager, "", group, this.playerXInt, this.playerYInt, this.playerZInt, this.playerDimension));
+					this.mc.displayGuiScreen(
+							new MwGuiMarkerDialog(
+									null,
+									this.markerManager,
+									"",
+									group,
+									this.playerXInt,
+									this.playerYInt,
+									this.playerZInt,
+									this.playerDimension));
 				}
 			}
 			else if (kb == MwKeyHandler.keyNextGroup)
@@ -330,15 +354,18 @@ public class Mw
 				// toggle marker mode
 				this.markerManager.nextGroup();
 				this.markerManager.update();
-				this.mc.player.sendMessage(new TextComponentTranslation("mw.msg.groupselected", new Object[] {
-						this.markerManager.getVisibleGroupName()
-				}));
+				this.mc.player.sendMessage(
+						new TextComponentTranslation(
+								"mw.msg.groupselected",
+								new Object[] { this.markerManager.getVisibleGroupName() }));
 
 			}
 			else if (kb == MwKeyHandler.keyTeleport)
 			{
 				// set or remove marker
-				Marker marker = this.markerManager.getNearestMarkerInDirection(this.playerXInt, this.playerZInt, this.playerHeading);
+				Marker marker =
+						this.markerManager
+								.getNearestMarkerInDirection(this.playerXInt, this.playerZInt, this.playerHeading);
 				if (marker != null)
 				{
 					this.teleportToMarker(marker);
@@ -378,7 +405,14 @@ public class Mw
 				this.markerManager.delMarker(null, "playerDeaths");
 			}
 
-			this.markerManager.addMarker(Utils.getCurrentDateString(), "playerDeaths", this.playerXInt, this.playerYInt, this.playerZInt, this.playerDimension, 0xffff0000);
+			this.markerManager.addMarker(
+					Utils.getCurrentDateString(),
+					"playerDeaths",
+					this.playerXInt,
+					this.playerYInt,
+					this.playerZInt,
+					this.playerDimension,
+					0xffff0000);
 			this.markerManager.setVisibleGroupName("playerDeaths");
 			this.markerManager.update();
 		}
@@ -471,7 +505,13 @@ public class Mw
 			oldMapTexture.close();
 		}
 		this.executor = new BackgroundExecutor();
-		this.regionManager = new RegionManager(this.worldDir, this.imageDir, this.blockColours, Config.zoomInLevels, Config.zoomOutLevels);
+		this.regionManager =
+				new RegionManager(
+						this.worldDir,
+						this.imageDir,
+						this.blockColours,
+						Config.zoomInLevels,
+						Config.zoomOutLevels);
 
 		UndergroundTexture oldTexture = this.undergroundMapTexture;
 		UndergroundTexture newTexture = new UndergroundTexture(this, this.textureSize, Config.linearTextureScaling);
@@ -570,16 +610,18 @@ public class Mw
 	{
 		this.markerManager.nextGroup();
 		this.markerManager.update();
-		this.mc.player.sendMessage(new TextComponentTranslation("mw.msg.groupselected", new Object[] {
-				this.markerManager.getVisibleGroupName()
-		}));
+		this.mc.player.sendMessage(
+				new TextComponentTranslation(
+						"mw.msg.groupselected",
+						new Object[] { this.markerManager.getVisibleGroupName() }));
 	}
 
 	public void toggleUndergroundMode()
 	{
 		Config.undergroundMode = !Config.undergroundMode;
 		// save the new value of underground mode.
-		ConfigurationHandler.configuration.get(Reference.catOptions, "undergroundMode", Config.undergroundModeDef).set(Config.undergroundMode);
+		ConfigurationHandler.configuration.get(Reference.catOptions, "undergroundMode", Config.undergroundModeDef).set(
+				Config.undergroundMode);
 	}
 
 	// update the saved player position and orientation
@@ -598,7 +640,8 @@ public class Mw
 		{
 			if (!this.mc.world.getChunkFromBlockCoords(new BlockPos(this.playerX, 0, this.playerZ)).isEmpty())
 			{
-				this.playerBiome = this.mc.world.getBiomeForCoordsBody(new BlockPos(this.playerX, 0, this.playerZ)).getBiomeName();
+				this.playerBiome =
+						this.mc.world.getBiomeForCoordsBody(new BlockPos(this.playerX, 0, this.playerZ)).getBiomeName();
 			}
 		}
 

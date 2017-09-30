@@ -26,8 +26,8 @@ public class Utils
 {
 	public static String RealmsWorldName = "";
 
-	private static int[] colours = new int[] { 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8000,
-			0x8000ff };
+	private static int[] colours =
+			new int[] { 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff, 0xff8000, 0x8000ff };
 
 	// static so that current index is shared between all markers
 	public static int colourIndex = 0;
@@ -134,8 +134,8 @@ public class Utils
 
 	public static int distToChunkSq(int x, int z, Chunk chunk)
 	{
-		int dx = (chunk.xPosition << 4) + 8 - x;
-		int dz = (chunk.zPosition << 4) + 8 - z;
+		int dx = (chunk.x << 4) + 8 - x;
+		int dz = (chunk.z << 4) + 8 - z;
 		return dx * dx + dz * dz;
 	}
 
