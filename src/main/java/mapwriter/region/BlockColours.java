@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
-
 import mapwriter.util.Logging;
 import mapwriter.util.Reference;
 import mapwriter.util.Render;
@@ -54,6 +53,14 @@ public class BlockColours
 
 	public static final String blockSectionString = "[blocks]";
 
+	private LinkedHashMap<String, BiomeData> biomeMap = new LinkedHashMap<String, BiomeData>();
+
+	private LinkedHashMap<String, BlockData> bcMap = new LinkedHashMap<String, BlockData>();
+
+	public BlockColours()
+	{
+	}
+
 	public static int getColourFromString(String s)
 	{
 		return (int) (Long.parseLong(s, 16) & 0xffffffffL);
@@ -90,16 +97,16 @@ public class BlockColours
 						"blocktype minecraft:leaves 2 opaque    		# birch leaves (not biome colorized)\n" +
 						"blocktype minecraft:tallgrass * grass     	# tall grass block\n" +
 						"blocktype minecraft:vine * foliage  			# vines block\n" +
-						"blocktype BiomesOPlenty:grass * grass		# BOP grass block\n" +
-						"blocktype BiomesOPlenty:plant_0 * grass		# BOP plant block\n" +
-						"blocktype BiomesOPlenty:plant_1 * grass		# BOP plant block\n" +
-						"blocktype BiomesOPlenty:leaves_0 * leaves	# BOP Leave block\n" +
-						"blocktype BiomesOPlenty:leaves_1 * leaves	# BOP Leave block\n" +
-						"blocktype BiomesOPlenty:leaves_2 * leaves	# BOP Leave block\n" +
-						"blocktype BiomesOPlenty:leaves_3 * leaves	# BOP Leave block\n" +
-						"blocktype BiomesOPlenty:leaves_4 * leaves	# BOP Leave block\n" +
-						"blocktype BiomesOPlenty:leaves_5 * leaves	# BOP Leave block\n" +
-						"blocktype BiomesOPlenty:tree_moss * foliage	# biomes o plenty tree moss\n");
+						"blocktype biomesoplenty:grass * grass		# BOP grass block\n" +
+						"blocktype biomesoplenty:plant_0 * grass		# BOP plant block\n" +
+						"blocktype biomesoplenty:plant_1 * grass		# BOP plant block\n" +
+						"blocktype biomesoplenty:leaves_0 * leaves	# BOP Leave block\n" +
+						"blocktype biomesoplenty:leaves_1 * leaves	# BOP Leave block\n" +
+						"blocktype biomesoplenty:leaves_2 * leaves	# BOP Leave block\n" +
+						"blocktype biomesoplenty:leaves_3 * leaves	# BOP Leave block\n" +
+						"blocktype biomesoplenty:leaves_4 * leaves	# BOP Leave block\n" +
+						"blocktype biomesoplenty:leaves_5 * leaves	# BOP Leave block\n" +
+						"blocktype biomesoplenty:tree_moss * foliage	# biomes o plenty tree moss\n");
 			// TODO: Find out the names and readd these
 			// overwrites
 			// + "blocktype 2164 * leaves # twilight forest
@@ -307,14 +314,6 @@ public class BlockColours
 			}
 			meta++;
 		}
-	}
-
-	private LinkedHashMap<String, BiomeData> biomeMap = new LinkedHashMap<String, BiomeData>();
-
-	private LinkedHashMap<String, BlockData> bcMap = new LinkedHashMap<String, BlockData>();
-
-	public BlockColours()
-	{
 	}
 
 	public boolean CheckFileVersion(File fn)
