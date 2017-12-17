@@ -2,10 +2,8 @@ package mapwriter.map;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.lwjgl.opengl.ARBDepthClamp;
 import org.lwjgl.opengl.GL11;
-
 import mapwriter.config.Config;
 import mapwriter.config.WorldConfig;
 import mapwriter.map.mapmode.MapMode;
@@ -298,7 +296,9 @@ public class MarkerManager
 
 	public void drawMarkersWorld(float partialTicks)
 	{
-		if (!Config.drawMarkersInWorld && !Config.drawMarkersNameInWorld)
+		if ((!Config.drawMarkersInWorld &&
+				!Config.drawMarkersNameInWorld) ||
+				Minecraft.getMinecraft().getRenderManager().renderViewEntity == null)
 		{
 			return;
 		}
@@ -399,7 +399,7 @@ public class MarkerManager
 	public String markerToString(Marker marker)
 	{
 		return String.format("%s:%d:%d:%d:%d:%06x:%s", marker.name, marker.x, marker.y, marker.z, marker.dimension, marker.colour &
-																													0xffffff, marker.groupName);
+				0xffffff, marker.groupName);
 	}
 
 	public void nextGroup()
