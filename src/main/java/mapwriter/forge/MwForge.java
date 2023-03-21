@@ -47,7 +47,7 @@ public class MwForge {
 
     @SubscribeEvent
     public void renderMap(RenderGameOverlayEvent.Post event) {
-        if (event.type == RenderGameOverlayEvent.ElementType.ALL) {
+        if (event.type == RenderGameOverlayEvent.ElementType.CROSSHAIRS) {
             Mw.instance.onTick();
         }
     }
