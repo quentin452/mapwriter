@@ -1,5 +1,5 @@
 // Add your dependencies here
 
 dependencies {
-
+    compileOnly "dev.modwarriors.notenoughkeys:NotEnoughKeys:1.7.10-2.0.0b4:deobf-dev"
 }

@@ -24,9 +24,8 @@ public class UpdateSurfaceChunksTask extends Task {
 				this.regionManager.updateChunk(chunk);
 				// copy updated region pixels to maptexture
 				this.mapTexture.updateArea(
-					this.regionManager,
-					chunk.x << 4, chunk.z << 4,
-					MwChunk.SIZE, MwChunk.SIZE, chunk.dimension
+						chunk.x << 4, chunk.z << 4,
+						MwChunk.SIZE, MwChunk.SIZE, chunk.dimension
 				);
 			}
 		}

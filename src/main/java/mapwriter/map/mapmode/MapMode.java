@@ -1,20 +1,20 @@
 package mapwriter.map.mapmode;
 
-import java.awt.Point;
-
 import mapwriter.forge.MwConfig;
 import mapwriter.map.MapView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 
+import java.awt.Point;
+
 public class MapMode {
 	private final MwConfig config;
 	public final String configCategory;
-	
+
 	private int sw = 320;
 	private int sh = 240;
 	private double screenScalingFactor = 1.0;
-	
+
 	// calculated before every frame drawn by updateMapDimensions
 	public int xTranslation = 0;
 	public int yTranslation = 0;
@@ -86,8 +86,8 @@ public class MapMode {
 	public void close() {
 		this.saveConfig();
 	}
-	
-	public void setScreenRes(int dw, int dh, int sw, int sh, double scaling) {
+
+	public void setScreenRes(int sw, int sh, double scaling) {
 		if ((sw != this.sw) || (sh != this.sh) || (scaling != this.screenScalingFactor)) {
 			this.sw = sw;
 			this.sh = sh;
@@ -99,7 +99,7 @@ public class MapMode {
 	public void setScreenRes() {
 		Minecraft mc = Minecraft.getMinecraft();
 		ScaledResolution sRes = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
-		this.setScreenRes(mc.displayWidth, mc.displayHeight, sRes.getScaledWidth(), sRes.getScaledHeight(), sRes.getScaleFactor());
+		this.setScreenRes(sRes.getScaledWidth(), sRes.getScaledHeight(), sRes.getScaleFactor());
 	}
 	
 	public void setMargins(int marginTop, int marginBottom, int marginLeft, int marginRight) {

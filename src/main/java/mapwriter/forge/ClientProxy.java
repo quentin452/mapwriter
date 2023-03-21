@@ -1,49 +1,41 @@
 package mapwriter.forge;
 
-import java.io.File;
-
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import mapwriter.Mw;
 import mapwriter.api.MwAPI;
 import mapwriter.overlay.OverlayGrid;
 import mapwriter.overlay.OverlaySlime;
 import mapwriter.region.MwChunk;
-import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.MinecraftForge;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Loader;
+
+import java.io.File;
 
 public class ClientProxy extends CommonProxy {
 
-	private MwConfig config;
+    private MwConfig config;
 
-	public void preInit(File configFile) {
-		this.config = new MwConfig(configFile);
-	}
+    public void preInit(File configFile) {
+        this.config = new MwConfig(configFile);
+    }
 
-	public void load() {
-		Mw mw = new Mw(this.config);
-		MinecraftForge.EVENT_BUS.register(new EventHandler(mw));
+    public void load() {
+        Mw mw = new Mw(this.config);
+        MinecraftForge.EVENT_BUS.register(new EventHandler(mw));
 
-		Object eventhandler = new MwKeyHandler();
-		FMLCommonHandler.instance().bus().register(eventhandler);
-		MinecraftForge.EVENT_BUS.register(eventhandler);
+        Object eventhandler = new MwKeyHandler();
+        FMLCommonHandler.instance().bus().register(eventhandler);
+        MinecraftForge.EVENT_BUS.register(eventhandler);
+    }
 
-		// temporary workaround for user defined key bindings not being loaded
-		// at game start. see https://github.com/MinecraftForge/FML/issues/378
-		// for more info.
-		Minecraft.getMinecraft().gameSettings.loadOptions();
-	}
-
-	public void postInit() {
-		if (Loader.isModLoaded("CarpentersBlocks")) {
-			MwChunk.carpenterdata();
-		}
-		if (Loader.isModLoaded("ForgeMultipart")) {
-			MwChunk.FMPdata();
-		}
-		MwAPI.registerDataProvider("Slime", new OverlaySlime());
-		MwAPI.registerDataProvider("Grid", new OverlayGrid());
-		// MwAPI.registerDataProvider("Checker", new OverlayChecker());
-		// MwAPI.setCurrentDataProvider("Slime");
-	}
+    public void postInit() {
+        if (Loader.isModLoaded("CarpentersBlocks")) {
+            MwChunk.carpenterData();
+        }
+        if (Loader.isModLoaded("ForgeMultipart")) {
+            MwChunk.fmpData();
+        }
+        MwAPI.registerDataProvider("Slime", new OverlaySlime());
+        MwAPI.registerDataProvider("Grid", new OverlayGrid());
+    }
 }

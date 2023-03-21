@@ -19,17 +19,17 @@ public class BlockColourGen {
 	private static int getIconMapColour(IIcon icon, Texture terrainTexture) {
 		// flipped icons have the U and V coords reversed (minU > maxU, minV > maxV).
 		// thanks go to taelnia for fixing this. 
-		int iconX = (int) Math.round(((float) terrainTexture.w) * Math.min(icon.getMinU(), icon.getMaxU()));
-		int iconY = (int) Math.round(((float) terrainTexture.h) * Math.min(icon.getMinV(), icon.getMaxV()));
-		int iconWidth = (int) Math.round(((float) terrainTexture.w) * Math.abs(icon.getMaxU() - icon.getMinU()));
-		int iconHeight = (int) Math.round(((float) terrainTexture.h) * Math.abs(icon.getMaxV() - icon.getMinV()));
-		
+		int iconX = Math.round(((float) terrainTexture.w) * Math.min(icon.getMinU(), icon.getMaxU()));
+		int iconY = Math.round(((float) terrainTexture.h) * Math.min(icon.getMinV(), icon.getMaxV()));
+		int iconWidth = Math.round(((float) terrainTexture.w) * Math.abs(icon.getMaxU() - icon.getMinU()));
+		int iconHeight = Math.round(((float) terrainTexture.h) * Math.abs(icon.getMaxV() - icon.getMinV()));
+
 		int[] pixels = new int[iconWidth * iconHeight];
-		
+
 		//MwUtil.log("(%d, %d) %dx%d", iconX, iconY, iconWidth, iconHeight);
-		
+
 		terrainTexture.getRGB(iconX, iconY, iconWidth, iconHeight, pixels, 0, iconWidth, icon);
-		
+
 		// need to use custom averaging routine rather than scaling down to one pixel to
 		// stop transparent pixel colours being included in the average.
 		return Render.getAverageColourOfArray(pixels);
@@ -114,17 +114,17 @@ public class BlockColourGen {
 		int b_count = 0;
 		int s_count = 0;
 
-		for (Object oblock : Block.blockRegistry){
-			Block block = (Block)oblock;
-			int blockID = block.getIdFromBlock(block);
-			
+		for (Object oblock : Block.blockRegistry) {
+			Block block = (Block) oblock;
+			int blockID = Block.getIdFromBlock(block);
+
 			for (int dv = 0; dv < 17; dv++) {
-				
+
 				int blockAndMeta = ((blockID & 0xfff) << 4) | (dv & 0xf);
 				int blockColour = 0;
-				
+
 				if (block != null) {
-					
+
 					IIcon icon = null;
 					try {
 						icon = block.getIcon(1, dv);

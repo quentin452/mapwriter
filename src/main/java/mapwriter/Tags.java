@@ -1,4 +1,4 @@
-package mapwriter.forge;
+package mapwriter;
 
 public class Tags {
     // GRADLETOKEN_* will be replaced by your configuration values at build time
