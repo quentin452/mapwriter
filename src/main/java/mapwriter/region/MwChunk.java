@@ -281,8 +281,8 @@ public class MwChunk implements IChunk {
 							value, (byte) 6);
 					if (itemStack != null) {
 						ItemBlock itemBlock = (ItemBlock) itemStack.getItem();
-						id = Block.getIdFromBlock(itemBlock.blockInstance);
-						meta = itemStack.getMetadata();
+						id = Block.getIdFromBlock(itemBlock.field_150939_a);
+						meta = itemStack.getItemDamage();
 					}
 				} catch (IllegalArgumentException e) {
 				} catch (IllegalAccessException e) {

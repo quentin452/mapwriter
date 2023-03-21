@@ -8,6 +8,7 @@ import mapwriter.Render;
 import mapwriter.api.IMwChunkOverlay;
 import mapwriter.api.IMwDataProvider;
 import mapwriter.api.MwAPI;
+import mapwriter.forge.Tags;
 import mapwriter.map.mapmode.MapMode;
 import net.minecraft.util.ResourceLocation;
 
@@ -21,11 +22,11 @@ public class MapRenderer {
 	// player arrow on the rendered map
 	public Point.Double playerArrowScreenPos = new Point.Double(0, 0);
 	 
-	private ResourceLocation backgroundTexture = new ResourceLocation("mapwriter", "textures/map/background.png");
-	private ResourceLocation roundMapTexture = new ResourceLocation("mapwriter", "textures/map/border_round.png");
-	private ResourceLocation squareMapTexture = new ResourceLocation("mapwriter", "textures/map/border_square.png");
-	private ResourceLocation playerArrowTexture = new ResourceLocation("mapwriter", "textures/map/arrow_player.png");
-	private ResourceLocation northArrowTexture = new ResourceLocation("mapwriter", "textures/map/arrow_north.png");
+	private ResourceLocation backgroundTexture = new ResourceLocation(Tags.MODID, "textures/map/background.png");
+	private ResourceLocation roundMapTexture = new ResourceLocation(Tags.MODID, "textures/map/border_round.png");
+	private ResourceLocation squareMapTexture = new ResourceLocation(Tags.MODID, "textures/map/border_square.png");
+	private ResourceLocation playerArrowTexture = new ResourceLocation(Tags.MODID, "textures/map/arrow_player.png");
+	private ResourceLocation northArrowTexture = new ResourceLocation(Tags.MODID, "textures/map/arrow_north.png");
 	
 	public MapRenderer(Mw mw, MapMode mapMode, MapView mapView) {
 		this.mw = mw;

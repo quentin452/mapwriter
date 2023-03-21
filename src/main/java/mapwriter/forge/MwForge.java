@@ -21,7 +21,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.FMLNetworkEvent;
 
-@Mod(modid="MapWriter", name="MapWriter", version="2.1.8", acceptableRemoteVersions = "*")
+@Mod(modid=Tags.MODID, name=Tags.MODNAME, version=Tags.VERSION, acceptableRemoteVersions = "*")
 public class MwForge {
 	
 	@Instance("MapWriter")
@@ -59,7 +59,7 @@ public class MwForge {
     @SubscribeEvent
     public void onConnected(FMLNetworkEvent.ClientConnectedToServerEvent event){
     	if (!event.isLocal) {
-    		InetSocketAddress address = (InetSocketAddress) event.manager.getRemoteAddress();
+    		InetSocketAddress address = (InetSocketAddress) event.manager.getSocketAddress();
     		Mw.instance.setServerDetails(address.getHostName(), address.getPort());
     	}
     }
