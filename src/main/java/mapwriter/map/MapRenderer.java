@@ -224,7 +224,7 @@ public class MapRenderer {
                 Render.drawCentredString(0, 0, this.mapMode.textColour,
                         "%d, %d, %d",
                         this.mw.playerXInt,
-                        this.mw.playerYInt,
+                        this.mw.playerFootYInt,
                         this.mw.playerZInt
                 );
                 offset += 12;

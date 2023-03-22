@@ -134,8 +134,10 @@ public class Mw {
     public double playerX = 0.0;
     public double playerZ = 0.0;
     public double playerY = 0.0;
+    public double playerFootY = 0.0;
     public int playerXInt = 0;
     public int playerYInt = 0;
+    public int playerFootYInt = 0;
     public int playerZInt = 0;
     public double playerHeading = 0.0;
     public int playerDimension = 0;
@@ -298,9 +300,11 @@ public class Mw {
         // get player pos
         this.playerX = this.mc.thePlayer.posX;
         this.playerY = this.mc.thePlayer.posY;
+        this.playerFootY = this.mc.thePlayer.boundingBox.minY;
         this.playerZ = this.mc.thePlayer.posZ;
         this.playerXInt = (int) Math.floor(this.playerX);
         this.playerYInt = (int) Math.floor(this.playerY);
+        this.playerFootYInt = (int) Math.floor(this.playerFootY);
         this.playerZInt = (int) Math.floor(this.playerZ);
 
         // rotationYaw of 0 points due north, we want it to point due east instead
