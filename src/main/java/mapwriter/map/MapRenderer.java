@@ -17,8 +17,8 @@ public class MapRenderer {
     private final ResourceLocation backgroundTexture = new ResourceLocation(Tags.MODID, "textures/map/background.png");
     private final ResourceLocation roundMapTexture = new ResourceLocation(Tags.MODID, "textures/map/border_round.png");
     private final ResourceLocation squareMapTexture = new ResourceLocation(Tags.MODID, "textures/map/border_square.png");
-    private final ResourceLocation playerArrowTexture = new ResourceLocation(Tags.MODID, "textures/map/arrow_player.png");
-    private final ResourceLocation northArrowTexture = new ResourceLocation(Tags.MODID, "textures/map/arrow_north.png");
+    private final ResourceLocation playerIndicatorTexture = new ResourceLocation(Tags.MODID, "textures/map/indicator_player.png");
+    private final ResourceLocation northIndicatorTexture = new ResourceLocation(Tags.MODID, "textures/map/indicator_north.png");
     private final Mw mw;
     private final MapMode mapMode;
     private final MapView mapView;
@@ -169,7 +169,7 @@ public class MapRenderer {
 
         double arrowSize = this.mapMode.playerArrowSize;
         Render.setColour(0xffffffff);
-        this.mw.mc.renderEngine.bindTexture(this.playerArrowTexture);
+        this.mw.mc.renderEngine.bindTexture(this.playerIndicatorTexture);
         Render.drawTexturedRect(
                 -arrowSize, -arrowSize, arrowSize * 2, arrowSize * 2,
                 0.0, 0.0, 1.0, 1.0
@@ -197,7 +197,7 @@ public class MapRenderer {
             double y = this.mapMode.h / 2.0;
             double arrowSize = this.mapMode.playerArrowSize;
             Render.setColour(0xffffffff);
-            this.mw.mc.renderEngine.bindTexture(this.northArrowTexture);
+            this.mw.mc.renderEngine.bindTexture(this.northIndicatorTexture);
             Render.drawTexturedRect(
                     -arrowSize, -y - (arrowSize * 2), arrowSize * 2, arrowSize * 2,
                     0.0, 0.0, 1.0, 1.0
