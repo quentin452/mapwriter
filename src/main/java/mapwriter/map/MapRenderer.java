@@ -167,6 +167,9 @@ public class MapRenderer {
             GL11.glRotated(-this.mw.mapRotationDegrees, 0.0f, 0.0f, 1.0f);
         }
 
+        double arrowScale = 4.0 / Math.pow(mapView.getZoomLevel() + 6, 0.8);
+        GL11.glScaled(arrowScale, arrowScale, 1.0);
+
         double arrowSize = this.mapMode.playerArrowSize;
         Render.setColour(0xffffffff);
         this.mw.mc.renderEngine.bindTexture(this.playerIndicatorTexture);
