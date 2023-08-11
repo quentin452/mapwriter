@@ -14,11 +14,11 @@ import java.awt.Point;
 import java.util.ArrayList;
 
 public class MapRenderer {
-    private final ResourceLocation backgroundTexture = new ResourceLocation(Tags.MODID, "textures/map/background.png");
-    private final ResourceLocation roundMapTexture = new ResourceLocation(Tags.MODID, "textures/map/border_round.png");
-    private final ResourceLocation squareMapTexture = new ResourceLocation(Tags.MODID, "textures/map/border_square.png");
-    private final ResourceLocation playerIndicatorTexture = new ResourceLocation(Tags.MODID, "textures/map/indicator_player.png");
-    private final ResourceLocation northIndicatorTexture = new ResourceLocation(Tags.MODID, "textures/map/indicator_north.png");
+    private final ResourceLocation backgroundTexture = new ResourceLocation(Tags.MODID.toLowerCase(), "textures/map/background.png");
+    private final ResourceLocation roundMapTexture = new ResourceLocation(Tags.MODID.toLowerCase(), "textures/map/border_round.png");
+    private final ResourceLocation squareMapTexture = new ResourceLocation(Tags.MODID.toLowerCase(), "textures/map/border_square.png");
+    private final ResourceLocation playerIndicatorTexture = new ResourceLocation(Tags.MODID.toLowerCase(), "textures/map/indicator_player.png");
+    private final ResourceLocation northIndicatorTexture = new ResourceLocation(Tags.MODID.toLowerCase(), "textures/map/indicator_north.png");
     private final Mw mw;
     private final MapMode mapMode;
     private final MapView mapView;
