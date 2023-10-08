@@ -1,10 +1,10 @@
 [
 {
-  "modid": "${modId}",
-  "name": "${modName}",
+  "modid": "mapwriter",
+  "name": "MapWriter",
   "description": "An open source mini map mod",
-  "version": "${modVersion}",
-  "mcversion": "${minecraftVersion}",
+  "version": "2.2.5",
+  "mcversion": "1.7.10",
   "url": "http://www.minecraftforum.net/topic/1570989-/",
   "updateUrl": "http://www.curse.com/mc-mods/Minecraft/231387-mapwriter-2",
   "authorList": ["mapwriter"],

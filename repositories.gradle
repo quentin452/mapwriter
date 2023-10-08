@@ -2,9 +2,6 @@
 
 repositories {
     maven {
-        url = "https://maven.cil.li"
-        metadataSources {
-            artifact()
-        }
+        url "https://cursemaven.com"
     }
 }
