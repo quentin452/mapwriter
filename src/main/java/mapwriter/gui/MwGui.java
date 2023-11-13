@@ -288,9 +288,11 @@ public class MwGui extends GuiScreen {
                 } else if (key == MwKeyHandler.keyNextGroup.getKeyCode()) {
                     this.mw.markerManager.nextGroup();
                     this.mw.markerManager.update();
-                } else if (key == MwKeyHandler.keyUndergroundMode.getKeyCode()) {
+                /*} else if (key == MwKeyHandler.keyUndergroundMode.getKeyCode()) {
                     this.mw.toggleUndergroundMode();
                     this.mapView.setUndergroundMode(this.mw.undergroundMode);
+
+                 */
                 }
                 break;
         }
