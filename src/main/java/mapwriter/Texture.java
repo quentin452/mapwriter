@@ -38,7 +38,7 @@ public class Texture {
     }
 
     // free up the resources used by the GL texture
-    public synchronized void close() {
+    public void close() {
         if (this.id != 0) {
             try {
                 GL11.glDeleteTextures(this.id);
@@ -57,7 +57,7 @@ public class Texture {
         this.pixelBuf.put(pixel);
     }
 
-    public synchronized void fillRect(int x, int y, int w, int h, int colour) {
+    public void fillRect(int x, int y, int w, int h, int colour) {
         int offset = (y * this.w) + x;
         for (int j = 0; j < h; j++) {
             this.pixelBuf.position(offset + (j * this.w));
@@ -68,7 +68,7 @@ public class Texture {
     }
 
     // Copy a rectangular sub-region of dimensions 'w' x 'h' from the pixel buffer to the array 'pixels'.
-    public synchronized void getRGB(int x, int y, int w, int h, int[] pixels, int offset, int scanSize, IIcon icon) {
+    public void getRGB(int x, int y, int w, int h, int[] pixels, int offset, int scanSize, IIcon icon) {
         int bufOffset = (y * this.w) + x;
         for (int i = 0; i < h; i++) {
             try {
@@ -107,7 +107,7 @@ public class Texture {
     }
 
     // update texture from pixels in pixelBuf
-    public synchronized void updateTextureArea(int x, int y, int w, int h) {
+    public void updateTextureArea(int x, int y, int w, int h) {
         try {
             this.bind();
             GL11.glPixelStorei(GL11.GL_UNPACK_ROW_LENGTH, this.w);
@@ -119,14 +119,14 @@ public class Texture {
         }
     }
 
-    public synchronized void updateTexture() {
+    public void updateTexture() {
         this.bind();
         this.pixelBuf.position(0);
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, this.w, this.h, 0, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE, this.pixelBuf);
     }
 
     // copy pixels from GL texture to pixelBuf
-    private synchronized void getPixelsFromExistingTexture() {
+    private void getPixelsFromExistingTexture() {
         try {
             this.bind();
             this.pixelBuf.clear();

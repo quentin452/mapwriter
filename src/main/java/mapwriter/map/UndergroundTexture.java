@@ -11,6 +11,8 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.Point;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UndergroundTexture extends Texture {
     private final Mw mw;
@@ -81,18 +83,35 @@ public class UndergroundTexture extends Texture {
         }
         this.updateTextureArea(tx, tz, 16, 16);
     }
-
+    private final Map<Integer, Integer> renderCache = new HashMap<>();
     void renderToTexture(int y) {
-        this.setPixelBufPosition(0);
-        for (int colour : this.pixels) {
-            int height = (colour >> 24) & 0xff;
-            int alpha = (y >= height) ? 255 - ((y - height) * 8) : 0;
-            if (alpha < 0) {
-                alpha = 0;
-            }
-            this.pixelBufPut(((alpha << 24) & 0xff000000) | (colour & 0xffffff));
+        int cacheKey = y << 16 | Arrays.hashCode(pixels);
+        if (renderCache.containsKey(cacheKey)) {
+            int cachedResult = renderCache.get(cacheKey);
+            this.setPixelBufPosition(0);
+            this.pixelBufPut(cachedResult);
+            this.updateTexture();
+            return;
         }
+
+        this.setPixelBufPosition(0);
+
+        int[] pixelArray = this.pixels;
+
+        int alphaShift = 24;
+        int rgbMask = 0xffffff;
+        int alphaMask = 0xff000000;
+        int alphaIncrement = 8;
+
+        for (int colour : pixelArray) {
+            int height = (colour >> alphaShift) & 0xff;
+            int alpha = Math.max(255 - ((y - height) * alphaIncrement), 0);
+            this.pixelBufPut((alpha << alphaShift & alphaMask) | (colour & rgbMask));
+        }
+
         this.updateTexture();
+
+        renderCache.put(cacheKey, pixelArray[0]);
     }
 
     public int getLoadedChunkOffset(int cx, int cz) {
@@ -185,8 +204,7 @@ public class UndergroundTexture extends Texture {
         int xDist = this.px - x;
         int zDist = this.pz - z;
 
-        if (((xDist * xDist) + (zDist * zDist)) <= 256) {
-            if (this.isChunkInTexture(x >> 4, z >> 4)) {
+        if (((xDist * xDist) + (zDist * zDist)) <= 256 && (this.isChunkInTexture(x >> 4, z >> 4))) {
                 int chunkOffset = ((zi >> 4) * 3) + (xi >> 4);
                 int columnXi = xi & 0xf;
                 int columnZi = zi & 0xf;
@@ -209,7 +227,7 @@ public class UndergroundTexture extends Texture {
                         this.updateFlags[chunkOffset][columnOffset] = ChunkRender.FLAG_OPAQUE;
                     }
                 }
-            }
+
         }
     }
 

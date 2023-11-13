@@ -75,7 +75,7 @@ components are initialised.
 One exception is the fillChunk handler which adds chunks to the chunkQueue so that they can be processed
 after initialization. This is so that no chunks are skipped if the chunks are loaded before the player is
 logged in.
-	
+
 */
 
 public class Mw {
@@ -598,50 +598,33 @@ public class Mw {
     }
 
     public void onTick() {
-        this.load();
-        if (this.ready && (this.mc.thePlayer != null)) {
+        load();
+        if (ready && mc.thePlayer != null) {
+            updatePlayer();
 
-            this.updatePlayer();
-
-            if (this.undergroundMode && ((this.tickCounter % 30) == 0)) {
-                this.undergroundMapTexture.update();
+            if (undergroundMode && tickCounter % 30 == 0) {
+                undergroundMapTexture.update();
             }
 
-            // check if the game over screen is being displayed and if so
-            // (thanks to Chrixian for this method of checking when the player is dead)
-            if (this.mc.currentScreen instanceof GuiGameOver) {
-                if (!this.onPlayerDeathAlreadyFired) {
-                    this.onPlayerDeath();
-                    this.onPlayerDeathAlreadyFired = true;
-                }
-            } else if (!(this.mc.currentScreen instanceof MwGui)) {
-                // if the player is not dead
-                this.onPlayerDeathAlreadyFired = false;
-                // if in game (no gui screen) center the minimap on the player and render it.
-                this.miniMap.view.setViewCentreScaled(this.playerX, this.playerZ, this.playerDimension);
-                this.miniMap.drawCurrentMap();
+            if (mc.currentScreen instanceof GuiGameOver && !onPlayerDeathAlreadyFired) {
+                onPlayerDeath();
+                onPlayerDeathAlreadyFired = true;
+            } else if (!(mc.currentScreen instanceof MwGui)) {
+                onPlayerDeathAlreadyFired = false;
+                miniMap.view.setViewCentreScaled(playerX, playerZ, playerDimension);
+                miniMap.drawCurrentMap();
             }
 
-            // process background tasks
             int maxTasks = 50;
-            while (!this.executor.processTaskQueue() && (maxTasks > 0)) {
+            while (!executor.processTaskQueue() && maxTasks > 0) {
                 maxTasks--;
             }
 
-            this.chunkManager.onTick();
+            chunkManager.onTick();
 
-            // update GL texture of mapTexture if updated
-            this.mapTexture.processTextureUpdates();
+            mapTexture.processTextureUpdates();
 
-            // let the renderEngine know we have changed the bound texture.
-            //this.mc.renderEngine.resetBoundTexture();
-
-            //if (this.tickCounter % 100 == 0) {
-            //	MwUtil.log("tick %d", this.tickCounter);
-            //}
-            this.playerTrail.onTick();
-
-            this.tickCounter++;
+            tickCounter++;
         }
     }
 
